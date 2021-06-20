@@ -1,1 +1,1 @@
-# ginn
+# GiNN

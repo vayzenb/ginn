@@ -1,0 +1,26 @@
+ID#: r01
+
+Rhesus monkey (Macaca mulatta)
+
+male
+
+7 years old
+
+Number of Photographs: 25
+
+r01_[01-25].png
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+All rights reserved.
+
+Usage:
+- You are allowed to download the database only for scientific purposes.
+ Commercial use is strictly prohibited.
+
+-  You must acknowledge and cite the source, "The face images used in this study are provided by PriFace database: http://visiome.neuroinf.jp/"
+
+*This database is funded by Grant-in-Aid for Scientific research on Innovative Areas,
+ "Face Perception and Recognition" from Ministry of Education,
+ Culture, Sports, Science, and Technology (MEXT), Japan.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

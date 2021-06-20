@@ -1,0 +1,24 @@
+ID#: r15
+
+Rhesus monkeys (Macaca mulatta)
+
+Number of photographs: 23
+
+r15_[01-23].png
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+All rights reserved.
+
+Usage:
+- You are allowed to download the database only for scientific purposes.
+ Commercial use is strictly prohibited.
+
+-  You must acknowledge and cite the source, "The face images used in this study are provided by PriFace database: http://visiome.neuroinf.jp/"
+
+*This database is funded by Grant-in-Aid for Scientific research on Innovative Areas,
+ "Face Perception and Recognition" from Ministry of Education,
+ Culture, Sports, Science, and Technology (MEXT), Japan. 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
