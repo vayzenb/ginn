@@ -3,7 +3,7 @@ from glob import glob
 import pandas as pd
 import pdb
 import numpy as np
-stim_folder = '/home/vayzenbe/GitHub_Repos/dunnetal_JEP_HPP_materials/Experiment Scripts/Experiment 1 Script/Images/AU'
+stim_folder = 'AU'
 out_folder = '/home/vayzenbe/matlab_toolboxes/SHINEtoolbox/SHINEtoolbox/SHINE_INPUT'
 
 im_files = glob(f'{stim_folder}/*.jpg')
