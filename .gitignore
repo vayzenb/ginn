@@ -1,7 +1,7 @@
 #Ignore weights files
-Models/data/
-Models/weights
-Activations/
-Results/fmri_ts/
-Stim/fmri_videos/
-Exps/fmri_data/
+models/runs/
+models/weights
+activations/
+results/fmri_ts/
+stim/fmri_videos/
+exps/fmri_data/
