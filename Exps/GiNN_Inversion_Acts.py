@@ -13,7 +13,7 @@ import os
 #os.chdir('C:/Users/vayze/Desktop/GitHub Repos/GiNN/')
 
 import sys
-sys.path.insert(1, '/home/vayzenbe/GitHub_Repos/GiNN/Models/')
+sys.path.insert(1, '/user_data/vayzenbe/GitHub_Repos/lemniscate.pytorch/')
 
 import torch as nn
 import torch
@@ -25,7 +25,7 @@ import numpy as np
 import torchvision.transforms as T
 import itertools
 import glob
-import cornet
+import models
 
 
 import deepdish as dd
@@ -34,9 +34,10 @@ scaler = T.Resize((224, 224))
 normalize = T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
 to_tensor = T.ToTensor()
 
-image_dir = "/home/vayzenbe/image_sets/"
+image_dir = "/user_data/vayzenbe/GitHub_Repos/ginn/Stim"
 
 ModelType = ['Face','Object', 'Random']
+model_arch
 stim = ['vggface2_fbf', 'ImageNet_Objects']
 cond =['Upright', 'Inverted']
 epoch = 30
@@ -115,6 +116,10 @@ for mm in range(0, len(ModelType)):
                         
                     print(ModelType[mm], stim[ss],cc, imNum, n)    
                     imNum = imNum + 1
+
+                    if imNum == 10:
+                        break
+
             
                 #Remove all unsused rows and save
                 Acts['Act'] = Acts['Act'][0:n,:]

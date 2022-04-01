@@ -1,0 +1,6 @@
+model_arch,train_type,test_stim,test_cond,fold_n,acc
+cornet_z,imagenet_objects,imagenet_objects,Inverted,1,0.26
+cornet_z,imagenet_objects,imagenet_objects,Inverted,2,0.37
+cornet_z,imagenet_objects,imagenet_objects,Inverted,3,0.28
+cornet_z,imagenet_objects,imagenet_objects,Inverted,4,0.26
+cornet_z,imagenet_objects,imagenet_objects,Inverted,5,0.28
