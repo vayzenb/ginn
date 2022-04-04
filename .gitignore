@@ -5,3 +5,12 @@ activations/
 results/fmri_ts/
 stim/fmri_videos/
 exps/fmri_data/
+data/*
+checkpoint/*
+logs/*
+
+*.pyc
+*.bak
+*.log
+*.tar
+*.pth

@@ -23,6 +23,7 @@ from PIL import Image
 from skimage import io, transform
 import numpy as np
 import torchvision.transforms as T
+from torchvision import transforms
 import itertools
 import glob
 import models
@@ -43,11 +44,11 @@ test_dir = "/user_data/vayzenbe/image_sets/"
 #test_dir = "/lab_data/plautlab/imagesets/"
 weights_dir = "/user_data/vayzenbe/GitHub_Repos/lemniscate.pytorch/results"
 
-train_type = ['random']
+train_type = ['random', 'imagenet_objects']
 model_arch = ['cornet_z']
 test_stim = ['objects']
 
-test_cond =['Upright']
+test_cond =['upright', 'inverted']
 epoch = 30
 layer = 'decoder'
 sublayer = 'avgpool'
@@ -55,6 +56,12 @@ suf = '_unsupervised'
 splits = 5
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+
+
+
+
 
 #Set image loader for model
 def image_loader(image_name):
@@ -119,35 +126,51 @@ def extract_acts(model, image_dir, cond):
     acts = {'feats' : np.zeros((30000, 1024)),'label' : np.zeros((30000, 1))}
     imNum = 0
     n=0
+
+    if cond == 'inverted':
+        transform = transforms.Compose([
+            transforms.RandomVerticalFlip(p=1.0),
+            transforms.Resize([224,224]),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                 std=[0.229, 0.224, 0.225])])
+    else:
+        #Transformations for ImageNet
+        transform = transforms.Compose([
+            transforms.Resize([224,224]),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                 std=[0.229, 0.224, 0.225])])
+
+
     
-    for ii in range(0, len(imFolders)):
-        #load images in that folder
-        #THey are annoying in two different formats between VGG (.jpg) and ImageNet (.JPEG)
-        imFiles = [os.path.basename(x) for x in glob.glob(f"{image_dir}/{imFolders[ii]}/*.jpg")]
-        imFiles.extend([os.path.basename(x) for x in glob.glob(f"{image_dir}/{imFolders[ii]}/*.JPEG")])
+    test_dataset = torchvision.datasets.ImageFolder(image_dir, transform=transform)
+    testloader = torch.utils.data.DataLoader(test_dataset, batch_size=128, shuffle=False, num_workers = 4, pin_memory=True)
+    
 
-        with torch.no_grad():
-            for jj in range(0, len(imFiles)):
-                IM = Image.open(f"{image_dir}/{imFolders[ii]}/{imFiles[jj]}").convert("RGB")
-                
-                if cond == 'Inverted':
-                    IM = IM.rotate(180) # rotate to invert it
-                
-                IM = image_loader(IM) #Convert to tensor
-                _model_feats = []
-                model(IM)
-                acts['feats'][n,:] = _model_feats[0][0]
-                acts['label'][n] = imNum
-                
-                n = n + 1
 
-                                
+    with torch.no_grad():
+        for data, label in testloader:
+            # move tensors to GPU if CUDA is available
+            data, target = data.cuda(), label.cuda()
             
-            imNum = imNum + 1
+            _model_feats = []
+            model(data)
+            #output = model(data)
+
+            labels = label.cpu().numpy()
+
+            if n == 0:
+                acts = {'feats' : _model_feats[0],'label' : labels}
+            else:
+                acts['feats'] = np.append(acts['feats'], _model_feats[0],axis = 0)
+                acts['label'] = np.append(acts['label'], labels,axis = 0)
             
-    #Remove all unsused rows and save
-    acts['feats'] = acts['feats'][0:n,:]
-    acts['label'] = acts['label'][0:n]
+            n = n + 1
+
+                            
+        
+    
 
     return acts
 
@@ -193,7 +216,7 @@ for mm in enumerate(model_arch):
                 file_name = f'{mm[1]}_{trt[1]}_{ts}_{cc}{suf}'
                 acts = extract_acts(model, test_ims, cc)
 
-                dd.io.save(f"{curr_dir}/Activations/{file_name}.h5", acts)
+                dd.io.save(f"{curr_dir}/activations/{file_name}.h5", acts)
                 model_info = [mm[1], trt[1], ts, cc]
                 cat_summary = start_classification(acts, model_info)
                 
