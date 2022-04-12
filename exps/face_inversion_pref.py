@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
 """
 Extracts activations from penultimate layer from object, face, and random models
 to human and inverted human faces
-
-Run SVM to classify them
 
 Created on Thu Feb  6 14:02:03 2020
 
@@ -31,6 +28,7 @@ import models
 from sklearn import svm
 from sklearn.model_selection import StratifiedShuffleSplit
 import pandas as pd
+import load_stim
 
 
 import deepdish as dd
@@ -165,59 +163,3 @@ def extract_acts(model, image_dir, cond):
             n = n + 1
 
     return acts
-
-def start_classification(acts, model_info):
-    print('Running classification...')
-    clf = svm.SVC(kernel='linear', C=1)
-    sss = StratifiedShuffleSplit(n_splits=splits,test_size=0.2)
-    X = acts['feats']
-    y = np.ravel(acts['label']).astype(int)
-
-    cat_summary = pd.DataFrame(columns = ['model_arch', 'train_type', 'test_stim','test_cond', 'fold_n','acc'])
-    fold_n = 1
-    for train_index, test_index in sss.split(X, y):
-        
-        
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
-        
-        clf.fit(X_train, y_train)
-        curr_acc = clf.score(X_test, y_test)
-        #pdb.set_trace()
-        curr_data = pd.Series(model_info + [fold_n, curr_acc], index = cat_summary.columns)
-        cat_summary = cat_summary.append(curr_data, ignore_index=True)
-        fold_n +=1
-
-    print(model_info,cat_summary['acc'].mean())
-    return cat_summary
-
-    
-
-
-
-for mm in enumerate(model_arch):   
-    for trt in enumerate(train_type):
-        model = load_model(mm[1], trt[1])
-        
-
-
-        for ts in test_stim:
-            test_ims = f'{test_dir}/{ts}'
-
-            for cc in test_cond:
-                file_name = f'{mm[1]}_{trt[1]}_{ts}_{cc}{suf}'
-
-                if test_only == True:
-                    acts = dd.io.load(f"{act_dir}/{exp}/{file_name}.h5")
-
-                else:
-                    acts = extract_acts(model, test_ims, cc)
-
-                    dd.io.save(f"{act_dir}/{exp}/{file_name}.h5", acts)
-
-                
-                model_info = [mm[1], trt[1], ts, cc]
-                cat_summary = start_classification(acts, model_info)
-                
-                cat_summary.to_csv(f"{curr_dir}/results/{exp}/{file_name}.csv", index=False)
-                print(mm[1], ts,cc, 'Saved')

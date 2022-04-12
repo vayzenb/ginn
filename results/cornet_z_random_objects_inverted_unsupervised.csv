@@ -1,6 +1,6 @@
 model_arch,train_type,test_stim,test_cond,fold_n,acc
-cornet_z,random,objects,inverted,1,0.32123510292524377
-cornet_z,random,objects,inverted,2,0.33206933911159264
-cornet_z,random,objects,inverted,3,0.33315276273022754
-cornet_z,random,objects,inverted,4,0.3120260021668472
-cornet_z,random,objects,inverted,5,0.3391115926327194
+cornet_z,random,objects,inverted,1,0.24214517876489708
+cornet_z,random,objects,inverted,2,0.2502708559046587
+cornet_z,random,objects,inverted,3,0.23401950162513543
+cornet_z,random,objects,inverted,4,0.25947995666305523
+cornet_z,random,objects,inverted,5,0.25460455037919827

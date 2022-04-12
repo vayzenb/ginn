@@ -1,0 +1,177 @@
+images transferred
+everything loaded
+cornet_z_/scratch/vayzenbe/vggface_oneobject
+runs created?
+=> creating model 'cornet_z'
+cornet_z
+normalization constant Z is set to 391817.4
+Epoch: [0][0/690]	Time 18.104 (18.104)	Data 3.674 (3.674)	Loss 10.0474 (10.0474)	
+Epoch: [0][10/690]	Time 1.251 (2.785)	Data 0.000 (0.334)	Loss 11.7952 (11.7916)	
+Epoch: [0][20/690]	Time 1.251 (2.055)	Data 0.000 (0.175)	Loss 15.1844 (12.8933)	
+Epoch: [0][30/690]	Time 1.253 (1.796)	Data 0.000 (0.119)	Loss 13.7918 (13.1300)	
+Epoch: [0][40/690]	Time 1.252 (1.664)	Data 0.000 (0.090)	Loss 17.7065 (13.8563)	
+Epoch: [0][50/690]	Time 1.252 (1.584)	Data 0.000 (0.072)	Loss 17.2838 (14.7141)	
+Epoch: [0][60/690]	Time 1.258 (1.531)	Data 0.000 (0.061)	Loss 15.6660 (14.8425)	
+Epoch: [0][70/690]	Time 1.252 (1.492)	Data 0.000 (0.052)	Loss 19.1746 (15.2447)	
+Epoch: [0][80/690]	Time 1.252 (1.463)	Data 0.000 (0.046)	Loss 20.8313 (15.9108)	
+Epoch: [0][90/690]	Time 1.256 (1.440)	Data 0.000 (0.041)	Loss 20.4344 (16.4391)	
+Epoch: [0][100/690]	Time 1.285 (1.422)	Data 0.000 (0.037)	Loss 18.9058 (16.7396)	
+Epoch: [0][110/690]	Time 1.248 (1.407)	Data 0.000 (0.033)	Loss 17.9795 (16.8651)	
+Epoch: [0][120/690]	Time 1.252 (1.394)	Data 0.000 (0.031)	Loss 18.4223 (16.9664)	
+Epoch: [0][130/690]	Time 1.254 (1.383)	Data 0.000 (0.028)	Loss 18.4071 (17.0751)	
+Epoch: [0][140/690]	Time 1.257 (1.374)	Data 0.000 (0.026)	Loss 16.4040 (17.1352)	
+Epoch: [0][150/690]	Time 1.268 (1.366)	Data 0.000 (0.025)	Loss 17.3228 (17.1031)	
+Epoch: [0][160/690]	Time 1.251 (1.359)	Data 0.000 (0.023)	Loss 18.7943 (17.2161)	
+Epoch: [0][170/690]	Time 1.250 (1.353)	Data 0.000 (0.022)	Loss 18.8305 (17.3032)	
+Epoch: [0][180/690]	Time 1.249 (1.348)	Data 0.000 (0.021)	Loss 17.2528 (17.3506)	
+Epoch: [0][190/690]	Time 1.255 (1.343)	Data 0.000 (0.020)	Loss 18.4648 (17.3811)	
+Epoch: [0][200/690]	Time 1.250 (1.339)	Data 0.000 (0.019)	Loss 19.1392 (17.4397)	
+Epoch: [0][210/690]	Time 1.251 (1.335)	Data 0.000 (0.018)	Loss 20.8240 (17.5716)	
+Epoch: [0][220/690]	Time 1.254 (1.331)	Data 0.000 (0.017)	Loss 18.6873 (17.6722)	
+Epoch: [0][230/690]	Time 1.255 (1.328)	Data 0.000 (0.016)	Loss 18.4812 (17.6978)	
+Epoch: [0][240/690]	Time 1.270 (1.325)	Data 0.000 (0.016)	Loss 20.3384 (17.7560)	
+Epoch: [0][250/690]	Time 1.288 (1.322)	Data 0.000 (0.015)	Loss 22.4567 (17.9048)	
+Epoch: [0][260/690]	Time 1.248 (1.320)	Data 0.000 (0.014)	Loss 21.9534 (18.0712)	
+Epoch: [0][270/690]	Time 1.253 (1.317)	Data 0.000 (0.014)	Loss 19.8520 (18.1785)	
+Epoch: [0][280/690]	Time 1.254 (1.315)	Data 0.000 (0.013)	Loss 21.1897 (18.2337)	
+Epoch: [0][290/690]	Time 1.254 (1.313)	Data 0.000 (0.013)	Loss 20.6931 (18.3775)	
+Epoch: [0][300/690]	Time 1.251 (1.311)	Data 0.000 (0.013)	Loss 20.9429 (18.4578)	
+Epoch: [0][310/690]	Time 1.248 (1.309)	Data 0.000 (0.012)	Loss 23.5351 (18.5917)	
+Epoch: [0][320/690]	Time 1.252 (1.308)	Data 0.000 (0.012)	Loss 23.9491 (18.7541)	
+Epoch: [0][330/690]	Time 1.252 (1.306)	Data 0.000 (0.012)	Loss 22.7394 (18.8956)	
+Epoch: [0][340/690]	Time 1.246 (1.304)	Data 0.000 (0.011)	Loss 21.5538 (18.9868)	
+Epoch: [0][350/690]	Time 1.252 (1.303)	Data 0.000 (0.011)	Loss 21.2505 (19.0597)	
+Epoch: [0][360/690]	Time 1.253 (1.302)	Data 0.000 (0.011)	Loss 20.7429 (19.1147)	
+Epoch: [0][370/690]	Time 1.253 (1.301)	Data 0.001 (0.010)	Loss 23.8635 (19.2057)	
+Epoch: [0][380/690]	Time 1.255 (1.299)	Data 0.000 (0.010)	Loss 24.7049 (19.3518)	
+Epoch: [0][390/690]	Time 1.251 (1.298)	Data 0.000 (0.010)	Loss 23.3229 (19.4793)	
+Epoch: [0][400/690]	Time 1.256 (1.297)	Data 0.000 (0.010)	Loss 23.1382 (19.5654)	
+Epoch: [0][410/690]	Time 1.256 (1.296)	Data 0.000 (0.009)	Loss 24.5070 (19.6645)	
+Epoch: [0][420/690]	Time 1.251 (1.295)	Data 0.000 (0.009)	Loss 23.4682 (19.7647)	
+Epoch: [0][430/690]	Time 1.284 (1.294)	Data 0.000 (0.009)	Loss 26.4008 (19.8821)	
+Epoch: [0][440/690]	Time 1.252 (1.293)	Data 0.000 (0.009)	Loss 26.1166 (20.0345)	
+Epoch: [0][450/690]	Time 1.250 (1.292)	Data 0.000 (0.009)	Loss 22.8899 (20.1266)	
+Epoch: [0][460/690]	Time 1.254 (1.292)	Data 0.000 (0.008)	Loss 23.3473 (20.1818)	
+Epoch: [0][470/690]	Time 1.251 (1.291)	Data 0.000 (0.008)	Loss 25.2265 (20.2750)	
+Epoch: [0][480/690]	Time 1.249 (1.290)	Data 0.000 (0.008)	Loss 24.8792 (20.3787)	
+Epoch: [0][490/690]	Time 1.253 (1.289)	Data 0.000 (0.008)	Loss 24.1436 (20.4666)	
+Epoch: [0][500/690]	Time 1.280 (1.289)	Data 0.000 (0.008)	Loss 24.5987 (20.5519)	
+Epoch: [0][510/690]	Time 1.254 (1.288)	Data 0.000 (0.008)	Loss 24.0803 (20.6287)	
+Epoch: [0][520/690]	Time 1.256 (1.287)	Data 0.000 (0.007)	Loss 23.6412 (20.6822)	
+Epoch: [0][530/690]	Time 1.251 (1.287)	Data 0.000 (0.007)	Loss 25.4160 (20.7536)	
+Epoch: [0][540/690]	Time 1.254 (1.286)	Data 0.000 (0.007)	Loss 24.2854 (20.8375)	
+Epoch: [0][550/690]	Time 1.273 (1.286)	Data 0.000 (0.007)	Loss 25.3456 (20.9169)	
+Epoch: [0][560/690]	Time 1.251 (1.285)	Data 0.000 (0.007)	Loss 23.7635 (20.9878)	
+Epoch: [0][570/690]	Time 1.254 (1.284)	Data 0.000 (0.007)	Loss 23.5260 (21.0289)	
+Epoch: [0][580/690]	Time 1.250 (1.284)	Data 0.000 (0.007)	Loss 24.8838 (21.0802)	
+Epoch: [0][590/690]	Time 1.255 (1.283)	Data 0.000 (0.007)	Loss 25.2411 (21.1512)	
+Epoch: [0][600/690]	Time 1.249 (1.283)	Data 0.000 (0.006)	Loss 27.6498 (21.2321)	
+Epoch: [0][610/690]	Time 1.251 (1.283)	Data 0.000 (0.006)	Loss 28.6759 (21.3560)	
+Epoch: [0][620/690]	Time 1.252 (1.282)	Data 0.000 (0.006)	Loss 26.7862 (21.4520)	
+Epoch: [0][630/690]	Time 1.252 (1.282)	Data 0.000 (0.006)	Loss 27.1655 (21.5401)	
+Epoch: [0][640/690]	Time 1.252 (1.281)	Data 0.000 (0.006)	Loss 28.5367 (21.6417)	
+Epoch: [0][650/690]	Time 1.254 (1.281)	Data 0.000 (0.006)	Loss 27.7950 (21.7431)	
+Epoch: [0][660/690]	Time 1.252 (1.280)	Data 0.000 (0.006)	Loss 26.1937 (21.8188)	
+Epoch: [0][670/690]	Time 1.254 (1.280)	Data 0.000 (0.006)	Loss 26.1647 (21.8876)	
+Epoch: [0][680/690]	Time 1.280 (1.280)	Data 0.000 (0.006)	Loss 26.4505 (21.9572)	
+Test [256/22066]	Net Time 2.447 (2.447)	Cls Time 0.496 (0.496)	Top1: 0.00
+Test [512/22066]	Net Time 0.010 (1.229)	Cls Time 0.498 (0.497)	Top1: 0.00
+Test [768/22066]	Net Time 0.028 (0.828)	Cls Time 0.480 (0.491)	Top1: 0.00
+Test [1024/22066]	Net Time 0.022 (0.627)	Cls Time 0.486 (0.490)	Top1: 0.29
+Test [1280/22066]	Net Time 0.008 (0.503)	Cls Time 0.500 (0.492)	Top1: 0.31
+Test [1536/22066]	Net Time 0.009 (0.421)	Cls Time 0.499 (0.493)	Top1: 0.26
+Test [1792/22066]	Net Time 0.010 (0.362)	Cls Time 0.498 (0.494)	Top1: 0.22
+Test [2048/22066]	Net Time 0.010 (0.318)	Cls Time 0.498 (0.494)	Top1: 0.20
+Test [2304/22066]	Net Time 0.009 (0.284)	Cls Time 0.544 (0.500)	Top1: 0.17
+Test [2560/22066]	Net Time 0.011 (0.256)	Cls Time 0.497 (0.500)	Top1: 0.16
+Test [2816/22066]	Net Time 0.006 (0.234)	Cls Time 0.502 (0.500)	Top1: 0.14
+Test [3072/22066]	Net Time 0.008 (0.215)	Cls Time 0.500 (0.500)	Top1: 0.13
+Test [3328/22066]	Net Time 0.007 (0.199)	Cls Time 0.501 (0.500)	Top1: 0.12
+Test [3584/22066]	Net Time 0.006 (0.185)	Cls Time 0.502 (0.500)	Top1: 0.20
+Test [3840/22066]	Net Time 0.008 (0.173)	Cls Time 0.501 (0.500)	Top1: 0.18
+Test [4096/22066]	Net Time 0.006 (0.163)	Cls Time 0.502 (0.500)	Top1: 0.17
+Test [4352/22066]	Net Time 0.009 (0.154)	Cls Time 0.498 (0.500)	Top1: 0.16
+Test [4608/22066]	Net Time 0.010 (0.146)	Cls Time 0.498 (0.500)	Top1: 0.15
+Test [4864/22066]	Net Time 0.013 (0.139)	Cls Time 0.495 (0.500)	Top1: 0.14
+Test [5120/22066]	Net Time 0.013 (0.133)	Cls Time 0.499 (0.500)	Top1: 0.14
+Test [5376/22066]	Net Time 0.011 (0.127)	Cls Time 0.519 (0.501)	Top1: 0.19
+Test [5632/22066]	Net Time 0.009 (0.121)	Cls Time 0.499 (0.501)	Top1: 0.18
+Test [5888/22066]	Net Time 0.008 (0.116)	Cls Time 0.499 (0.500)	Top1: 0.17
+Test [6144/22066]	Net Time 0.006 (0.112)	Cls Time 0.540 (0.502)	Top1: 0.16
+Test [6400/22066]	Net Time 0.006 (0.108)	Cls Time 0.501 (0.502)	Top1: 0.25
+Test [6656/22066]	Net Time 0.006 (0.104)	Cls Time 0.501 (0.502)	Top1: 0.24
+Test [6912/22066]	Net Time 0.006 (0.100)	Cls Time 0.501 (0.502)	Top1: 0.23
+Test [7168/22066]	Net Time 0.006 (0.097)	Cls Time 0.501 (0.502)	Top1: 0.27
+Test [7424/22066]	Net Time 0.007 (0.094)	Cls Time 0.501 (0.502)	Top1: 0.26
+Test [7680/22066]	Net Time 0.023 (0.091)	Cls Time 0.497 (0.502)	Top1: 0.25
+Test [7936/22066]	Net Time 0.006 (0.089)	Cls Time 0.502 (0.502)	Top1: 0.25
+Test [8192/22066]	Net Time 0.009 (0.086)	Cls Time 0.499 (0.502)	Top1: 0.24
+Test [8448/22066]	Net Time 0.006 (0.084)	Cls Time 0.501 (0.502)	Top1: 0.24
+Test [8704/22066]	Net Time 0.007 (0.081)	Cls Time 0.501 (0.502)	Top1: 0.23
+Test [8960/22066]	Net Time 0.006 (0.079)	Cls Time 0.502 (0.502)	Top1: 0.22
+Test [9216/22066]	Net Time 0.007 (0.077)	Cls Time 0.502 (0.502)	Top1: 0.22
+Test [9472/22066]	Net Time 0.009 (0.075)	Cls Time 0.499 (0.502)	Top1: 0.21
+Test [9728/22066]	Net Time 0.009 (0.074)	Cls Time 0.506 (0.502)	Top1: 0.22
+Test [9984/22066]	Net Time 0.009 (0.072)	Cls Time 0.500 (0.502)	Top1: 0.21
+Test [10240/22066]	Net Time 0.007 (0.070)	Cls Time 0.501 (0.502)	Top1: 0.21
+Test [10496/22066]	Net Time 0.009 (0.069)	Cls Time 0.499 (0.502)	Top1: 0.21
+Test [10752/22066]	Net Time 0.006 (0.067)	Cls Time 0.502 (0.502)	Top1: 0.20
+Test [11008/22066]	Net Time 0.006 (0.066)	Cls Time 0.502 (0.502)	Top1: 0.20
+Test [11264/22066]	Net Time 0.008 (0.065)	Cls Time 0.501 (0.502)	Top1: 0.20
+Test [11520/22066]	Net Time 0.016 (0.063)	Cls Time 0.493 (0.501)	Top1: 0.20
+Test [11776/22066]	Net Time 0.006 (0.062)	Cls Time 0.502 (0.501)	Top1: 0.20
+Test [12032/22066]	Net Time 0.009 (0.061)	Cls Time 0.499 (0.501)	Top1: 0.20
+Test [12288/22066]	Net Time 0.009 (0.060)	Cls Time 0.498 (0.501)	Top1: 0.20
+Test [12544/22066]	Net Time 0.010 (0.059)	Cls Time 0.498 (0.501)	Top1: 0.19
+Test [12800/22066]	Net Time 0.006 (0.058)	Cls Time 0.501 (0.501)	Top1: 0.20
+Test [13056/22066]	Net Time 0.008 (0.057)	Cls Time 0.499 (0.501)	Top1: 0.19
+Test [13312/22066]	Net Time 0.006 (0.056)	Cls Time 0.501 (0.501)	Top1: 0.20
+Test [13568/22066]	Net Time 0.006 (0.055)	Cls Time 0.502 (0.501)	Top1: 0.19
+Test [13824/22066]	Net Time 0.006 (0.054)	Cls Time 0.501 (0.501)	Top1: 0.19
+Test [14080/22066]	Net Time 0.043 (0.054)	Cls Time 0.482 (0.501)	Top1: 0.18
+Test [14336/22066]	Net Time 0.006 (0.053)	Cls Time 0.502 (0.501)	Top1: 0.18
+Test [14592/22066]	Net Time 0.008 (0.052)	Cls Time 0.500 (0.501)	Top1: 0.18
+Test [14848/22066]	Net Time 0.006 (0.052)	Cls Time 0.502 (0.501)	Top1: 0.18
+Test [15104/22066]	Net Time 0.006 (0.051)	Cls Time 0.502 (0.501)	Top1: 0.17
+Test [15360/22066]	Net Time 0.009 (0.050)	Cls Time 0.517 (0.501)	Top1: 0.19
+Test [15616/22066]	Net Time 0.009 (0.049)	Cls Time 0.499 (0.501)	Top1: 0.19
+Test [15872/22066]	Net Time 0.009 (0.049)	Cls Time 0.500 (0.501)	Top1: 0.18
+Test [16128/22066]	Net Time 0.009 (0.048)	Cls Time 0.500 (0.501)	Top1: 0.20
+Test [16384/22066]	Net Time 0.007 (0.047)	Cls Time 0.502 (0.501)	Top1: 0.20
+Test [16640/22066]	Net Time 0.007 (0.047)	Cls Time 0.532 (0.502)	Top1: 0.19
+Test [16896/22066]	Net Time 0.009 (0.046)	Cls Time 0.500 (0.502)	Top1: 0.19
+Test [17152/22066]	Net Time 0.010 (0.046)	Cls Time 0.499 (0.502)	Top1: 0.19
+Test [17408/22066]	Net Time 0.009 (0.045)	Cls Time 0.499 (0.501)	Top1: 0.18
+Test [17664/22066]	Net Time 0.009 (0.045)	Cls Time 0.500 (0.501)	Top1: 0.19
+Test [17920/22066]	Net Time 0.006 (0.044)	Cls Time 0.502 (0.501)	Top1: 0.19
+Test [18176/22066]	Net Time 0.011 (0.044)	Cls Time 0.496 (0.501)	Top1: 0.19
+Test [18432/22066]	Net Time 0.010 (0.043)	Cls Time 0.498 (0.501)	Top1: 0.19
+Test [18688/22066]	Net Time 0.007 (0.043)	Cls Time 0.524 (0.502)	Top1: 0.19
+Test [18944/22066]	Net Time 0.006 (0.042)	Cls Time 0.502 (0.502)	Top1: 0.19
+Test [19200/22066]	Net Time 0.007 (0.042)	Cls Time 0.502 (0.502)	Top1: 0.19
+Test [19456/22066]	Net Time 0.013 (0.041)	Cls Time 0.496 (0.502)	Top1: 0.22
+Test [19712/22066]	Net Time 0.008 (0.041)	Cls Time 0.500 (0.502)	Top1: 0.21
+Test [19968/22066]	Net Time 0.011 (0.041)	Cls Time 0.497 (0.501)	Top1: 0.22
+Test [20224/22066]	Net Time 0.007 (0.040)	Cls Time 0.501 (0.501)	Top1: 0.21
+Test [20480/22066]	Net Time 0.009 (0.040)	Cls Time 0.499 (0.501)	Top1: 0.21
+Test [20736/22066]	Net Time 0.006 (0.039)	Cls Time 0.501 (0.501)	Top1: 0.22
+Test [20992/22066]	Net Time 0.007 (0.039)	Cls Time 0.501 (0.501)	Top1: 0.21
+Test [21248/22066]	Net Time 0.007 (0.039)	Cls Time 0.501 (0.501)	Top1: 0.23
+Test [21504/22066]	Net Time 0.007 (0.038)	Cls Time 0.501 (0.501)	Top1: 0.23
+Test [21760/22066]	Net Time 0.007 (0.038)	Cls Time 0.501 (0.501)	Top1: 0.23
+Test [22016/22066]	Net Time 0.007 (0.037)	Cls Time 0.500 (0.501)	Top1: 0.23
+Test [22066/22066]	Net Time 0.934 (0.048)	Cls Time 0.034 (0.496)	Top1: 0.23
+Traceback (most recent call last):
+  File "/user_data/vayzenbe/GitHub_Repos/ginn/model_training/train_model.py", line 338, in <module>
+    main()
+  File "/user_data/vayzenbe/GitHub_Repos/ginn/model_training/train_model.py", line 231, in main
+    save_checkpoint({
+  File "/user_data/vayzenbe/GitHub_Repos/ginn/model_training/train_model.py", line 298, in save_checkpoint
+    torch.save(state, f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar')
+  File "/home/vayzenbe/anaconda3/envs/ml_new/lib/python3.9/site-packages/torch/serialization.py", line 377, in save
+    with _open_file_like(f, 'wb') as opened_file:
+  File "/home/vayzenbe/anaconda3/envs/ml_new/lib/python3.9/site-packages/torch/serialization.py", line 231, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/vayzenbe/anaconda3/envs/ml_new/lib/python3.9/site-packages/torch/serialization.py", line 212, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: '/lab_data/behrmannlab/vlad/ginn/model_weights/cornet_z_/scratch/vayzenbe/vggface_oneobject_checkpoint_1.pth.tar'

@@ -1,3 +1,7 @@
+"""
+Dataloader which loads images without a folder or label
+"""
+
 import os
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -24,14 +28,4 @@ class load_stim(Dataset):
         image = Image.open(img_loc).convert("RGB")
         tensor_image = self.transform(image)
         
-        return tensor_image
-
-
-""" transform_ = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                             std=[0.229, 0.224, 0.225])])
-hab_data = LoadFrames('Frames/Figure_23_Bulge',transform_)
-trainloader = torch.utils.data.DataLoader(hab_data, batch_size=len(hab_data), shuffle=False, num_workers = 4, pin_memory=True)
-#dataiter = iter(trainloader)
-print(hab_data) """
+        return tensor_image, self.total_imgs[idx]

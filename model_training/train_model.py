@@ -23,13 +23,17 @@ from lib.LinearAverage import LinearAverage
 from lib.NCECriterion import NCECriterion
 from lib.utils import AverageMeter
 from test import NN, kNN
+from model_funcs import reproducible_results
 
 from torch.utils.tensorboard import SummaryWriter
 
 print('everything loaded')
 suf=''
 
-image_dir= '/lab_data/behrmannlab/image_sets/'
+image_dir= '/scratch/vayzenbe/'
+image_dir ='/lab_data/behrmannlab/image_sets/'
+out_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
+
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -92,6 +96,8 @@ def main():
     global args, best_prec1
     args = parser.parse_args()
 
+    reproducible_results(args.rand_seed)
+
     #create tensorboard summary writer
     image_type = args.data
     image_type=image_type.replace(image_dir, '')
@@ -105,7 +111,7 @@ def main():
 
     if args.distributed:
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
-                                world_size=args.world_size)
+                                world_size=args.world_size, rank =1)
 
     # create model
     if args.pretrained:
@@ -220,6 +226,8 @@ def main():
         # remember best prec@1 and save checkpoint
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
+
+
         save_checkpoint({
             'epoch': epoch + 1,
             'arch': args.arch,
@@ -227,7 +235,8 @@ def main():
             'lemniscate': lemniscate,
             'best_prec1': best_prec1,
             'optimizer' : optimizer.state_dict(),
-        }, is_best,filename=f'results/{model_type}_checkpoint.pth.tar')
+        }, is_best,epoch,filename=f'{model_type}')
+
     # evaluate KNN after last epoch
     kNN(0, model, lemniscate, train_loader, val_loader, 200, args.nce_t)
     writer.close()
@@ -285,20 +294,25 @@ def train(train_loader, model, lemniscate, criterion, optimizer, epoch):
 
 
 
-def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
-    torch.save(state, filename)
+def save_checkpoint(state, is_best, epoch, filename='checkpoint.pth.tar'):
+    torch.save(state, f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar')
+    if (epoch + 1) == 1 or (epoch+1) == 5 or (epoch+1) % 10 == 0:
+        shutil.copyfile(f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar', f'{out_dir}/{filename}_{epoch+1}_{args.rand_seed}.pth.tar')
     if is_best:
-        shutil.copyfile(filename, 'model_best.pth.tar')
+        shutil.copyfile(f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar', f'{out_dir}/{filename}_best_{args.rand_seed}.pth.tar')
 
 def adjust_learning_rate(optimizer, epoch):
     """Sets the learning rate to the initial LR decayed by 10 every 100 epochs"""
     lr = args.lr
-    if epoch < 120:
+
+    #if training = imagenet, then dont change LR 
+    #if training = vggface, then start learning rate lower
+    
+    if epoch < 40:
         lr = args.lr
-    elif epoch >= 120 and epoch < 160:
+    elif epoch >= 40:
         lr = args.lr * 0.1
-    else:
-        lr = args.lr * 0.01
+    
     #lr = args.lr * (0.1 ** (epoch // 100))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
