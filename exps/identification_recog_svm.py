@@ -12,10 +12,8 @@ Created on Thu Feb  6 14:02:03 2020
 
 
 import os
-#os.chdir('C:/Users/vayze/Desktop/GitHub Repos/GiNN/')
-
 import sys
-
+sys.path.insert(1, '/user_data/vayzenbe/GitHub_Repos/ginn/model_training')
 
 import torch as nn
 import torch
@@ -38,9 +36,6 @@ import pdb
 import warnings
 warnings.filterwarnings("ignore")
 
-scaler = T.Resize((224, 224))
-normalize = T.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
-to_tensor = T.ToTensor()
 
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 test_dir = "/user_data/vayzenbe/image_sets/"
@@ -97,7 +92,7 @@ def load_model(model_arch, train_type):
 
 def extract_acts(model, image_dir, cond):
     print('extracting features...')
-    cond = ['upright','inverted']
+    
 
     #set up hook to specified layer
     def _store_feats(layer, inp, output):

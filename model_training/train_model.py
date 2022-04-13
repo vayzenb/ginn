@@ -31,7 +31,7 @@ print('everything loaded')
 suf=''
 
 image_dir= '/scratch/vayzenbe/'
-image_dir ='/lab_data/behrmannlab/image_sets/'
+#image_dir ='/lab_data/behrmannlab/image_sets/'
 out_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
 
 
