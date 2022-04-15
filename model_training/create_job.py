@@ -21,7 +21,7 @@ model_arch = 'cornet_z'
 
 train_type = ['vggface', 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject']
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
-#train_type = ['vggface', 'vggface_oneobject']
+train_type = ['imagenet_oneface']
 rand_seed = [1]
 lr = .03
 #lr = .003

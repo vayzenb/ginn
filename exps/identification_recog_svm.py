@@ -45,6 +45,8 @@ weights_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
 
 train_type = ['random','imagenet_noface', 'imagenet_oneface',
 'imagenet_vggface', 'vggface_oneobject', 'vggface']
+#train_type = ['vggface_oneobject', 'vggface']
+
 model_arch = ['cornet_z']
 test_stim = ['objects', 'faces']
 
@@ -59,22 +61,17 @@ test_only = False
 
 test_cond =['upright','inverted']
 epoch = 30
-layer = 'decoder'
-sublayer = 'linear'
+layer_type = ['decoder', 'decoder', 'decoder']
+sublayer_type = ['avgpool', 'linear','l2norm']
 suf = '_unsupervised'
 splits = 5
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-#Set image loader for model
-def image_loader(image_name):
-    """load image, returns cuda tensor"""
-    image_name = Variable(normalize(to_tensor(scaler(image_name))).unsqueeze(0))
-    return image_name
 
 
 def load_model(model_arch, train_type):
-    print('loading model...')
+    print('loading model...', model_arch, train_type)
     #Load model
     model = models.__dict__[model_arch](low_dim=128)
     model = torch.nn.DataParallel(model).cuda()
@@ -91,7 +88,7 @@ def load_model(model_arch, train_type):
     return model
 
 def extract_acts(model, image_dir, cond):
-    print('extracting features...')
+    print('extracting features...',image_dir, cond, sublayer)
     
 
     #set up hook to specified layer
@@ -194,25 +191,29 @@ for mm in enumerate(model_arch):
     for trt in enumerate(train_type):
         model = load_model(mm[1], trt[1])
         
+        for ll in enumerate(sublayer_type):
+            global layer, sublayer
+            layer = layer_type[ll[0]]
+            sublayer = sublayer_type[ll[0]]
+            
 
+            for ts in test_stim:
+                test_ims = f'{test_dir}/{ts}'
 
-        for ts in test_stim:
-            test_ims = f'{test_dir}/{ts}'
+                for cc in test_cond:
+                    file_name = f'{mm[1]}_{trt[1]}_{sublayer}_{ts}_{cc}{suf}'
 
-            for cc in test_cond:
-                file_name = f'{mm[1]}_{trt[1]}_{ts}_{cc}{suf}'
+                    if test_only == True:
+                        acts = dd.io.load(f"{act_dir}/{exp}/{file_name}.h5")
 
-                if test_only == True:
-                    acts = dd.io.load(f"{act_dir}/{exp}/{file_name}.h5")
+                    else:
+                        acts = extract_acts(model, test_ims, cc)
 
-                else:
-                    acts = extract_acts(model, test_ims, cc)
+                        dd.io.save(f"{act_dir}/{exp}/{file_name}.h5", acts)
 
-                    dd.io.save(f"{act_dir}/{exp}/{file_name}.h5", acts)
-
-                
-                model_info = [mm[1], trt[1], ts, cc]
-                cat_summary = start_classification(acts, model_info)
-                
-                cat_summary.to_csv(f"{curr_dir}/results/{exp}/{file_name}.csv", index=False)
-                print(mm[1], ts,cc, 'Saved')
+                    
+                    model_info = [mm[1], trt[1], ts, cc]
+                    cat_summary = start_classification(acts, model_info)
+                    
+                    cat_summary.to_csv(f"{curr_dir}/results/{exp}/{file_name}.csv", index=False)
+                    print(mm[1], ts,cc, 'Saved')

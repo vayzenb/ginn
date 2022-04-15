@@ -1,0 +1,6 @@
+model_arch,train_type,test_stim,test_cond,fold_n,acc
+cornet_z,imagenet_vggface,faces,inverted,1,0.2892561983471074
+cornet_z,imagenet_vggface,faces,inverted,2,0.39669421487603307
+cornet_z,imagenet_vggface,faces,inverted,3,0.34710743801652894
+cornet_z,imagenet_vggface,faces,inverted,4,0.30578512396694213
+cornet_z,imagenet_vggface,faces,inverted,5,0.32231404958677684

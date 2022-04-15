@@ -1,0 +1,6 @@
+model_arch,train_type,test_stim,test_cond,fold_n,acc
+cornet_z,imagenet_noface,objects,upright,1,0.5184182015167931
+cornet_z,imagenet_noface,objects,upright,2,0.4989165763813651
+cornet_z,imagenet_noface,objects,upright,3,0.5119176598049837
+cornet_z,imagenet_noface,objects,upright,4,0.5157096424702059
+cornet_z,imagenet_noface,objects,upright,5,0.5075839653304443

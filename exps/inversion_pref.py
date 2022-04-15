@@ -63,8 +63,8 @@ test_only = False
 
 test_cond =['upright','inverted']
 
-layer = 'decoder'
-sublayer = 'linear'
+layer_type = ['decoder', 'decoder', 'decoder']
+sublayer_type = ['avgpool', 'linear','l2norm']
 suf = '_unsupervised'
 iter = 10
 
@@ -173,9 +173,9 @@ def measure_pref(upright_acts, inverted_acts, model_info):
     upright_acts[upright_acts <=0] = 0
     inverted_acts[inverted_acts <=0] = 0
 
-    pdb.set_trace()
-    upright_mean = np.mean(upright_acts[upright_acts >0])
-    inverted_mean = np.mean(inverted_acts[inverted_acts >0])
+    
+    upright_mean = np.mean(upright_acts)
+    inverted_mean = np.mean(inverted_acts)
     #extract mean energy
     mean_pref = upright_mean/ (upright_mean + inverted_mean)
 
@@ -202,28 +202,33 @@ for mm in enumerate(model_arch):
     for trt in enumerate(train_type):
         model = load_model(mm[1], trt[1])
 
-        summary_df = pd.DataFrame(columns = ['model_arch', 'train_type', 'test_stim','pref','ci_low','ci_high'])
-        for ts in test_stim:
-            test_ims = f'{test_dir}/{ts}'
-            file_name = f'{mm[1]}_{trt[1]}_{ts}'
+        for ll in enumerate(sublayer_type):
+            global layer, sublayer
+            layer = layer_type[ll[0]]
+            sublayer = sublayer_type[ll[0]]
 
-            if test_only == True:
-                upright_acts = dd.io.load(f"{act_dir}/{exp}/{file_name}_upright{suf}.h5")
-                inverted_acts = dd.io.load(f"{act_dir}/{exp}/{file_name}_inverted{suf}.h5")
-            else:
-                upright_acts = extract_acts(model, test_ims, 'upright')
-                inverted_acts = extract_acts(model, test_ims, 'inverted')
+            summary_df = pd.DataFrame(columns = ['model_arch', 'train_type', 'test_stim','pref','ci_low','ci_high'])
+            for ts in test_stim:
+                test_ims = f'{test_dir}/{ts}'
+                file_name = f'{mm[1]}_{trt[1]}_{sublayer}_{ts}'
 
-                
-                dd.io.save(f"{act_dir}/{exp}/{file_name}_upright{suf}.h5", upright_acts)
-                dd.io.save(f"{act_dir}/{exp}/{file_name}_inverted{suf}.h5", inverted_acts)
+                if test_only == True:
+                    upright_acts = dd.io.load(f"{act_dir}/{exp}/{file_name}_upright{suf}.h5")
+                    inverted_acts = dd.io.load(f"{act_dir}/{exp}/{file_name}_inverted{suf}.h5")
+                else:
+                    upright_acts = extract_acts(model, test_ims, 'upright')
+                    inverted_acts = extract_acts(model, test_ims, 'inverted')
 
-                
-                model_info = [mm[1], trt[1], ts]
-                pref, ci_low, ci_high = measure_pref(upright_acts,inverted_acts, model_info)
-                summary_df = summary_df.append(pd.Series(model_info +[pref, ci_low, ci_high],index = summary_df.columns),ignore_index = True)
-                summary_df.to_csv(f"{curr_dir}/results/{exp}/{file_name}.csv", index=False)
-                
-                print(mm[1], ts, 'Saved')
+                    
+                    dd.io.save(f"{act_dir}/{exp}/{file_name}_upright{suf}.h5", upright_acts)
+                    dd.io.save(f"{act_dir}/{exp}/{file_name}_inverted{suf}.h5", inverted_acts)
+
+                    
+                    model_info = [mm[1], trt[1], ts]
+                    pref, ci_low, ci_high = measure_pref(upright_acts,inverted_acts, model_info)
+                    summary_df = summary_df.append(pd.Series(model_info +[pref, ci_low, ci_high],index = summary_df.columns),ignore_index = True)
+                    summary_df.to_csv(f"{curr_dir}/results/{exp}/{file_name}.csv", index=False)
+                    
+                    print(mm[1], ts, 'Saved')
 
 

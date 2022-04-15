@@ -1,0 +1,2 @@
+model_arch,train_type,test_stim,pref,ci_low,ci_high
+cornet_z,vggface,cropped_face,0.4861711263656616,0.5212689250707626,0.5135764151811599
