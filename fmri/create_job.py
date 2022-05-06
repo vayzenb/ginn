@@ -10,12 +10,12 @@ import pdb
 import time
 
 mem = 12
-run_time = "3-00:00:00"
+run_time = "1-00:00:00"
 
 #stim info
 data_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn'
 study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn/fmri'
-suf = '_preproc'
+suf = '_1stlevel'
 iter = 10 #how many jobs to submit before waiting
 sleep_time = 45 # set how many minutes to wait between submissions
 
@@ -54,30 +54,34 @@ def setup_sbatch(sub):
 
 module load fsl-6.0.3
 
-python preprocess.py --path {data_dir} --subj {ss}
+python run_1stlevel.py --path {data_dir} --og_sub sub-NDARAB514MAJ --curr_sub {ss}
 """
     return sbatch_setup
 
 
 n = 0
+total_n = 1
 for ss in subj_list:
+    if os.path.exists(f'{data_dir}/{ss}/derivatives/fsl/1stLevel.feat/filtered_func_data.nii.gz') == False:
+        job_name = f'{ss}_{suf}'
+        print(job_name , f'{total_n} out of {len(subj_list)}')
+        
+        #write job 
+        f = open(f"{job_name}.sh", "a")
+        f.writelines(setup_sbatch(ss))
+        
+        
+        f.close()
+        
+        subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True) #run job
+        os.remove(f"{job_name}.sh") #delete sbatch script
 
-    job_name = f'{ss}_{suf}'
-    print(job_name)
-    
-    #write job 
-    f = open(f"{job_name}.sh", "a")
-    f.writelines(setup_sbatch(ss))
-    
-    
-    f.close()
-    
-    subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True) #run job
-    os.remove(f"{job_name}.sh") #delete sbatch script
+        #iterate the number of jobs submitted
+        #sleep when number is reached
+        n = n + 1
+        
+        if n == iter:
+            time.sleep(60*sleep_time)
+            n = 0
 
-    #iterate the number of jobs submitted
-    #sleep when number is reached
-    n = n + 1
-    if n == iter:
-        time.sleep(60*sleep_time)
-        n = 0
+    total_n = total_n + 1

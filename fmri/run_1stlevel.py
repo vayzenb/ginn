@@ -19,6 +19,8 @@ args = parser.parse_args()
 og_file = f'{args.path}/{args.og_sub}/derivatives/fsl/1stLevel{suf}.fsf'
 new_file = f'{args.path}/{args.curr_sub}/derivatives/fsl/1stLevel{suf}.fsf'
 
+
+
 #create directory
 os.makedirs(f'{args.path}/{args.curr_sub}/derivatives/fsl/', exist_ok=True)
 
