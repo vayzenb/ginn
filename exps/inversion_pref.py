@@ -14,7 +14,7 @@ import os
 import sys
 sys.path.insert(1, '/user_data/vayzenbe/GitHub_Repos/ginn/model_training')
 
-import torch as nn
+from torch import nn
 import torch
 import torchvision
 from torch.autograd import Variable
@@ -41,15 +41,16 @@ warnings.filterwarnings("ignore")
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 #test_dir = "/user_data/vayzenbe/image_sets/"
 test_dir = f"{curr_dir}/stim/"
-act_dir = '/lab_data/behrmannlab/vlad/ginn/activations'
+act_dir = '/lab_data/behrmannlab/scratch/vlad/ginn/activations'
 #test_dir = "/lab_data/plautlab/imagesets/"
 weights_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
 
 train_type = ['random','imagenet_noface', 'imagenet_oneface',
 'imagenet_vggface', 'vggface_oneobject', 'vggface']
-train_type = ['vggface']
-model_arch = ['cornet_z']
-test_stim = ['cropped_face', 'schematic']
+n_feats = [600, 600, 601,1200, 601, 600]
+
+model_arch = ['cornet_z_cl','cornet_z_sl']
+test_stim = ['cropped_face', 'au','schematic']
 
 exp = 'inversion_pref'
 
@@ -63,33 +64,36 @@ test_only = False
 
 test_cond =['upright','inverted']
 
-layer_type = ['decoder', 'decoder', 'decoder']
-sublayer_type = ['avgpool', 'linear','l2norm']
-suf = '_unsupervised'
-iter = 10
+layer_type = [['decoder', 'decoder', 'decoder'],['decoder', 'decoder', 'decoder']]
+sublayer_type = [['avgpool', 'linear','l2norm'],['avgpool', 'linear','output']]
+#layer_type = [['decoder', 'decoder', 'decoder']]
+#sublayer_type = [['avgpool', 'linear','output']]
+suf = ''
+iter = 100
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-#Set image loader for model
-def image_loader(image_name):
-    """load image, returns cuda tensor"""
-    image_name = Variable(normalize(to_tensor(scaler(image_name))).unsqueeze(0))
-    return image_name
+relu = nn.ReLU()
 
 
-def load_model(model_arch, train_type):
-    print('loading model...')
+def load_model(model_arch, train_type,n_feats=128):
+    print('loading model...', model_arch, train_type)
     #Load model
-    model = models.__dict__[model_arch](low_dim=128)
-    model = torch.nn.DataParallel(model).cuda()
+    model = models.__dict__[model_arch](n_feats)
+    
+    
     
     #If face or object, load face or object weights. else leave are random
     if train_type != 'random':
         checkpoint = torch.load(f"{weights_dir}/{model_arch}_{train_type}_best_{seed}.pth.tar")
-        
-        model.load_state_dict(checkpoint['state_dict']) 
-    
+        try:    
+            model.load_state_dict(checkpoint['state_dict']) 
+            model = torch.nn.DataParallel(model).cuda()
+        except:
+            model = torch.nn.DataParallel(model).cuda()
+            model.load_state_dict(checkpoint['state_dict'])
+    else:
+        model = torch.nn.DataParallel(model).cuda()
 
+        
     model.eval()
 
     return model
@@ -102,6 +106,7 @@ def extract_acts(model, image_dir, cond):
     def _store_feats(layer, inp, output):
         """An ugly but effective way of accessing intermediate model features
         """
+        output = relu(output)
         output = output.cpu().numpy()
         
         _model_feats.append(np.reshape(output, (len(output), -1)))
@@ -170,8 +175,8 @@ def extract_acts(model, image_dir, cond):
 def measure_pref(upright_acts, inverted_acts, model_info):
     print('Analyzing pref...')
     
-    upright_acts[upright_acts <=0] = 0
-    inverted_acts[inverted_acts <=0] = 0
+    #upright_acts[upright_acts <=0] = 0
+    #inverted_acts[inverted_acts <=0] = 0
 
     
     upright_mean = np.mean(upright_acts)
@@ -185,27 +190,33 @@ def measure_pref(upright_acts, inverted_acts, model_info):
         temp_upright = resample(upright_acts, replace = True, random_state = ii)
         temp_inverted = resample(inverted_acts, replace = True, random_state = ii)
 
-        upright_mean = np.mean(temp_upright[temp_upright >0])
-        inverted_mean = np.mean(temp_inverted[temp_inverted >0])
+        upright_mean = np.mean(temp_upright)
+        inverted_mean = np.mean(temp_inverted)
 
         temp_pref = upright_mean/ (upright_mean + inverted_mean)
         boot_vals.append(temp_pref)
 
     ci_low = np.percentile(boot_vals, alpha*100)
     ci_high= np.percentile(boot_vals, 100-alpha*100)
-    print( model_info + [mean_pref, ci_high, ci_low])
-    return mean_pref, ci_high, ci_low
+    print( model_info + [mean_pref, ci_low, ci_high])
+    return mean_pref, ci_low, ci_high
 
 
 
 for mm in enumerate(model_arch):   
     for trt in enumerate(train_type):
-        model = load_model(mm[1], trt[1])
 
-        for ll in enumerate(sublayer_type):
+        if mm[1] == 'cornet_z_sl':
+            feats = n_feats[trt[0]] 
+        else:
+            feats = 128
+        
+        model = load_model(mm[1], trt[1],feats)
+
+        for ll in enumerate(sublayer_type[mm[0]]):
             global layer, sublayer
-            layer = layer_type[ll[0]]
-            sublayer = sublayer_type[ll[0]]
+            layer = layer_type[mm[0]][ll[0]]
+            sublayer = sublayer_type[mm[0]][ll[0]]
 
             summary_df = pd.DataFrame(columns = ['model_arch', 'train_type', 'test_stim','pref','ci_low','ci_high'])
             for ts in test_stim:

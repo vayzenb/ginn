@@ -45,9 +45,14 @@ weights_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
 
 train_type = ['random','imagenet_noface', 'imagenet_oneface',
 'imagenet_vggface', 'vggface_oneobject', 'vggface']
+n_feats = [600,600, 601,1200, 601, 600]
 #train_type = ['vggface_oneobject', 'vggface']
+train_type = ['random']
+n_feats = [600]
 
-model_arch = ['cornet_z']
+
+model_arch = ['cornet_z_cl','cornet_z_sl']
+model_arch = ['cornet_z_sl']
 test_stim = ['objects', 'faces']
 
 exp = 'classify'
@@ -61,27 +66,35 @@ test_only = False
 
 test_cond =['upright','inverted']
 epoch = 30
-layer_type = ['decoder', 'decoder', 'decoder']
-sublayer_type = ['avgpool', 'linear','l2norm']
-suf = '_unsupervised'
+layer_type = [['decoder', 'decoder', 'decoder'],['decoder', 'decoder', 'decoder']]
+sublayer_type = [['avgpool', 'linear','l2norm'],['avgpool', 'linear','output']]
+layer_type = [['decoder', 'decoder', 'decoder']]
+sublayer_type = [['avgpool', 'linear','output']]
+suf = ''
 splits = 5
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
-def load_model(model_arch, train_type):
+def load_model(model_arch, train_type,n_feats=128):
     print('loading model...', model_arch, train_type)
     #Load model
-    model = models.__dict__[model_arch](low_dim=128)
-    model = torch.nn.DataParallel(model).cuda()
+    model = models.__dict__[model_arch](n_feats)
+    
     
     #If face or object, load face or object weights. else leave are random
     if train_type != 'random':
         checkpoint = torch.load(f"{weights_dir}/{model_arch}_{train_type}_best_{seed}.pth.tar")
-        
-        model.load_state_dict(checkpoint['state_dict']) 
-    
+        try:    
+            model.load_state_dict(checkpoint['state_dict']) 
+            model = torch.nn.DataParallel(model).cuda()
+        except:
+            model = torch.nn.DataParallel(model).cuda()
+            model.load_state_dict(checkpoint['state_dict'])
+    else:
+        model = torch.nn.DataParallel(model).cuda()
+
 
     model.eval()
 
@@ -189,12 +202,17 @@ def start_classification(acts, model_info):
 
 for mm in enumerate(model_arch):   
     for trt in enumerate(train_type):
-        model = load_model(mm[1], trt[1])
+        if mm[1] == 'cornet_z_sl':
+            feats = n_feats[trt[0]] 
+        else:
+            feats = 128
         
-        for ll in enumerate(sublayer_type):
+        model = load_model(mm[1], trt[1],feats)
+        
+        for ll in enumerate(sublayer_type[mm[0]]):
             global layer, sublayer
-            layer = layer_type[ll[0]]
-            sublayer = sublayer_type[ll[0]]
+            layer = layer_type[mm[0]][ll[0]]
+            sublayer = sublayer_type[mm[0]][ll[0]]
             
 
             for ts in test_stim:

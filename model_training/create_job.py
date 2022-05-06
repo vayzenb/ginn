@@ -17,11 +17,12 @@ study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn/model_training'
 stim_dir = f'/lab_data/behrmannlab/image_sets/'
 
 #training info
-model_arch = 'cornet_z'
+model_arch = 'cornet_z_sl'
 
-train_type = ['vggface', 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject']
-train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
-train_type = ['imagenet_oneface']
+train_type = [ 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
+
+#train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
+train_type = ['imagenet_vggface']
 rand_seed = [1]
 lr = .03
 #lr = .003
@@ -40,7 +41,7 @@ def setup_sbatch(model, train_cat, seed):
 #SBATCH -p gpu
 
 #SBATCH --cpus-per-task=6
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 
 # Job memory request
 #SBATCH --mem={mem}gb
@@ -60,8 +61,9 @@ rsync -a {stim_dir}/{train_cat} /scratch/vayzenbe/
 
 echo "images transferred"
 
-python train_model.py /scratch/vayzenbe/{train_cat}/ --arch cornet_z --epochs 50 --nce-k 4096 --nce-t 0.07 --lr {lr} --nce-m 0.5 --low-dim 128 -b 256 --rand_seed {seed}
-
+# python train_model.py /scratch/vayzenbe/{train_cat}/ --arch cornet_z --epochs 50 --nce-k 4096 --nce-t 0.07 --lr {lr} --nce-m 0.5 --low-dim 128 -b 256 --rand_seed {seed}
+# python supervised_training.py --data /scratch/vayzenbe/{train_cat}/ --arch {model_arch} --rand_seed {seed}
+python supervised_training.py --data /scratch/vayzenbe/{train_cat}/ --arch {model_arch} --resume /lab_data/behrmannlab/vlad/ginn/model_weights/{model_arch}_{train_cat}_15_{seed}.pth.tar
 """
     return sbatch_setup
 
@@ -77,6 +79,7 @@ for tt in train_type:
         
         f = open(f"{job_name}.sh", "a")
         f.writelines(setup_sbatch(model_arch, tt, rs))
+        
         
         f.close()
         

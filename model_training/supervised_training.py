@@ -47,7 +47,7 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
 suf=''
 
 image_dir= '/scratch/vayzenbe/'
-image_dir ='/lab_data/behrmannlab/image_sets/'
+#image_dir ='/lab_data/behrmannlab/image_sets/'
 out_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
 
 print('read some args')
@@ -65,14 +65,13 @@ print(model_type)
 writer = SummaryWriter(f'runs/{model_type}')
 best_prec1 = 0
 
-writer = SummaryWriter()
 print_file = False   
 
 #Image directory
 
 n_classes = len(glob(f'{args.data}/train/*'))
 
-start_epoch = 0
+start_epoch = 1
 
 #These are all the default learning parameters from the run_CorNet script
 lr = .01 #Starting learning rate
@@ -85,13 +84,14 @@ n_save = 5 #save model every X epochs
 def save_checkpoint(state, is_best, epoch, filename='checkpoint.pth.tar'):
     torch.save(state, f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar')
     if (epoch) == 1 or (epoch) % n_save  == 0:
-        shutil.copyfile(f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar', f'{out_dir}/{filename}_{epoch+1}_{args.rand_seed}.pth.tar')
+        shutil.copyfile(f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar', f'{out_dir}/{filename}_{epoch}_{args.rand_seed}.pth.tar')
     if is_best:
         shutil.copyfile(f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar', f'{out_dir}/{filename}_best_{args.rand_seed}.pth.tar')
 
 
 
 model = models.__dict__[args.arch](out_feat=n_classes)
+model.cuda()
 print('model created..')
 
 
@@ -118,7 +118,7 @@ if args.resume:
     if os.path.isfile(args.resume):
         print("=> loading checkpoint '{}'".format(args.resume))
         checkpoint = torch.load(args.resume)
-        args.start_epoch = checkpoint['epoch']
+        start_epoch = checkpoint['epoch']
         best_prec1 = checkpoint['best_prec1']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
@@ -128,7 +128,7 @@ if args.resume:
         print("=> no checkpoint found at '{}'".format(args.resume))
 
 
-train_dir = args.data + 'val'
+train_dir = args.data + 'train'
 val_dir = args.data + 'val'
 train_dataset = torchvision.datasets.ImageFolder(train_dir, transform=transform)
 val_dataset = torchvision.datasets.ImageFolder(val_dir, transform=transform)
@@ -137,14 +137,14 @@ trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle
 valloader = torch.utils.data.DataLoader(val_dataset, batch_size=128, shuffle=True, num_workers = 4, pin_memory=True)
 
 print("data loaded")
-model.cuda()
+
 # Start training loop
 
 print('starting training...')
 valid_loss_min = np.Inf # track change in validation loss
 nTrain = 1
 nVal = 1
-for epoch in range(1, n_epochs+1):
+for epoch in range(start_epoch, n_epochs+1):
 
     # keep track of training and validation loss
     train_loss = 0.0
@@ -168,7 +168,7 @@ for epoch in range(1, n_epochs+1):
         # calculate the batch loss
         loss = criterion(output, target)
         #print(loss)
-        writer.add_scalar("Raw Train Loss", loss, nTrain) #write to tensorboard
+        writer.add_scalar("Supervised Raw Train Loss", loss, nTrain) #write to tensorboard
         writer.flush()
         nTrain = nTrain + 1
         # backward pass: compute gradient of the loss with respect to model parameters
@@ -196,7 +196,7 @@ for epoch in range(1, n_epochs+1):
             output = model(data)
             # calculate the batch loss
             loss = criterion(output, target)
-            writer.add_scalar("Raw Validation Loss", loss, nVal) #write to tensorboard
+            writer.add_scalar("Supervised Raw Validation Loss", loss, nVal) #write to tensorboard
             writer.flush()
             nVal = nVal + 1
             #print('wrote to tensorboard')
@@ -222,14 +222,14 @@ for epoch in range(1, n_epochs+1):
     print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(
         epoch, train_loss, valid_loss),
         "Test Accuracy: {:.3f}".format(accuracy/len(valloader)))
-    writer.add_scalar("Average Train Loss", train_loss, epoch) #write to tensorboard
-    writer.add_scalar("Average Validation Loss", valid_loss, epoch) #write to tensorboard
-    writer.add_scalar("Average Acc", accuracy/len(valloader), epoch) #write to tensorboard
+    writer.add_scalar("Supervised Average Train Loss", train_loss, epoch) #write to tensorboard
+    writer.add_scalar("Supervised Average Validation Loss", valid_loss, epoch) #write to tensorboard
+    writer.add_scalar("Supervised Average Acc", accuracy/len(valloader), epoch) #write to tensorboard
     writer.flush()
     
     # save model if validation loss has decreased
     save_checkpoint({
-                'epoch': epoch + 1,
+                'epoch': epoch,
                 'arch': args.arch,
                 'state_dict': model.state_dict(),
                 'best_prec1': best_prec1,

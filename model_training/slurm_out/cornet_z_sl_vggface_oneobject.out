@@ -1,0 +1,37 @@
+images transferred
+libs loaded
+read some args
+cornet_z_sl_vggface_oneobject
+model created..
+data loaded
+starting training...
+Epoch: 1 	Training Loss: 6.209823 	Validation Loss: 6.124456 Test Accuracy: 0.009
+Epoch: 2 	Training Loss: 5.486736 	Validation Loss: 5.614933 Test Accuracy: 0.049
+Epoch: 3 	Training Loss: 4.248500 	Validation Loss: 4.187067 Test Accuracy: 0.177
+Epoch: 4 	Training Loss: 3.216383 	Validation Loss: 3.425655 Test Accuracy: 0.310
+Epoch: 5 	Training Loss: 2.571155 	Validation Loss: 2.726084 Test Accuracy: 0.420
+Epoch: 6 	Training Loss: 2.181723 	Validation Loss: 2.158974 Test Accuracy: 0.535
+Epoch: 7 	Training Loss: 1.899283 	Validation Loss: 2.216569 Test Accuracy: 0.527
+Epoch: 8 	Training Loss: 1.741630 	Validation Loss: 1.823181 Test Accuracy: 0.603
+Epoch: 9 	Training Loss: 1.574197 	Validation Loss: 1.936072 Test Accuracy: 0.577
+Epoch: 10 	Training Loss: 1.488670 	Validation Loss: 1.948229 Test Accuracy: 0.590
+Epoch: 11 	Training Loss: 1.123245 	Validation Loss: 1.276841 Test Accuracy: 0.720
+Epoch: 12 	Training Loss: 1.062845 	Validation Loss: 1.239780 Test Accuracy: 0.730
+Epoch: 13 	Training Loss: 1.020601 	Validation Loss: 1.233959 Test Accuracy: 0.732
+Epoch: 14 	Training Loss: 0.999122 	Validation Loss: 1.208452 Test Accuracy: 0.736
+Epoch: 15 	Training Loss: 0.978043 	Validation Loss: 1.198449 Test Accuracy: 0.735
+Epoch: 16 	Training Loss: 0.975978 	Validation Loss: 1.183076 Test Accuracy: 0.738
+Epoch: 17 	Training Loss: 0.945201 	Validation Loss: 1.171707 Test Accuracy: 0.744
+Epoch: 18 	Training Loss: 0.928953 	Validation Loss: 1.160866 Test Accuracy: 0.747
+Epoch: 19 	Training Loss: 0.917303 	Validation Loss: 1.138614 Test Accuracy: 0.751
+Epoch: 20 	Training Loss: 0.914116 	Validation Loss: 1.138712 Test Accuracy: 0.752
+Epoch: 21 	Training Loss: 0.879558 	Validation Loss: 1.109492 Test Accuracy: 0.758
+Epoch: 22 	Training Loss: 0.868431 	Validation Loss: 1.104573 Test Accuracy: 0.760
+Epoch: 23 	Training Loss: 0.870744 	Validation Loss: 1.105819 Test Accuracy: 0.757
+Epoch: 24 	Training Loss: 0.863811 	Validation Loss: 1.072525 Test Accuracy: 0.762
+Epoch: 25 	Training Loss: 0.858674 	Validation Loss: 1.103805 Test Accuracy: 0.761
+Epoch: 26 	Training Loss: 0.854670 	Validation Loss: 1.104659 Test Accuracy: 0.760
+Epoch: 27 	Training Loss: 0.856791 	Validation Loss: 1.102427 Test Accuracy: 0.758
+Epoch: 28 	Training Loss: 0.854296 	Validation Loss: 1.075614 Test Accuracy: 0.766
+Epoch: 29 	Training Loss: 0.848164 	Validation Loss: 1.106954 Test Accuracy: 0.759
+Epoch: 30 	Training Loss: 0.845756 	Validation Loss: 1.103294 Test Accuracy: 0.760

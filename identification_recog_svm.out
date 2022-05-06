@@ -1,0 +1,490 @@
+loading model... cornet_z_cl imagenet_noface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'objects', 'upright'] 0.662296858071506
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'objects', 'inverted'] 0.6594799566630553
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'faces', 'upright'] 0.31735537190082647
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'faces', 'inverted'] 0.32066115702479336
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'objects', 'upright'] 0.5542795232936077
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'objects', 'inverted'] 0.5614301191765981
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'faces', 'upright'] 0.3454545454545454
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'faces', 'inverted'] 0.3239669421487603
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'objects', 'upright'] 0.5638136511375949
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'objects', 'inverted'] 0.5711809317443122
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'faces', 'upright'] 0.3735537190082644
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_noface', 'faces', 'inverted'] 0.3371900826446281
+cornet_z_cl faces inverted Saved
+loading model... cornet_z_cl imagenet_oneface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'objects', 'upright'] 0.67204767063922
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'objects', 'inverted'] 0.6692307692307693
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'faces', 'upright'] 0.34876033057851236
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'faces', 'inverted'] 0.32892561983471075
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'objects', 'upright'] 0.5674972914409533
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'objects', 'inverted'] 0.5543878656554713
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'faces', 'upright'] 0.3404958677685951
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'faces', 'inverted'] 0.34545454545454546
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'objects', 'upright'] 0.5601300108342362
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'objects', 'inverted'] 0.5639219934994583
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'faces', 'upright'] 0.3768595041322314
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_oneface', 'faces', 'inverted'] 0.3355371900826446
+cornet_z_cl faces inverted Saved
+loading model... cornet_z_cl imagenet_vggface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'objects', 'upright'] 0.6759479956663055
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'objects', 'inverted'] 0.6683640303358614
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'faces', 'upright'] 0.4677685950413223
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'faces', 'inverted'] 0.4
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'objects', 'upright'] 0.5651137594799567
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'objects', 'inverted'] 0.5646803900325027
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'faces', 'upright'] 0.49421487603305786
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'faces', 'inverted'] 0.42644628099173554
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'objects', 'upright'] 0.5771397616468039
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'objects', 'inverted'] 0.5719393282773564
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'faces', 'upright'] 0.5107438016528926
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted l2norm
+Running classification...
+['cornet_z_cl', 'imagenet_vggface', 'faces', 'inverted'] 0.43966942148760335
+cornet_z_cl faces inverted Saved
+loading model... cornet_z_cl vggface_oneobject
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'objects', 'upright'] 0.586457204767064
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'objects', 'inverted'] 0.5800650054171179
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'faces', 'upright'] 0.33223140495867765
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'faces', 'inverted'] 0.27272727272727276
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'objects', 'upright'] 0.48039003250270856
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'objects', 'inverted'] 0.48797399783315276
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'faces', 'upright'] 0.35867768595041327
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'faces', 'inverted'] 0.3074380165289256
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright l2norm
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'objects', 'upright'] 0.5104008667388948
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted l2norm
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'objects', 'inverted'] 0.5022751895991332
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright l2norm
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'faces', 'upright'] 0.38677685950413226
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted l2norm
+Running classification...
+['cornet_z_cl', 'vggface_oneobject', 'faces', 'inverted'] 0.2909090909090909
+cornet_z_cl faces inverted Saved
+loading model... cornet_z_cl vggface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_cl', 'vggface', 'objects', 'upright'] 0.581148429035753
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_cl', 'vggface', 'objects', 'inverted'] 0.5804983748645721
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_cl', 'vggface', 'faces', 'upright'] 0.27768595041322314
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_cl', 'vggface', 'faces', 'inverted'] 0.2859504132231405
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_cl', 'vggface', 'objects', 'upright'] 0.48840736728060674
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_cl', 'vggface', 'objects', 'inverted'] 0.4836403033586133
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_cl', 'vggface', 'faces', 'upright'] 0.32561983471074385
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_cl', 'vggface', 'faces', 'inverted'] 0.29256198347107437
+cornet_z_cl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright l2norm
+Running classification...
+['cornet_z_cl', 'vggface', 'objects', 'upright'] 0.5037919826652221
+cornet_z_cl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted l2norm
+Running classification...
+['cornet_z_cl', 'vggface', 'objects', 'inverted'] 0.4963163596966414
+cornet_z_cl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright l2norm
+Running classification...
+['cornet_z_cl', 'vggface', 'faces', 'upright'] 0.343801652892562
+cornet_z_cl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted l2norm
+Running classification...
+['cornet_z_cl', 'vggface', 'faces', 'inverted'] 0.34710743801652894
+cornet_z_cl faces inverted Saved
+loading model... cornet_z_sl imagenet_noface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'objects', 'upright'] 0.7549295774647887
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'objects', 'inverted'] 0.7353196099674972
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'faces', 'upright'] 0.4826446280991735
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'faces', 'inverted'] 0.40495867768595045
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'objects', 'upright'] 0.7161430119176598
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'objects', 'inverted'] 0.6908992416034669
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'faces', 'upright'] 0.34049586776859503
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'faces', 'inverted'] 0.30578512396694213
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright output
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'objects', 'upright'] 0.7202600216684724
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted output
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'objects', 'inverted'] 0.6992416034669556
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright output
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'faces', 'upright'] 0.32892561983471075
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted output
+Running classification...
+['cornet_z_sl', 'imagenet_noface', 'faces', 'inverted'] 0.284297520661157
+cornet_z_sl faces inverted Saved
+loading model... cornet_z_sl imagenet_oneface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'objects', 'upright'] 0.7674972914409535
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'objects', 'inverted'] 0.7320693391115926
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'faces', 'upright'] 0.4231404958677686
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'faces', 'inverted'] 0.4429752066115703
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'objects', 'upright'] 0.7267605633802816
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'objects', 'inverted'] 0.6915492957746479
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'faces', 'upright'] 0.35702479338842974
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'faces', 'inverted'] 0.40495867768595045
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright output
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'objects', 'upright'] 0.7309859154929577
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted output
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'objects', 'inverted'] 0.6945828819068256
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright output
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'faces', 'upright'] 0.3322314049586777
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted output
+Running classification...
+['cornet_z_sl', 'imagenet_oneface', 'faces', 'inverted'] 0.3090909090909091
+cornet_z_sl faces inverted Saved
+loading model... cornet_z_sl imagenet_vggface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'objects', 'upright'] 0.7529794149512459
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'objects', 'inverted'] 0.7229685807150596
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'faces', 'upright'] 0.8132231404958677
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'faces', 'inverted'] 0.5454545454545453
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'objects', 'upright'] 0.717984832069339
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'objects', 'inverted'] 0.6920910075839654
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'faces', 'upright'] 0.7454545454545454
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'faces', 'inverted'] 0.4363636363636364
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright output
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'objects', 'upright'] 0.7136511375947996
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted output
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'objects', 'inverted'] 0.6867822318526545
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright output
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'faces', 'upright'] 0.7884297520661157
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted output
+Running classification...
+['cornet_z_sl', 'imagenet_vggface', 'faces', 'inverted'] 0.4429752066115703
+cornet_z_sl faces inverted Saved
+loading model... cornet_z_sl vggface_oneobject
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'objects', 'upright'] 0.5378114842903575
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'objects', 'inverted'] 0.5320693391115927
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'faces', 'upright'] 0.7933884297520661
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'faces', 'inverted'] 0.5173553719008265
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'objects', 'upright'] 0.49934994582881914
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'objects', 'inverted'] 0.48656554712892747
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'faces', 'upright'] 0.771900826446281
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'faces', 'inverted'] 0.40826446280991735
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright output
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'objects', 'upright'] 0.4957746478873239
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted output
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'objects', 'inverted'] 0.48764897074756225
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright output
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'faces', 'upright'] 0.7933884297520662
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted output
+Running classification...
+['cornet_z_sl', 'vggface_oneobject', 'faces', 'inverted'] 0.4198347107438016
+cornet_z_sl faces inverted Saved
+loading model... cornet_z_sl vggface
+extracting features... /user_data/vayzenbe/image_sets//objects upright avgpool
+Running classification...
+['cornet_z_sl', 'vggface', 'objects', 'upright'] 0.54192849404117
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted avgpool
+Running classification...
+['cornet_z_sl', 'vggface', 'objects', 'inverted'] 0.5178764897074757
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright avgpool
+Running classification...
+['cornet_z_sl', 'vggface', 'faces', 'upright'] 0.7785123966942148
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted avgpool
+Running classification...
+['cornet_z_sl', 'vggface', 'faces', 'inverted'] 0.4925619834710743
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright linear
+Running classification...
+['cornet_z_sl', 'vggface', 'objects', 'upright'] 0.49880823401950175
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted linear
+Running classification...
+['cornet_z_sl', 'vggface', 'objects', 'inverted'] 0.48320693391115926
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright linear
+Running classification...
+['cornet_z_sl', 'vggface', 'faces', 'upright'] 0.7487603305785123
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted linear
+Running classification...
+['cornet_z_sl', 'vggface', 'faces', 'inverted'] 0.39669421487603307
+cornet_z_sl faces inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//objects upright output
+Running classification...
+['cornet_z_sl', 'vggface', 'objects', 'upright'] 0.49653304442036833
+cornet_z_sl objects upright Saved
+extracting features... /user_data/vayzenbe/image_sets//objects inverted output
+Running classification...
+['cornet_z_sl', 'vggface', 'objects', 'inverted'] 0.4849404117009751
+cornet_z_sl objects inverted Saved
+extracting features... /user_data/vayzenbe/image_sets//faces upright output
+Running classification...
+['cornet_z_sl', 'vggface', 'faces', 'upright'] 0.7685950413223139
+cornet_z_sl faces upright Saved
+extracting features... /user_data/vayzenbe/image_sets//faces inverted output
+Running classification...
+['cornet_z_sl', 'vggface', 'faces', 'inverted'] 0.4198347107438017
+cornet_z_sl faces inverted Saved

@@ -1,0 +1,6 @@
+Image Exception : #22 :: Failed to read volume /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARMZ936WYB/func/sub-NDARMZ936WYB_task-movieDM_bold
+Error : Error: short read, file may be truncated
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Failed to read volume /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARMZ936WYB/func/sub-NDARMZ936WYB_task-movieDM_bold
+Error : Error: short read, file may be truncated
+/opt/fsl/6.0.3/bin/fsl_motion_outliers: line 269:  1030 Aborted                 $FSLDIR/bin/mcflirt -in $mcf -out ${outdir}_mc/fmri_mcf -mats -plots -refvol $refnum -rmsrel -rmsabs

@@ -1,0 +1,3 @@
+model_arch,train_type,test_stim,pref,ci_low,ci_high
+cornet_z_sl,imagenet_noface,cropped_face,0.5013018846511841,0.4970264256000519,0.5065948963165283
+cornet_z_sl,imagenet_noface,au,0.5058664083480835,0.5044558674097062,0.5072953760623932

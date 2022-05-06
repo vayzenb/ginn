@@ -1,0 +1,15 @@
+
+Error: input image /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/anat/sub-NDARKM718VKX_acq-VNavNorm_T1w not valid
+
+Image Exception : #63 :: No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+Image Exception : #63 :: No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+(standard_in) 1: syntax error
+Image Exception : #63 :: No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+Image Exception : #22 :: Failed to read volume /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+Error : No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Failed to read volume /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+Error : No image files match: /lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/sub-NDARKM718VKX/func/sub-NDARKM718VKX_task-movieDM_bold
+/opt/fsl/6.0.3/bin/fsl_motion_outliers: line 269:  5281 Aborted                 $FSLDIR/bin/mcflirt -in $mcf -out ${outdir}_mc/fmri_mcf -mats -plots -refvol $refnum -rmsrel -rmsabs
