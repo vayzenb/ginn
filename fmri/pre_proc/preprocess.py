@@ -3,7 +3,7 @@ Pre-processes hbn
 """
 import os, shutil
 import subprocess
-import pandas as pd
+
 import pdb
 from glob import glob as glob
 import os, argparse, shutil

@@ -39,31 +39,41 @@ for sn, ss in enumerate(sub_list['participant_id']):
                 
                 #remove tar
                 os.remove(f'{dest_dir}/sub-{ss}.tar.gz')
+                #pdb.set_trace()
+                #Remove whole folder if the movie data isn't there
+                if os.path.exists(f'{dest_dir}/sub-{ss}/func/sub-{ss}_task-movieDM_bold.nii.gz') == False:
+                    bash_cmd = f'rm -rf {dest_dir}/sub-{ss}'
+                    subprocess.run(bash_cmd.split())
                 
-                #remove fieldmap folder
-                if os.path.exists(f'{dest_dir}/sub-{ss}/fmap'): shutil.rmtree(f'{dest_dir}/sub-{ss}/fmap')
-                if os.path.exists(f'{dest_dir}/sub-{ss}/dwi'): shutil.rmtree(f'{dest_dir}/sub-{ss}/dwi')
-                
+                else: #otherwise remove unecessary files
+                                        
+                    #remove fieldmap folder
+                    if os.path.exists(f'{dest_dir}/sub-{ss}/fmap'): shutil.rmtree(f'{dest_dir}/sub-{ss}/fmap')
+                    if os.path.exists(f'{dest_dir}/sub-{ss}/dwi'): shutil.rmtree(f'{dest_dir}/sub-{ss}/dwi')
+                    
 
-                #delete unnecessary files from anat
-                all_files = glob(f'{dest_dir}/sub-{ss}/anat/*')
+                    #delete unnecessary files from anat
+                    all_files = glob(f'{dest_dir}/sub-{ss}/anat/*')
 
-                for nifti_file in all_files:
-                    if 'T1w'in nifti_file:
-                        continue
-                    else:
-                        os.remove(nifti_file)
+                    for nifti_file in all_files:
+                        if 'T1w'in nifti_file:
+                            continue
+                        else:
+                            os.remove(nifti_file)
 
-                #delete unnecessary files from func
-                all_files = glob(f'{dest_dir}/sub-{ss}/func/*')
+                    #delete unnecessary files from func
+                    all_files = glob(f'{dest_dir}/sub-{ss}/func/*')
 
-                for nifti_file in all_files:
-                    if 'movieDM' in nifti_file:
-                        continue
-                    else:
-                        os.remove(nifti_file)
+                    for nifti_file in all_files:
+                        if 'movieDM' in nifti_file:
+                            continue
+                        else:
+                            os.remove(nifti_file)
             except:
                 print(f'Error with {ss}.tar.gz')
+
+
+
                 
             
         

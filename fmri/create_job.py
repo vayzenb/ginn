@@ -14,12 +14,16 @@ run_time = "1-00:00:00"
 
 #stim info
 data_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn'
-study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn/fmri'
-suf = '_1stlevel'
-iter = 10 #how many jobs to submit before waiting
-sleep_time = 45 # set how many minutes to wait between submissions
+study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn'
+out_dir = f'{data_dir}/derivatives/preprocessed_data/'
+anat = '/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz'
+suf = '_reg'
+iter = 12 #how many jobs to submit before waiting
+sleep_time = 15 # set how many minutes to wait between submissions
 
 subj_list = [os.path.basename(x) for x in glob(f'{data_dir}/*')] #get list of subs to loop over
+
+print('Running: ', suf)
 
 def setup_sbatch(sub):
     """
@@ -54,7 +58,11 @@ def setup_sbatch(sub):
 
 module load fsl-6.0.3
 
-python run_1stlevel.py --path {data_dir} --og_sub sub-NDARAB514MAJ --curr_sub {ss}
+# python pre_proc/preprocess.py --path {data_dir} --subj {sub}
+# python pre_proc/run_1stlevel.py --path {data_dir} --og_sub sub-NDARAB514MAJ --curr_sub {sub}
+# python pre_proc/1stlevel2standard.py --anat {anat} --path {data_dir} --sub {sub}
+python pre_proc/merge_age_data.py --age {sub}
+
 """
     return sbatch_setup
 
@@ -62,8 +70,10 @@ python run_1stlevel.py --path {data_dir} --og_sub sub-NDARAB514MAJ --curr_sub {s
 n = 0
 total_n = 1
 for ss in subj_list:
-    if os.path.exists(f'{data_dir}/{ss}/derivatives/fsl/1stLevel.feat/filtered_func_data.nii.gz') == False:
-        job_name = f'{ss}_{suf}'
+    
+    
+    if os.path.exists(f'{out_dir}/{ss}/{ss}_task-movieDM_bold.nii.gz') == False:
+        job_name = f'{ss}{suf}'
         print(job_name , f'{total_n} out of {len(subj_list)}')
         
         #write job 
