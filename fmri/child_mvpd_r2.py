@@ -32,7 +32,7 @@ n_comp = 10
 
 pc_thresh = .9
 
-clf = Ridge()
+clf = LinearRegression()
 
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
@@ -43,8 +43,8 @@ out_dir = f'{study_dir}/derivatives/mean_func'
 results_dir =f'{curr_dir}/results/mvpd'
 roi_dir = f'{study_dir}/derivatives/rois'
 curr_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
-suf = f'_{n_comp}_pcs'
-suf = '_90_thresh'
+suf = f'_{n_comp}_pcs_r2'
+suf = '_90_thresh_r2'
 #curr_subs= curr_subs[curr_subs['Age']<8]
 
 #load whole brain mask
@@ -59,7 +59,7 @@ seed_age = args.age
 '''Extract adult data from ROI'''
 seed_brain = image.get_data(image.load_img(f'{out_dir}/mean_task-movieDM_bold_{seed_age}.nii.gz'))
 #Rois to predict
-rois = ['LO','FFA', 'OFA']
+rois = ['LO','FFA']
 
 
 
@@ -154,7 +154,7 @@ def calc_mvpd(seed_comps,target_comps, target_pca):
     for pcn in range(0,len(target_pca.explained_variance_ratio_)):
         
         clf.fit(seed_comps, target_comps[:,pcn]) #fit seed PCs to target
-        r_squared = clf.score(target_comps[:,pcn]) 
+        r_squared = clf.score(seed_comps,target_comps[:,pcn]) 
         
         weighted_corr = r_squared * target_pca.explained_variance_ratio_[pcn]
         all_scores.append(weighted_corr)
@@ -176,7 +176,7 @@ seed_pca = extract_pc(seed_ts, n_comp) #conduct PCA one more time with that numb
 seed_comps = seed_pca.transform(seed_ts) #transform train data in PCs
 
 
-sub_summary = pd.DataFrame(columns = ['sub','seed_age','seed_roi','target_age','target_roi', 'corr'])
+sub_summary = pd.DataFrame(columns = ['sub','seed_age','seed_roi','target_age','target_roi', 'r2'])
 #print(f'predicting for: {slr}{sr}', seed_comps.shape[1])
 for sub in enumerate(sub_list['sub']):
     print(f'predicting {sub} from {args.roi}', seed_comps.shape[1], f'{sub[0]+1} of {len(sub_list)}')
@@ -198,9 +198,8 @@ for sub in enumerate(sub_list['sub']):
                 sub_summary.to_csv(f'{results_dir}/{args.roi}_{seed_age}_summary{suf}.csv', index = False)
             except:
                 continue
-                
-
-
             
+
+                
 
 

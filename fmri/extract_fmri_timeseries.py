@@ -59,7 +59,8 @@ for ss in subj_list:
         os.makedirs(out_dir, exist_ok=True)
         
         bold_vol = image.load_img(sub_file) #load data
-        bold_vol = image.get_data(image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask)) #standardize within mask and convert to numpy
+        
+        bold_vol = image.get_data(image.clean_img(bold_vol,standardize=False,mask_img=whole_brain_mask)) #extract within brain mask
 
         for rr in ROIs:
             '''
