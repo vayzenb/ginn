@@ -11,14 +11,15 @@ from PIL import Image
 import pdb
 
 #os.chdir("C:/Users/vayzenb\Desktop\GitHub Repos\LiMA")
-vid_folder = "pixar/"
-
-vids = os.listdir("pixar/")
+vid_folder = "fmri_videos/"
+vids = ['DM-clip.mp4']
+#vids = os.listdir(vid_folder)
 
 
 for ii in range(0,len(vids)):
     print(vids[ii])
     vidcap = cv2.VideoCapture(vid_folder + vids[ii])
+    
     vidFile = vids[ii][:-4]
     os.makedirs(vid_folder + "frames/"+ vidFile)
     success,image = vidcap.read()

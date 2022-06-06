@@ -1,17 +1,22 @@
 import os, argparse, shutil
 import subprocess
 from glob import glob as glob
+import pdb
 
 #stim info
 data_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn'
+preprocessed_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/derivatives/preprocessed_data'
 study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn/fmri'
 
 
 subj_list = [os.path.basename(x) for x in glob(f'{data_dir}/*')] #get list of subs to loop over
 n = 1
 for ss in subj_list:
-    if os.path.exists(f'{data_dir}/{ss}/func/{ss}_task-movieDM_bold.nii.gz') == False:
+    #pdb.set_trace()
+    if os.path.exists(f'{data_dir}/{ss}/func/{ss}_task-movieDM_bold.nii.gz') == False or os.path.exists(f'{data_dir}/{ss}/anat/{ss}_acq-VNavNorm_T1w_brain.nii.gz') == False:
         bash_cmd = f'rm -rf {data_dir}/{ss}'
+        subprocess.run(bash_cmd.split())
+        bash_cmd = f'rm -rf {preprocessed_dir}/{ss}'
         subprocess.run(bash_cmd.split())
         print('Removed all of:', ss)
     
@@ -21,6 +26,7 @@ for ss in subj_list:
         if os.path.exists(f'{data_dir}/{ss}/derivatives/fsl/1stLevel.feat/filtered_func_data.nii.gz') == False:
             bash_cmd = f'rm -rf {data_dir}/{ss}/derivatives/fsl/1stLevel.feat'
             subprocess.run(bash_cmd.split())
+
             print('Removed incomplete 1stlevel of:', ss)
 
 
