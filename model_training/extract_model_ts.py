@@ -35,7 +35,7 @@ out_dir = f"/lab_data/behrmannlab/vlad/ginn/model_ts"
 
 
 #training info
-model_arch = ['cornet_z_cl','cornet_z_sl']
+model_arch = ['cornet_z_sl']
 '''
 set model params
 '''
@@ -294,9 +294,9 @@ for mm in enumerate(model_arch):
         if mm[1] == 'cornet_z_sl':
 
             if trt[1] == 'random':
-                n_classes = 600
+                feats = 600
             else:
-                n_classes = len(glob(f'{train_dir}/{trt[1]}/train/*'))
+                feats = len(glob(f'{train_dir}/{trt[1]}/train/*'))
         else:
             feats = 128
         

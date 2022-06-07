@@ -16,7 +16,7 @@ subj_dir=f'{study_dir}/derivatives/preprocessed_data'
 whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 whole_brain_mask = image.binarize_img(whole_brain_mask)
 
-ROIs=["LO", "PFS", "FFA", "OFA"]
+ROIs=["LO", "FFA", "OFA"]
 
 
 #pull sub dirs
