@@ -9,9 +9,9 @@ from nilearn import image
 import nibabel as nib
 
 parser = argparse.ArgumentParser(description='HBN preprocessing')
-parser.add_argument('--age', required=False,
+parser.add_argument('--age', required=True,
                     help='age of subjects to process', 
-                    default=18)   
+                    default=None)   
 
 suf = ''
 
@@ -23,8 +23,9 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn/fmri'
 exp_dir= f'ginn/fmri/hbn'
 study_dir = f'/lab_data/behrmannlab/scratch/vlad/{exp_dir}'
 subj_dir=f'{study_dir}/derivatives/preprocessed_data'
-out_dir = f'{study_dir}/derivatives/group_func'
+out_dir = f'{study_dir}/derivatives/mean_func'
 sub_list = pd.read_csv(f'{curr_dir}/HBN-Site-CBIC.csv')
+
 
 whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 affine = whole_brain_mask.affine
