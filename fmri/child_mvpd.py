@@ -1,7 +1,7 @@
 import warnings
 import os, argparse
 from matplotlib.pyplot import subplot
-from sqlalchemy import column, false
+
 warnings.filterwarnings("ignore")
 
 import pandas as pd
@@ -14,11 +14,12 @@ from sklearn.linear_model import LinearRegression, Ridge
 
 from nilearn import image, datasets
 import nibabel as nib
+print('libraries loaded')
 
 # threshold for PCA
 
 use_pc_thresh = True
-n_comp = 10
+
 
 pc_thresh = .9
 
@@ -106,13 +107,13 @@ def calc_pc_n(pca, thresh):
     explained_variance = pca.explained_variance_ratio_
     
     var = 0
-    for n_comp, ev in enumerate(explained_variance):
+    for n_components, ev in enumerate(explained_variance):
         var += ev #add each PC's variance to current variance
         #print(n_comp, ev, var)
 
         if var >=thresh: #once variance > than thresh, stop
             break
-    return n_comp+1
+    return n_components+1
 
 
 def calc_mvpd(seed_comps,target_comps, target_pca):
@@ -129,13 +130,14 @@ def calc_mvpd(seed_comps,target_comps, target_pca):
         
         weighted_corr = r_squared * target_pca.explained_variance_ratio_[pcn]
         all_scores.append(weighted_corr)
+        #all_scores.append(r_squared)
 
     final_corr = np.sum(all_scores)/(np.sum(target_pca.explained_variance_ratio_))
-
+    #final_corr = np.mean(all_scores)
     return final_corr
 
 
-def calc_mvpd_r2(seed_ts):
+def calc_mvpd_r2(seed_ts,n_comp =10):
     """
     Calculate r2 of regression
     """
@@ -143,6 +145,7 @@ def calc_mvpd_r2(seed_ts):
     sub_list = get_existing_files(curr_subs)
     sub_list = sub_list.drop_duplicates()
     sub_list = sub_list.reset_index()
+    
     
     
     sub_summary = pd.DataFrame(columns = ['sub','age','roi', 'r2'])
@@ -155,9 +158,9 @@ def calc_mvpd_r2(seed_ts):
                 
                 sub_ts = np.load(f'{subj_dir}/sub-{sub[1]}/timeseries/{lr}{roi}_ts_all.npy')
                 
-
+                
                 if use_pc_thresh == True: n_comp = calc_pc_n(extract_pc(sub_ts),pc_thresh) #determine number of PCs in train_data using threshold        
-
+                
                 child_pca = extract_pc(sub_ts, n_comp) #conduct PCA one more time with that number of PCs
                 child_comps = child_pca.transform(sub_ts) #transform train data in PCs       
                          
@@ -165,7 +168,6 @@ def calc_mvpd_r2(seed_ts):
                 r2 = calc_mvpd(seed_ts,child_comps, child_pca)
                 
                 
-
 
                 curr_data = pd.Series([sub[1],sub_list['age'][sub[0]], f'{lr}{roi}', r2],index= sub_summary.columns)
                 sub_summary = sub_summary.append(curr_data,ignore_index = True)

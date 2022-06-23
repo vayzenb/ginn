@@ -8,19 +8,19 @@ import numpy as np
 import pdb
 
 
-
-#
-
 srm_predict = False
 model_predict = True
-
+suf = '_fixed_model'
 '''
 model predictors
 '''
 model_arch = ['cornet_z_cl','cornet_z_sl']
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layer = ['aIT','pIT']
+
 vid = 'DM-clip'
+
+
 '''
 neural predictors
 '''
@@ -57,7 +57,7 @@ if srm_predict == True:
         sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_summary_{n_feat}.csv')
 
 if model_predict == True:
-    predictor_dir = '/lab_data/behrmannlab/vlad/ginn/model_ts'
+    predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'
     summary_type = 'model'
     sub_summary = pd.DataFrame(columns=['sub','age', 'roi','r2','architecture', 'train_type', 'layer'])
     for mt in model_arch:
@@ -77,4 +77,4 @@ if model_predict == True:
                 sub_summary = sub_summary.append(predictor_summary)
                 
 
-        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_{mt}_summary.csv')
+        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_{mt}_summary{suf}.csv')
