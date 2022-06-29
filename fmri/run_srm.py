@@ -121,6 +121,7 @@ for n_feats in features:
             roi_data = extract_roi_data(curr_subs, roi)
 
             roi_data = standardize_data(roi_data)
+            pdb.set_trace()
 
             # Fit the SRM data
             print('Fitting SRM, may take a minute ...')
