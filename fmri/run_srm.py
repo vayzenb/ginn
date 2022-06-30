@@ -40,6 +40,8 @@ age = 18
 features = [25,50,100,200]  # How many features will you fit?
 n_iter = 30  # How many iterations of fitting will you perform
 
+predictor_dir = '/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/derivatives/group_func'
+seed_ts = np.load(f'{subj_dir}/sub-{curr_subs["sub"][0]}/timeseries/seed_ts_all.npy')
 
 # %%
 
@@ -121,12 +123,12 @@ for n_feats in features:
             roi_data = extract_roi_data(curr_subs, roi)
 
             roi_data = standardize_data(roi_data)
-            pdb.set_trace()
+            
 
             # Fit the SRM data
             print('Fitting SRM, may take a minute ...')
             srm.fit(roi_data)
-
+            pdb.set_trace()
             print('SRM has been fit')    
             
 
