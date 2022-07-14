@@ -1,3 +1,8 @@
+"""
+Run MVPD on each individaul
+"""
+
+
 import warnings
 import os, argparse
 from matplotlib.pyplot import subplot
@@ -14,6 +19,7 @@ from sklearn.linear_model import LinearRegression, Ridge
 
 from nilearn import image, datasets
 import nibabel as nib
+import statsmodels.api as sm
 print('libraries loaded')
 
 # threshold for PCA
@@ -34,7 +40,7 @@ out_dir = f'{study_dir}/derivatives/mean_func'
 results_dir =f'{curr_dir}/results/mvpd'
 roi_dir = f'{study_dir}/derivatives/rois'
 curr_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
-rois = ['LO','FFA','OFA']
+rois = ['LO','FFA','A1']
 
 
 
@@ -125,9 +131,11 @@ def calc_mvpd(seed_comps,target_comps, target_pca):
     all_scores = []
     for pcn in range(0,len(target_pca.explained_variance_ratio_)):
         
-        clf.fit(seed_comps, target_comps[:,pcn]) #fit seed PCs to target
-        r_squared = clf.score(seed_comps,target_comps[:,pcn]) 
-        
+        #clf.fit(seed_comps, target_comps[:,pcn]) #fit seed PCs to target
+        lm_model = sm.OLS(target_comps[:,pcn], seed_comps).fit()
+        #r_squared = clf.score(seed_comps,target_comps[:,pcn]) 
+        r_squared = lm_model.rsquared
+
         weighted_corr = r_squared * target_pca.explained_variance_ratio_[pcn]
         all_scores.append(weighted_corr)
         #all_scores.append(r_squared)
@@ -144,7 +152,9 @@ def calc_mvpd_r2(seed_ts,n_comp =10):
     
     sub_list = get_existing_files(curr_subs)
     sub_list = sub_list.drop_duplicates()
+    sub_list = sub_list[sub_list['age']>=18]
     sub_list = sub_list.reset_index()
+    
     
     
     

@@ -16,11 +16,15 @@ subj_dir=f'{study_dir}/derivatives/preprocessed_data'
 whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 whole_brain_mask = image.binarize_img(whole_brain_mask)
 
-ROIs=["LO", "FFA", "OFA"]
+ROIs=["LO", "FFA", "A1"]
+
+
 
 
 #pull sub dirs
 subj_list = [os.path.basename(x) for x in glob(f'{subj_dir}/sub-*')] #get list of subs to loop over
+
+
 
 def extract_mv_ts(bold_vol, mask_dir):
     """

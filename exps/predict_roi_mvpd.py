@@ -2,15 +2,15 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys
 sys.path.insert(1, f'{curr_dir}/fmri')
-import child_mvpd
+import indiv_mvpd
 import pandas as pd
 import numpy as np
 import pdb
 
 
-srm_predict = False
-model_predict = True
-suf = '_fixed_model'
+srm_predict = True
+model_predict = False
+suf = 'adult_test'
 '''
 model predictors
 '''
@@ -25,10 +25,11 @@ vid = 'DM-clip'
 neural predictors
 '''
 ages = [18]
-rois = ['LO','FFA','OFA']
+rois = ['LO','FFA']
 
 
 n_feats = [25,50,100,200]
+n_feats = [50]
 
 if srm_predict == True:
 
@@ -45,7 +46,7 @@ if srm_predict == True:
                     predictor_ts = np.load(f'{predictor_dir}/srm_{roi}_{age}_{n_feat}.npy')
                     
                     predictor_ts = np.transpose(predictor_ts)
-                    predictor_summary = child_mvpd.calc_mvpd_r2(predictor_ts)
+                    predictor_summary = indiv_mvpd.calc_mvpd_r2(predictor_ts)
                     
                     predictor_summary['seed_age'] = age
                     predictor_summary['seed_roi'] = roi
@@ -54,7 +55,7 @@ if srm_predict == True:
                     
                     
         
-        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_summary_{n_feat}.csv')
+        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_summary_{n_feat}{suf}.csv')
 
 if model_predict == True:
     predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'

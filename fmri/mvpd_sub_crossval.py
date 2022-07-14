@@ -37,7 +37,7 @@ results_dir =f'{curr_dir}/results/mvpd'
 roi_dir = f'{study_dir}/derivatives/rois'
 all_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
 
-rois = ['LO','FFA', 'OFA']
+rois = ['LO','FFA', 'A1']
 ages = [5,6,7,18]
 
 
@@ -91,26 +91,6 @@ def extract_mv_ts(bold_vol, mask_dir):
     print('Seed data extracted...')
 
     return mv_ts
-
-
-
-
-# %%
-
-def get_existing_files(curr_subs):
-    
-    sub_file =pd.DataFrame(columns=['sub','age'])
-    for sub in enumerate(curr_subs['participant_id']):
-        img = f'{subj_dir}/sub-{sub[1]}/sub-{sub[1]}_task-movieDM_bold.nii.gz'
-        
-        if os.path.exists(img):
-            
-            
-            sub_file = sub_file.append(pd.Series([sub[1], curr_subs['Age'][sub[0]]], index = sub_file.columns), ignore_index = True)
-
-    return sub_file
-
-
 
 
 # %%
@@ -183,7 +163,7 @@ def calc_mvpd(seed_ts, train_data, test_data):
     return final_score
 
 def cross_val_srm(roi_data,n_feats):
-    print('running cross validating...')
+    print('running cross validation...')
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
     

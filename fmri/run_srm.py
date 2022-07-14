@@ -33,7 +33,7 @@ roi_dir = f'{study_dir}/derivatives/rois'
 
 curr_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
 
-rois = ['LO','FFA', 'OFA']
+rois = ['LO','FFA', 'A1']
 
 age = 18
 
@@ -41,7 +41,7 @@ features = [25,50,100,200]  # How many features will you fit?
 n_iter = 30  # How many iterations of fitting will you perform
 
 predictor_dir = '/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/derivatives/group_func'
-seed_ts = np.load(f'{subj_dir}/sub-{curr_subs["sub"][0]}/timeseries/seed_ts_all.npy')
+#seed_ts = np.load(f'{subj_dir}/sub-{curr_subs["sub"][0]}/timeseries/seed_ts_all.npy')
 
 # %%
 
