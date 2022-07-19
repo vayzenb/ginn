@@ -30,7 +30,7 @@ acts_extracted = False
 '''
 folder params
 '''
-vid = 'DM-clip'
+vid = 'partly_cloudy'
 stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 weights_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_weights"
 out_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_ts"
@@ -38,16 +38,18 @@ out_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_ts"
 
 #training info
 model_arch = ['cornet_z_cl','cornet_z_sl']
+model_arch = ['cornet_z_sl']
 '''
 set model params
 '''
-model_type = 'sl'
+
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
+train_type = ['vggface_oneobject', 'vggface', 'random']
 
 train_dir = f'/lab_data/behrmannlab/image_sets/'
 #n_classes = len(glob(f'{args.data}/train/*'))
 #layer =['aIT','pIT'] #set in descending order
-layer_type = ['aIT','pIT']
+layer_type = ['aIT']
 #layer_type = ['decoder']
 sublayer_type = 'output'
 seed = 1
@@ -55,25 +57,28 @@ pca_perc = .90
 epochs = [0, 1, 5, 10, 15, 20, 25, 30]
 
 
-'''
-Despicable me (DM) video params
-'''
-vols = 750 #volumes in the scan
-tr = .8 #TR of scan
-fix_tr =0 #how many volumes are there at the beginning of the scan
-fps = 30 # frame per second of video (how many rows go into 1 sec)
-bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
 
+if vid == 'DM-clip':
+    '''
+    Despicable me (DM) video params
+    '''
+    vols = 750 #volumes in the scan
+    tr = .8 #TR of scan
+    fix_tr =0 #how many volumes are there at the beginning of the scan
+    fps = 30 # frame per second of video (how many rows go into 1 sec)
+    bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
 
-'''
-Pixar video params
+elif vid == 'partly_cloudy':
 
-vols = 168 #volumes in the scan
-tr = 2 #TR of scan
-fix_tr =5 #first 5 volumes of the scan (10 s) were fix in the beginning
-fps = 24 # frame per second of video (how many rows go into 1 sec)
-bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
-'''
+    '''
+    Pixar video params
+    '''
+    vols = 168 #volumes in the scan
+    tr = 2 #TR of scan
+    fix_tr =5 #first 5 volumes of the scan (10 s) were fix in the beginning
+    fps = 24 # frame per second of video (how many rows go into 1 sec)
+    bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
+
 
 transform = transforms.Compose([
         transforms.Resize((224, 224)),

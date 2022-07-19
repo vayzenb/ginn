@@ -38,13 +38,11 @@ if exp == 'pixar':
     exp_dir= f'fmri/pixar'
     file_suf = 'pixar_run-001_swrf'
     all_subs = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
-    fix_tr = 5
 
 elif exp == 'hbn':
     exp_dir = f'fmri/hbn'
     file_suf = 'movieDM'
     all_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
-    fix_tr = 0
 
 raw_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/{exp_dir}'
 study_dir = f'/lab_data/behrmannlab/vlad/ginn/'
@@ -57,7 +55,7 @@ roi_dir = f'{study_dir}/derivatives/rois'
 
 rois = ['LO','FFA', 'A1']
 
-ages = [3,18]
+ages = [3,4,5,18]
 
 
 
@@ -95,8 +93,6 @@ def extract_roi_data(curr_subs, roi):
         
         
         sub_ts = np.load(f'{subj_dir}/{sub}/timeseries/{roi}_ts_all.npy')
-        
-        sub_ts = sub_ts[fix_tr:,:]
         sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
         
@@ -161,7 +157,6 @@ def cross_val_srm(roi_data,seed_data, n_feats):
     srm.fit(roi_data)
     srm_data = np.transpose(srm.s_)
     score = []
-    
     #split into folds
     for fold in range(0,2):
         
@@ -204,7 +199,6 @@ def predict_srm(seed_ts,n_feats=50):
                 #load all subject data from ROI
                 roi_data = extract_roi_data(curr_subs, f'{lr}{roi}')
                 roi_data = standardize_data(roi_data)
-                
                 
                 score = cross_val_srm(roi_data,seed_ts,n_feats)
                 

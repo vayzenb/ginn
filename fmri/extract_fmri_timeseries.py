@@ -2,19 +2,20 @@ import subprocess
 import os
 from glob import glob
 import pdb
-from nilearn import image, datasets
+from nilearn import image, maskers
 import nibabel as nib
 import numpy as np
 #import pdb
 
 #set up folders and ROIS
-exp_dir= f'ginn/fmri/hbn'
+exp_dir= f'ginn/fmri/pixar'
+
 study_dir = f'/lab_data/behrmannlab/scratch/vlad/{exp_dir}'
 roi_dir=f'{study_dir}/derivatives/rois'
 subj_dir=f'{study_dir}/derivatives/preprocessed_data'
 
-whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
-whole_brain_mask = image.binarize_img(whole_brain_mask)
+#whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
+#whole_brain_mask = image.binarize_img(whole_brain_mask)
 
 ROIs=["LO", "FFA", "A1"]
 
@@ -32,7 +33,7 @@ def extract_mv_ts(bold_vol, mask_dir):
     """
 
     #load seed
-    roi = image.get_data(image.load_img(f'{mask_dir}'))
+    roi = image.get_data(image.binarize_img(image.load_img(f'{mask_dir}')))
     #Just ensure its all binary
     roi[roi>0] = 1
     roi[roi<=0] = 0
@@ -52,7 +53,10 @@ n = 1
 #loop through subs
 for ss in subj_list:
     
-    sub_file = f'{subj_dir}/{ss}/{ss}_task-movieDM_bold.nii.gz'
+    #sub_file = f'{subj_dir}/{ss}/{ss}_task-movieDM_bold.nii.gz'
+    sub_file = f'{subj_dir}/{ss}/{ss}_task-pixar_run-001_swrf_bold.nii.gz'
+    
+    whole_brain_mask = image.binarize_img(image.load_img(f'{subj_dir}/{ss}/{ss}_analysis_mask.nii.gz'))
 
     if os.path.exists(sub_file):
         print(f'Extracting for...{ss}', f'{n} of {len(subj_list)}')
@@ -63,8 +67,12 @@ for ss in subj_list:
         os.makedirs(out_dir, exist_ok=True)
         
         bold_vol = image.load_img(sub_file) #load data
+        whole_masker = maskers.NiftiMasker(mask_img=whole_brain_mask, detrend = True, standardize = True)
+        whole_masker.fit(bold_vol)
+        whole_ts = whole_masker.transform(bold_vol)
+        mean_ts = np.mean(whole_ts, axis=1)
         
-        bold_vol = image.get_data(image.clean_img(bold_vol,standardize=False,mask_img=whole_brain_mask)) #extract within brain mask
+        bold_vol = image.get_data(image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask, detrend=True,confounds = mean_ts)) #extract within brain mask
 
         for rr in ROIs:
             '''

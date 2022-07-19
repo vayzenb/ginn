@@ -22,25 +22,43 @@ import pdb
 
 
 # %%
+
+exp = 'pixar'
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
-exp_dir= f'ginn/fmri/hbn'
-study_dir = f'/lab_data/behrmannlab/scratch/vlad/{exp_dir}'
-subj_dir=f'{study_dir}/derivatives/preprocessed_data'
-out_dir = f'{study_dir}/derivatives/group_func'
-results_dir =f'{curr_dir}/results/mvpd'
+
+if exp == 'pixar':
+    exp_dir= f'fmri/pixar'
+    file_suf = 'pixar_run-001_swrf'
+    curr_subs = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
+
+elif exp == 'hbn':
+    exp_dir = f'fmri/hbn'
+    file_suf = 'movieDM'
+    curr_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
+
+
+raw_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/{exp_dir}'
+study_dir = f'/lab_data/behrmannlab/vlad/ginn/'
+out_dir = f'{study_dir}/{exp_dir}/derivatives/group_func'
+subj_dir=f'{raw_dir}/derivatives/preprocessed_data'
+
+
 roi_dir = f'{study_dir}/derivatives/rois'
 
-curr_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
+
+
+os.makedirs(out_dir, exist_ok=True)
 
 rois = ['LO','FFA', 'A1']
 
 age = 18
 
 features = [25,50,100,200]  # How many features will you fit?
+features = [50]
 n_iter = 30  # How many iterations of fitting will you perform
 
-predictor_dir = '/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/derivatives/group_func'
+
 #seed_ts = np.load(f'{subj_dir}/sub-{curr_subs["sub"][0]}/timeseries/seed_ts_all.npy')
 
 # %%
@@ -49,7 +67,7 @@ def get_existing_files(curr_subs):
     
     sub_file =pd.DataFrame(columns=['sub','age'])
     for sub in enumerate(curr_subs['participant_id']):
-        img = f'{subj_dir}/sub-{sub[1]}/sub-{sub[1]}_task-movieDM_bold.nii.gz'
+        img = f'{subj_dir}/{sub[1]}/{sub[1]}_task-{file_suf}_bold.nii.gz'
         
         if os.path.exists(img):
             
@@ -58,10 +76,12 @@ def get_existing_files(curr_subs):
 
     return sub_file
 
+pdb.set_trace()
 curr_subs = get_existing_files(curr_subs)
 curr_subs = curr_subs[curr_subs['age']>=18]
 curr_subs = curr_subs.drop_duplicates(subset ="sub",)
 curr_subs = curr_subs.reset_index()
+
 
 
 # %%
@@ -76,7 +96,7 @@ def extract_roi_data(curr_subs, roi):
     for sub in curr_subs['sub']:
         
         
-        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}_ts_all.npy')
+        sub_ts = np.load(f'{subj_dir}/{sub}/timeseries/{roi}_ts_all.npy')
         sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
         
@@ -128,7 +148,7 @@ for n_feats in features:
             # Fit the SRM data
             print('Fitting SRM, may take a minute ...')
             srm.fit(roi_data)
-            pdb.set_trace()
+            
             print('SRM has been fit')    
             
 
