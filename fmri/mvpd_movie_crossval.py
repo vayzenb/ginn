@@ -152,13 +152,14 @@ def calc_mvpd(train_seed, test_seed, train_data, test_data):
     final_score = np.mean(all_scores)
     return final_score
 
-def cross_val_srm(roi_data,seed_data, n_feats):
+def cross_val_srm(target_data,seed_data, n_feats):
     print('running cross validation...')
     roi_data = np.asanyarray(roi_data)
     
     # Create the SRM objects
-    srm = brainiak.funcalign.srm.SRM(n_iter=n_iter, features=n_feats)
-    srm.fit(roi_data)
+    srm_target = brainiak.funcalign.srm.SRM(n_iter=n_iter, features=n_feats)
+    srm_seed = brainiak.funcalign.srm.SRM(n_iter=n_iter, features=n_feats)
+    srm_target.fit(roi_data)
     srm_data = np.transpose(srm.s_)
     score = []
     
@@ -166,11 +167,26 @@ def cross_val_srm(roi_data,seed_data, n_feats):
     for fold in range(0,2):
         
         if fold == 0:
-            train_data = srm_data[0:int(srm_data.shape[0]/2),:]
-            test_data = srm_data[int(srm_data.shape[0]/2):,:]
+            #split data and run SRM on target
+            train_target = target_data[:,0:int(target_data.shape[1]/2)]
+            test_target = target_data[:,int(target_data.shape[1]/2):]
 
-            train_seed = seed_data[0:int(seed_data.shape[0]/2),:]
-            test_seed = seed_data[int(seed_data.shape[0]/2):,:]
+            srm_target.fit(train_target)
+            train_target = srm_target.s_
+            test_target = srm_target.transform(test_target)
+
+            train_seed = seed_data[:,0:int(seed_data.shape[1]/2)]
+            test_seed = seed_data[:,int(seed_data.shape[1]/2):]
+
+            #split data and run SRM on target
+            srm_seed.fit(train_seed)
+            train_seed = srm_seed.s_
+            test_seed = srm_seed.transform(test_seed)
+
+            srm_target = srm_seed.fit(target_data)
+            train_srm = srm_target.s_
+            test_srm = srm_target.transform(target_data)
+
         elif fold ==1:
             train_data = srm_data[int(srm_data.shape[0]/2):,:]
             test_data = srm_data[0:int(srm_data.shape[0]/2),:]
@@ -217,55 +233,4 @@ def predict_srm(seed_ts,n_feats=50):
     return sub_summary
                     
                 
-
-
-    
-
-    
-
-    
-
-
-"""
-def predict_srm(seed_ts,n_comp =10):
-    
-    Calculate r2 of regression
-    
-    
-    sub_list = get_existing_files(curr_subs)
-    sub_list = sub_list.drop_duplicates()
-    sub_list = sub_list.reset_index()
-    
-    
-    sub_summary = pd.DataFrame(columns = ['sub','age','roi', 'r2'])
-
-    #print(f'predicting for: {slr}{sr}', seed_comps.shape[1])
-    for sub in enumerate(sub_list['sub']):
-        #print(f'predicting {sub} from {args.roi}', seed_comps.shape[1], f'{sub[0]+1} of {len(sub_list)}')
-        for roi in rois:
-            for lr in ['l','r']:
-                
-                sub_ts = np.load(f'{subj_dir}/sub-{sub[1]}/timeseries/{lr}{roi}_ts_all.npy')
-                
-                
-                if use_pc_thresh == True: n_comp = calc_pc_n(extract_pc(sub_ts),pc_thresh) #determine number of PCs in train_data using threshold        
-                
-                child_pca = extract_pc(sub_ts, n_comp) #conduct PCA one more time with that number of PCs
-                child_comps = child_pca.transform(sub_ts) #transform train data in PCs       
-                         
-
-                r2 = calc_mvpd(seed_ts,child_comps, child_pca)
-                
-                
-
-                curr_data = pd.Series([sub[1],sub_list['age'][sub[0]], f'{lr}{roi}', r2],index= sub_summary.columns)
-                sub_summary = sub_summary.append(curr_data,ignore_index = True)
-                
-
-    return sub_summary
-"""
-            
-
-                
-
 

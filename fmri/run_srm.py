@@ -76,7 +76,7 @@ def get_existing_files(curr_subs):
 
     return sub_file
 
-pdb.set_trace()
+
 curr_subs = get_existing_files(curr_subs)
 curr_subs = curr_subs[curr_subs['age']>=18]
 curr_subs = curr_subs.drop_duplicates(subset ="sub",)

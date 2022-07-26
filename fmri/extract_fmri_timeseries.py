@@ -33,21 +33,14 @@ def extract_mv_ts(bold_vol, mask_dir):
     """
 
     #load seed
-    roi = image.get_data(image.binarize_img(image.load_img(f'{mask_dir}')))
-    #Just ensure its all binary
-    roi[roi>0] = 1
-    roi[roi<=0] = 0
-    reshaped_roi = np.reshape(roi, whole_brain_mask.shape +(1,))
-    masked_img = reshaped_roi*bold_vol
-
-    #extract voxel resposnes from within mask
-    mv_ts = masked_img.reshape(-1, bold_vol.shape[3]) #reshape into rows (voxels) x columns (time)
-    mv_ts =mv_ts[~np.all(mv_ts == 0, axis=1)] #remove voxels that are 0 (masked out)
-    mv_ts = np.transpose(mv_ts)
-
+    roi = image.binarize_img(image.load_img(f'{mask_dir}'))
+    masker = maskers.NiftiMasker(mask_img=roi)
+    masker.fit(bold_vol)
+    roi_data = masker.transform(bold_vol)
+    
     print('Seed data extracted...')
 
-    return mv_ts
+    return roi_data
 
 n = 1
 #loop through subs
@@ -70,9 +63,10 @@ for ss in subj_list:
         whole_masker = maskers.NiftiMasker(mask_img=whole_brain_mask, detrend = True, standardize = True)
         whole_masker.fit(bold_vol)
         whole_ts = whole_masker.transform(bold_vol)
-        mean_ts = np.mean(whole_ts, axis=1)
+        np.save(f'{out_dir}/whole_brain_ts',whole_ts)
+        #mean_ts = np.mean(whole_ts, axis=1)
         
-        bold_vol = image.get_data(image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask, detrend=True,confounds = mean_ts)) #extract within brain mask
+        bold_vol = image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask, detrend=True) #extract within brain mask
 
         for rr in ROIs:
             '''
@@ -99,6 +93,7 @@ for ss in subj_list:
             mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/r{rr}.nii.gz')
             np.save(f'{out_dir}/r{rr}_ts_all',mv_ts)
         
+            
     else:
         print(f'No file for {ss}')
 

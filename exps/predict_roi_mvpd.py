@@ -18,8 +18,8 @@ model_arch = ['cornet_z_cl','cornet_z_sl']
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layer = ['aIT','pIT']
 
-vid = 'DM-clip'
-
+exp = 'pixar'
+vid = 'partly_cloudy'
 
 '''
 neural predictors
@@ -33,11 +33,11 @@ n_feats = [50]
 
 if srm_predict == True:
 
-    predictor_dir = '/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/derivatives/group_func'
-    summary_type = 'srm'
+    predictor_dir = f'/lab_data/behrmannlab/vlad/ginn/fmri/{exp}/derivatives/group_func'
+    summary_type = 'srm_indiv'
 
     for n_feat in n_feats:
-        sub_summary = pd.DataFrame(columns=['sub','age', 'roi','r2','seed_age', 'seed_roi'])
+        sub_summary = pd.DataFrame(columns=['sub','age', 'roi','corr','seed_age', 'seed_roi'])
         for age in ages:
             for rr in rois:
                 for lr in ['l','r']:
@@ -55,7 +55,7 @@ if srm_predict == True:
                     
                     
         
-        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_summary_{n_feat}{suf}.csv')
+        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{exp}_{summary_type}_summary_{n_feat}_{suf}.csv')
 
 if model_predict == True:
     predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'
@@ -68,7 +68,7 @@ if model_predict == True:
                 predictor_ts = np.load(f'{predictor_dir}/{mt}_{tt}_{ll}_{vid}_ts.npy')
                 
                 #predictor_ts = np.transpose(predictor_ts)
-                predictor_summary = child_mvpd.calc_mvpd_r2(predictor_ts)
+                predictor_summary = indiv_mvpd.calc_mvpd_r2(predictor_ts)
                 
                 
                 predictor_summary['architecture'] = mt
@@ -78,4 +78,4 @@ if model_predict == True:
                 sub_summary = sub_summary.append(predictor_summary)
                 
 
-        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{summary_type}_{mt}_summary{suf}.csv')
+        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{exp}_{summary_type}_{mt}_summary{suf}.csv')
