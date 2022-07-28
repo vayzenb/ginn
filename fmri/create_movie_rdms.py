@@ -1,0 +1,162 @@
+"""
+Do RSA, but comparing the similarity between each timepoint
+"""
+
+import warnings
+import os, argparse
+from matplotlib.pyplot import subplot
+
+warnings.filterwarnings("ignore")
+
+import pandas as pd
+import numpy as np
+import pdb
+
+from sklearn.decomposition import PCA
+from sklearn.model_selection import ShuffleSplit
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.metrics import pairwise, pairwise_distances
+
+from nilearn import image, datasets
+import nibabel as nib
+print('Libraries loaded...')
+# threshold for PCA
+
+use_pc_thresh = True
+n_comp = 10
+
+pc_thresh = .9
+
+#set directories
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+
+exp = 'pixar'
+#set directories
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+
+if exp == 'pixar':
+    exp_dir= f'fmri/pixar'
+    file_suf = 'pixar_run-001_swrf'
+    all_subs = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
+    fix_tr = 5
+
+elif exp == 'hbn':
+    exp_dir = f'fmri/hbn'
+    file_suf = 'movieDM'
+    all_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
+    fix_tr = 0
+
+raw_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/{exp_dir}'
+study_dir = f'/lab_data/behrmannlab/vlad/ginn/'
+out_dir = f'{study_dir}/{exp_dir}/derivatives/group_func'
+subj_dir=f'{raw_dir}/derivatives/preprocessed_data'
+roi_dir = f'{study_dir}/derivatives/rois'
+
+rois = ['LO','FFA','A1']
+
+
+
+
+#curr_subs= curr_subs[curr_subs['Age']<8]
+
+#load whole brain mask
+whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
+affine = whole_brain_mask.affine
+whole_brain_mask = image.binarize_img(whole_brain_mask)
+
+
+def get_existing_files(curr_subs):
+    
+    sub_file =pd.DataFrame(columns=['sub','age'])
+    for sub in enumerate(curr_subs['participant_id']):
+        img = f'{subj_dir}/{sub[1]}/{sub[1]}_task-{file_suf}_bold.nii.gz'
+        
+        if os.path.exists(img):
+            
+            sub_file = sub_file.append(pd.Series([sub[1], curr_subs['Age'][sub[0]]], index = sub_file.columns), ignore_index = True)
+
+    return sub_file
+
+
+
+def extract_pc(data, n_components=None):
+
+    """
+    Extract principal components
+    if n_components isn't set, it will extract all it can
+    """
+    
+    pca = PCA(n_components = n_components)
+    pca.fit(data)
+    
+    return pca
+
+# %%
+def calc_pc_n(pca, thresh):
+    '''
+    Calculate how many PCs are needed to explain X% of data
+    
+    pca - result of pca analysis
+    thresh- threshold for how many components to keep
+    '''
+    
+    explained_variance = pca.explained_variance_ratio_
+    
+    var = 0
+    for n_comp, ev in enumerate(explained_variance):
+        var += ev #add each PC's variance to current variance
+        #print(n_comp, ev, var)
+
+        if var >=thresh: #once variance > than thresh, stop
+            break
+    return n_comp+1
+
+def create_rdm(ts):
+    """
+    Create RDM
+    """
+    
+    rdm = np.corrcoef(ts) * -1
+    rdm_vec = rdm[np.triu_indices(n=ts.shape[0],k=1)] #remove lower triangle
+    
+    return rdm, rdm_vec
+
+
+
+def extract_rdm():
+    """
+    Calculate RDM for each ROI
+    """
+
+    sub_list = get_existing_files(all_subs)
+    sub_list = sub_list.drop_duplicates()
+    sub_list = sub_list.reset_index()
+
+
+
+
+    #print(f'predicting for: {slr}{sr}', seed_comps.shape[1])
+    for sub in enumerate(sub_list['sub']):
+        print(f'Extracting RDMs for sub: {sub[1]}', f'{sub[0]} out of {len(sub_list)}')
+        #print(f'predicting {sub} from {args.roi}', seed_comps.shape[1], f'{sub[0]+1} of {len(sub_list)}')
+        os.makedirs(f'{out_dir}/{sub[1]}/derivatives/rdms', exist_ok=True)
+        for roi in rois:
+            for lr in ['l','r']:
+                
+                sub_ts = np.load(f'{subj_dir}/{sub[1]}/timeseries/{lr}{roi}_ts_all.npy')
+                
+                
+                if use_pc_thresh == True: n_comp = calc_pc_n(extract_pc(sub_ts),pc_thresh) #determine number of PCs in train_data using threshold        
+
+                #sub_pca = extract_pc(sub_ts, n_comp) #conduct PCA one more time with that number of PCs
+                #sub_pcs = sub_pca.transform(sub_ts) #transform train data in PCs
+                
+                rdm, rdm_vec = create_rdm(sub_ts)
+                rdm_df = pd.DataFrame(rdm_vec, columns = ['rdm'])
+
+                np.save(f'{out_dir}/{sub[1]}/derivatives/rdms/{lr}{roi}_rdm.npy',rdm)
+                rdm_df.to_csv(f'{out_dir}/{sub[1]}/derivatives/rdms/{lr}{roi}_rdm_vec.csv',index = False)
+
+                
+    # %%
+

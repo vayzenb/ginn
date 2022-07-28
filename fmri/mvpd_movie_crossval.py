@@ -97,7 +97,7 @@ def extract_roi_data(curr_subs, roi):
         sub_ts = np.load(f'{subj_dir}/{sub}/timeseries/{roi}_ts_all.npy')
         
         sub_ts = sub_ts[fix_tr:,:]
-        sub_ts = np.transpose(sub_ts)
+        #sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
         
         all_data.append(sub_ts)
