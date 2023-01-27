@@ -1,3 +1,9 @@
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+
+import sys
+
+sys.path.insert(1, f'{curr_dir}')
+
 import warnings
 import os, argparse
 from matplotlib.pyplot import subplot
@@ -13,15 +19,15 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.linear_model import LinearRegression, Ridge
 import brainiak.funcalign.srm
 from scipy import stats
-from nilearn import image, datasets
+from nilearn import signal
 import nibabel as nib
+import ginn_params as params
 import random
 print('libraries loaded')
 
 # threshold for PCA
-
+global_signal = 'mean'
 use_pc_thresh = True
-
 
 pc_thresh = .9
 
@@ -29,27 +35,24 @@ clf = Ridge()
 
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+exp = params.exp
+exp_dir = params.exp_dir
+file_suf = params.file_suf
+fix_tr = params.fix_tr
 
-exp = 'pixar'
-#set directories
-curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+data_dir = params.data_dir
+study_dir = params.study_dir
 
-if exp == 'pixar':
-    exp_dir= f'fmri/pixar'
-    file_suf = 'pixar_run-001_swrf'
-    all_subs = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
-    fix_tr = 5
+sub_list = params.sub_list
 
-elif exp == 'hbn':
-    exp_dir = f'fmri/hbn'
-    file_suf = 'movieDM'
-    all_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
-    fix_tr = 0
+file_suf = params.file_suf
 
-raw_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/{exp_dir}'
-study_dir = f'/lab_data/behrmannlab/vlad/ginn/'
-out_dir = f'{study_dir}/{exp_dir}/derivatives/group_func'
-subj_dir=f'{raw_dir}/derivatives/preprocessed_data'
+
+subj_dir= data_dir
+
+
+out_dir = f'{data_dir}/group_func'
+
 roi_dir = f'{study_dir}/derivatives/rois'
 
 
@@ -57,29 +60,49 @@ roi_dir = f'{study_dir}/derivatives/rois'
 
 rois = ['LO','FFA', 'A1']
 
-ages = [3,18]
+ages = ['infant', 'adult']
 
 
 
-features = [25,50,100,200]  # How many features will you fit?
+features = [25]  # How many features will you fit?
+
 n_iter = 30  # How many iterations of fitting will you perform
 
 folds = 2
 
 
 
+def extract_pc(data, n_components=None):
 
-def get_existing_files(curr_subs):
+    """
+    Extract principal components
+    if n_components isn't set, it will extract all it can
+    """
     
-    sub_file =pd.DataFrame(columns=['sub','age'])
-    for sub in enumerate(curr_subs['participant_id']):
-        img = f'{subj_dir}/{sub[1]}/{sub[1]}_task-{file_suf}_bold.nii.gz'
-        
-        if os.path.exists(img):
-            
-            sub_file = sub_file.append(pd.Series([sub[1], curr_subs['Age'][sub[0]]], index = sub_file.columns), ignore_index = True)
+    pca = PCA(n_components = n_components)
+    pca.fit(data)
+    
+    return pca
 
-    return sub_file
+# %%
+def calc_pc_n(pca, thresh):
+    '''
+    Calculate how many PCs are needed to explain X% of data
+    
+    pca - result of pca analysis
+    thresh- threshold for how many components to keep
+    '''
+    
+    explained_variance = pca.explained_variance_ratio_
+    
+    var = 0
+    for n_comp, ev in enumerate(explained_variance):
+        var += ev #add each PC's variance to current variance
+        #print(n_comp, ev, var)
+
+        if var >=thresh: #once variance > than thresh, stop
+            break
+    return n_comp+1
 
 
 # %%
@@ -91,13 +114,23 @@ def extract_roi_data(curr_subs, roi):
     print(f'extracting {roi} data...')
     n = 0
     all_data = []
-    for sub in curr_subs['sub']:
+    for sub in curr_subs['participant_id']:
+        whole_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/whole_brain_ts.npy')
+        whole_ts = whole_ts[fix_tr:,:]
+
+        #remove global signal
+        if global_signal == 'pca':
+            pca = extract_pc(whole_ts, n_components = 10)
+            whole_confound = pca.transform(whole_ts)
+        elif global_signal == 'mean':
+            whole_confound = np.mean(whole_ts,axis =1)
+
         
-        
-        sub_ts = np.load(f'{subj_dir}/{sub}/timeseries/{roi}_ts_all.npy')
-        
+        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}_ts_all.npy')
         sub_ts = sub_ts[fix_tr:,:]
-        #sub_ts = np.transpose(sub_ts)
+        sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
+
+        sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
         
         all_data.append(sub_ts)
@@ -131,73 +164,91 @@ def standardize_data(all_data):
     return all_data
 
 
-def calc_mvpd(train_seed, test_seed, train_data, test_data):
+def calc_mvpd(train_seed, test_seed, train_target, test_target):
     """
     Conduct regression by iteratively fitting all seed PCs to target PCs
     
     """
-    #pdb.set_trace()
+    
     all_scores = []
+    weights = []
 
-    for kk in range(0,train_data.shape[1]):
-        clf.fit(train_seed, train_data[:,kk])
+    
+    train_seed, test_seed, train_target, test_target = np.transpose(train_seed), np.transpose(test_seed), np.transpose(train_target), np.transpose(test_target)
+
+
+    
+    for kk in range(0,train_target.shape[1]):
+        
+        
+        clf.fit(train_seed, train_target[:,kk])
         pred_ts = clf.predict(test_seed)
+        
+        
+        corr =np.corrcoef(pred_ts,test_target[:,kk])[0,1]
+        #weighted_corr = corr * ((train_target.shape[1]-kk)/train_target.shape[1])
+        weighted_corr = corr
+        weights.append(((train_target.shape[1]-kk)/train_target.shape[1]))
 
-        all_scores.append(np.corrcoef(pred_ts,test_data[:,kk])[0])
+        
 
 
-       #all_scores.append(r_squared)
+        all_scores.append(weighted_corr)
 
-    #final_score = np.sum(all_scores)/(np.sum(target_pca.explained_variance_ratio_))
-    final_score = np.mean(all_scores)
+    
+    final_score = np.sum(all_scores)/(np.sum(weights))
+    #final_score = np.mean(all_scores)
     return final_score
 
 def cross_val_srm(target_data,seed_data, n_feats):
-    print('running cross validation...')
-    roi_data = np.asanyarray(roi_data)
     
+    
+    #roi_data = np.asanyarray(seed_data)
+    target_data = np.asanyarray(target_data)
+    seed_data = np.asanyarray(seed_data)
+    seed_data = np.transpose(seed_data)
+
     # Create the SRM objects
-    srm_target = brainiak.funcalign.srm.SRM(n_iter=n_iter, features=n_feats)
-    srm_seed = brainiak.funcalign.srm.SRM(n_iter=n_iter, features=n_feats)
-    srm_target.fit(roi_data)
-    srm_data = np.transpose(srm.s_)
+
+    #srm_target.fit(roi_data)
+    #srm_data = np.transpose(srm_target.s_)
     score = []
-    
+
     #split into folds
     for fold in range(0,2):
+        srm_target = brainiak.funcalign.srm.SRM(n_iter=n_iter, features=n_feats)
+        
         
         if fold == 0:
             #split data and run SRM on target
-            train_target = target_data[:,0:int(target_data.shape[1]/2)]
-            test_target = target_data[:,int(target_data.shape[1]/2):]
-
+            train_target = target_data[:,:,0:int(target_data.shape[2]/2)]
+            test_target = target_data[:,:,int(target_data.shape[2]/2):]
+            
+            
             srm_target.fit(train_target)
             train_target = srm_target.s_
-            test_target = srm_target.transform(test_target)
+            test_target = srm_target.transform(test_target)[0]
 
             train_seed = seed_data[:,0:int(seed_data.shape[1]/2)]
             test_seed = seed_data[:,int(seed_data.shape[1]/2):]
+            
 
-            #split data and run SRM on target
-            srm_seed.fit(train_seed)
-            train_seed = srm_seed.s_
-            test_seed = srm_seed.transform(test_seed)
-
-            srm_target = srm_seed.fit(target_data)
-            train_srm = srm_target.s_
-            test_srm = srm_target.transform(target_data)
 
         elif fold ==1:
-            train_data = srm_data[int(srm_data.shape[0]/2):,:]
-            test_data = srm_data[0:int(srm_data.shape[0]/2),:]
+            #split data and run SRM on target
+            train_target = target_data[:,:,int(target_data.shape[2]/2):]
+            test_target = target_data[:,:,0:int(target_data.shape[2]/2)]
 
-            train_seed = seed_data[int(seed_data.shape[0]/2):,:]
-            test_seed = seed_data[0:int(seed_data.shape[0]/2),:]
+            srm_target.fit(train_target)
+            train_target = srm_target.s_
+            test_target = srm_target.transform(test_target)[0]
 
-        
-        curr_score = calc_mvpd(train_seed, test_seed, train_data, test_data)
+            train_seed = seed_data[:,int(seed_data.shape[1]/2):]
+            test_seed = seed_data[:,0:int(seed_data.shape[1]/2)]
+
+        curr_score = calc_mvpd(train_seed, test_seed, train_target, test_target)
         score.append(curr_score)
-    
+
     return np.mean(score)
 
 def predict_srm(seed_ts,n_feats=50):
@@ -205,13 +256,10 @@ def predict_srm(seed_ts,n_feats=50):
     
     sub_summary = pd.DataFrame(columns = ['age','roi', 'corr'])
     for age in ages:
-        curr_subs = get_existing_files(all_subs)
-        curr_subs['age'] = curr_subs['age'].apply(np.floor)
-        curr_subs['age'][curr_subs['age']>=18] = 18
-        curr_subs = curr_subs.drop_duplicates(subset ="sub",)
-        curr_subs = curr_subs.reset_index()
-        curr_subs = curr_subs[curr_subs['age']==age]
-        
+        if age == 'adult':
+            curr_subs = sub_list[sub_list['Age'] >= 18]
+        else:
+            curr_subs = sub_list[sub_list['Age'] < 18]
         
         for roi in rois:
             for lr in ['l','r']:
@@ -233,4 +281,3 @@ def predict_srm(seed_ts,n_feats=50):
     return sub_summary
                     
                 
-

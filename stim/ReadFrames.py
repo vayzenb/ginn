@@ -13,7 +13,7 @@ import pdb
 #os.chdir("C:/Users/vayzenb\Desktop\GitHub Repos\LiMA")
 vid_folder = "fmri_videos/"
 
-vids = os.listdir("pixar/")
+vids = ['Aeronaut.mp4']
 
 
 for ii in range(0,len(vids)):

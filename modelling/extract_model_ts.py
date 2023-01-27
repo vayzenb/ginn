@@ -2,7 +2,7 @@
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys
-sys.path.insert(1, f'{curr_dir}/model_training')
+sys.path.insert(1, f'{curr_dir}/modelling')
 import os, argparse
 import torch
 import torch.nn as nn
@@ -30,7 +30,7 @@ acts_extracted = False
 '''
 folder params
 '''
-vid = 'partly_cloudy'
+vid = 'Aeronaut'
 stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 weights_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_weights"
 out_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_ts"
@@ -44,7 +44,8 @@ set model params
 '''
 
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-train_type = ['vggface_oneobject', 'vggface', 'random']
+#train_type = ['vggface_oneobject', 'vggface', 'random']
+#train_type = ['vggface_oneobject']
 
 train_dir = f'/lab_data/behrmannlab/image_sets/'
 #n_classes = len(glob(f'{args.data}/train/*'))
@@ -64,7 +65,7 @@ if vid == 'DM-clip':
     '''
     vols = 750 #volumes in the scan
     tr = .8 #TR of scan
-    fix_tr =0 #how many volumes are there at the beginning of the scan
+    fix_tr =0 #number of throwaway volumes at beginning
     fps = 30 # frame per second of video (how many rows go into 1 sec)
     bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
 
@@ -75,7 +76,18 @@ elif vid == 'partly_cloudy':
     '''
     vols = 168 #volumes in the scan
     tr = 2 #TR of scan
-    fix_tr =5 #first 5 volumes of the scan (10 s) were fix in the beginning
+    fix_tr =0 #number of throwaway volumes
+    fps = 24 # frame per second of video (how many rows go into 1 sec)
+    bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
+
+elif vid == 'Aeronaut':
+
+    '''
+    Pixar video params
+    '''
+    vols = 90 #volumes in the scan
+    tr = 2 #TR of scan
+    fix_tr =0 #number of throwaway volumes
     fps = 24 # frame per second of video (how many rows go into 1 sec)
     bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
 
@@ -225,6 +237,7 @@ def extract_pc(data, n_components=None):
     if n_components isn't set, it will extract all it can
     
     """
+    #pdb.set_trace()
     pca = PCA(n_components = n_components)
     pca.fit(data)
     
@@ -328,24 +341,30 @@ for mm in enumerate(model_arch):
                 #save full model timeseries (all frames)
                 np.save(f'{out_dir}/{mm[1]}_{trt[1]}_{ll}_{vid}_allframes', frame_acts)
             
-            #standardize activations
-            frame_acts = (frame_acts - np.mean(frame_acts))/np.std(frame_acts)
+            
+            
 
             print('downsampling and running PCA...')
             #downsample to scale of fmri
             downsample_ts = down_sample(frame_acts)
 
-
             #convolve to hrf
             hrf_ts = convolve_hrf(downsample_ts)
-            
+            #pdb.set_trace()
+            #standardize activations
+            #hrf_ts = stats.zscore(hrf_ts)
 
+            #hrf_ts = np.isnan(hrf_ts).any(axis=1)
+            
+            
             #calculate components for pca
-            n_comp = calc_pc_n(extract_pc(hrf_ts),pca_perc)
+            #n_comp = calc_pc_n(extract_pc(hrf_ts),pca_perc)
             
             #calculate final set of PCs
-            pca2 = extract_pc(hrf_ts, n_comp)
-            final_ts = pca2.transform(hrf_ts) #reduce dimensionality of data using model PCs
+            #pca = extract_pc(hrf_ts, n_comp)
+            #final_ts = pca.transform(hrf_ts) #reduce dimensionality of data using model PCs
+            final_ts = hrf_ts
+            
             
             #plot pc variance explained
 

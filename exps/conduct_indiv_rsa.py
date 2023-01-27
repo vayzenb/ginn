@@ -22,9 +22,9 @@ stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 
 
 
-model_archs = ['cornet_z_cl','cornet_z_sl']
+model_archs = ['cornet_z_cl']
 train_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-layer_types = ['aIT','pIT']
+layer_types = ['aIT']
 
 """HBN params
 #set directories

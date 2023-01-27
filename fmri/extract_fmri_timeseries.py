@@ -1,3 +1,7 @@
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+
+import sys
+sys.path.insert(1, f'{curr_dir}')
 import subprocess
 import os
 from glob import glob
@@ -5,25 +9,35 @@ import pdb
 from nilearn import image, maskers
 import nibabel as nib
 import numpy as np
-#import pdb
+import ginn_params as params
+import pdb
 
+print('libraries loaded')
 #set up folders and ROIS
-exp_dir= f'ginn/fmri/pixar'
+exp = params.exp
+exp_dir = params.exp_dir
+file_suf = params.file_suf
+fix_tr = params.fix_tr
 
-study_dir = f'/lab_data/behrmannlab/scratch/vlad/{exp_dir}'
+data_dir = params.data_dir
+study_dir = params.study_dir
+
+sub_list = params.sub_list
+
+file_suf = params.file_suf
+
 roi_dir=f'{study_dir}/derivatives/rois'
-subj_dir=f'{study_dir}/derivatives/preprocessed_data'
+subj_dir=f'{study_dir}/derivatives'
+data_dir = f'{study_dir}/Aeronaut_firstview/preprocessed_standard/linear_alignment/'
 
 #whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 #whole_brain_mask = image.binarize_img(whole_brain_mask)
 
-ROIs=["LO", "FFA", "A1"]
-
-
+rois=["LO", "FFA", "A1"]
 
 
 #pull sub dirs
-subj_list = [os.path.basename(x) for x in glob(f'{subj_dir}/sub-*')] #get list of subs to loop over
+#subj_list = [os.path.basename(x) for x in glob(f'{data_dir}/*.nii.gz')] #get list of subs to loop over
 
 
 
@@ -42,21 +56,23 @@ def extract_mv_ts(bold_vol, mask_dir):
 
     return roi_data
 
+
 n = 1
 #loop through subs
-for ss in subj_list:
+for sub in sub_list['participant_id']:
+    
     
     #sub_file = f'{subj_dir}/{ss}/{ss}_task-movieDM_bold.nii.gz'
-    sub_file = f'{subj_dir}/{ss}/{ss}_task-pixar_run-001_swrf_bold.nii.gz'
+    sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
     
-    whole_brain_mask = image.binarize_img(image.load_img(f'{subj_dir}/{ss}/{ss}_analysis_mask.nii.gz'))
+    whole_brain_mask = image.binarize_img(image.load_img(f'{subj_dir}/rois/mni_mask.nii.gz'))
 
     if os.path.exists(sub_file):
-        print(f'Extracting for...{ss}', f'{n} of {len(subj_list)}')
+        print(f'Extracting for...{sub}', f'{n} of {len(sub_list)}')
         #grab  functional image in each sub dir
         
 
-        out_dir = f'{subj_dir}/{ss}/timeseries'
+        out_dir = f'{subj_dir}/sub-{sub}/timeseries'
         os.makedirs(out_dir, exist_ok=True)
         
         bold_vol = image.load_img(sub_file) #load data
@@ -68,7 +84,7 @@ for ss in subj_list:
         
         bold_vol = image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask, detrend=True) #extract within brain mask
 
-        for rr in ROIs:
+        for rr in rois:
             '''
             Extract mean TS
             '''
@@ -95,7 +111,7 @@ for ss in subj_list:
         
             
     else:
-        print(f'No file for {ss}')
+        print(f'No file for {sub}')
 
     n = n +1
 

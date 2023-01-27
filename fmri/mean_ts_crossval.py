@@ -139,7 +139,7 @@ def calc_mvpd(train_seed, test_seed, train_data, test_data):
         clf.fit(train_seed, train_data[:,kk])
         pred_ts = clf.predict(test_seed)
 
-        all_scores.append(np.corrcoef(pred_ts,test_data[:,kk])[0])
+        all_scores.append(np.corrcoef(pred_ts,test_data[:,kk])[0,1])
 
 
        #all_scores.append(r_squared)

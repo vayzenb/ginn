@@ -1,7 +1,10 @@
 """
 Do RSA, but comparing the similarity between each timepoint
 """
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
+import sys
+sys.path.insert(1, f'{curr_dir}')
 import warnings
 import os, argparse
 from matplotlib.pyplot import subplot
@@ -11,6 +14,7 @@ warnings.filterwarnings("ignore")
 import pandas as pd
 import numpy as np
 import pdb
+import ginn_params as params
 
 from sklearn.decomposition import PCA
 from sklearn.model_selection import ShuffleSplit
@@ -32,10 +36,11 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 data_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_ts"
 out_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/rdms"
 results_dir =f'{curr_dir}/results/rsa'
-vid = 'DM-clip'
+vid = 'Aeronaut'
+vols = params.vols
 
 #training info
-model_archs = ['cornet_z_sl','cornet_z_cl']
+model_archs = ['cornet_z_sl']
 '''
 set model params
 '''
@@ -45,7 +50,7 @@ train_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggfa
 train_dir = f'/lab_data/behrmannlab/image_sets/'
 #n_classes = len(glob(f'{args.data}/train/*'))
 #layer =['aIT','pIT'] #set in descending order
-layer_type = ['aIT','pIT']
+layer_type = ['aIT']
 
 
 
@@ -58,7 +63,7 @@ def create_rdm(ts):
     """
     
     rdm = np.corrcoef(ts) * -1
-    rdm_vec = rdm[np.triu_indices(n=750,k=1)] #remove lower triangle
+    rdm_vec = rdm[np.triu_indices(n=vols,k=1)] #remove lower triangle
     
     return rdm, rdm_vec
 

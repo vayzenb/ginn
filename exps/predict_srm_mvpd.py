@@ -2,17 +2,21 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys
 sys.path.insert(1, f'{curr_dir}/fmri')
+sys.path.insert(1, f'{curr_dir}')
 
 import mvpd_movie_crossval
+import analysis_funcs
 import pandas as pd
 import numpy as np
+import ginn_params as params
 import pdb
 
-exp = 'pixar'
-vid = 'partly_cloudy'
-human_predict = False
+exp = params.exp
+vid = params.vid
+fix_tr = params.fix_tr
+human_predict =False
 model_predict = True
-suf = '_'
+suf = '' 
 '''
 model predictors
 '''
@@ -27,17 +31,17 @@ layer = ['aIT']
 '''
 neural predictors
 '''
-ages = [18]
-rois = ['LO','FFA']
+ages = ['adult']
+rois = ['LO','FFA','A1']
 
 
 n_feats = [25,50,100,200]
-n_feats = [50]
+n_feats = [25]
 if human_predict == True:
 
     predictor_dir = f'/lab_data/behrmannlab/vlad/ginn/fmri/{exp}/derivatives/group_func'
     summary_type = 'human'
-    suf = '_srm_sub_cv'
+    
 
     for n_feat in n_feats:
         sub_summary = pd.DataFrame(columns=['age', 'roi','corr','seed_age', 'seed_roi'])
@@ -47,6 +51,8 @@ if human_predict == True:
                     roi = f'{lr}{rr}'
                     print(f'predicting using {age} and {roi}...', n_feat)
                     predictor_ts = np.load(f'{predictor_dir}/srm_{roi}_{age}_{n_feat}.npy')
+                    predictor_ts = predictor_ts[:,fix_tr:]
+                    
                     
                     predictor_ts = np.transpose(predictor_ts)
                     predictor_summary = mvpd_movie_crossval.predict_srm(predictor_ts,n_feat)
@@ -63,7 +69,7 @@ if model_predict == True:
     predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'
     summary_type = 'model'
 
-    suf = '_srm_sub_cv' 
+    
     for n_feat in n_feats:
         sub_summary = pd.DataFrame(columns=['age', 'roi','corr','architecture', 'train_type', 'layer'])
         for mt in model_arch:
@@ -71,6 +77,14 @@ if model_predict == True:
                 for ll in layer:
                     print(f'predicting using {mt} {tt} {ll}...')
                     predictor_ts = np.load(f'{predictor_dir}/{mt}_{tt}_{ll}_{vid}_ts.npy')
+                    predictor_ts = predictor_ts[0:,:]
+                    #pdb.set_trace()
+
+                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
+                    pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
+                    predictor_ts = pca.transform(predictor_ts)
+                    #pdb.set_trace()
+                    
                     
                     #predictor_ts = np.transpose(predictor_ts)
                     predictor_summary = mvpd_movie_crossval.predict_srm(predictor_ts,n_feat)

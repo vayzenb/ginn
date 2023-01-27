@@ -6,6 +6,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import os, argparse
 from matplotlib.pyplot import subplot
+from scipy import stats
 
 
 import pandas as pd
@@ -13,7 +14,7 @@ import numpy as np
 import pdb
 
 human_predict = True
-model_predict = False
+model_predict = True
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 """Model params"""
@@ -26,21 +27,35 @@ model_archs = ['cornet_z_cl','cornet_z_sl']
 train_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layer_types = ['aIT','pIT']
 
-"""HBN params
+"""
+fmri params
+"""
+exp = 'pixar'
 #set directories
 
 
+if exp == 'pixar':
+    exp_dir= f'fmri/pixar'
+    file_suf = 'pixar_run-001_swrf'
+    all_subs = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
+    fix_tr = 6
 
-data_dir = f'/lab_data/behrmannlab/vlad/{exp_dir}/'
-"""
-exp_dir= f'ginn/fmri/hbn'
-raw_data_dir = f'/lab_data/behrmannlab/scratch/vlad/{exp_dir}'
-subj_dir=f'{raw_data_dir}/derivatives/preprocessed_data'
+elif exp == 'hbn':
+    exp_dir = f'fmri/hbn'
+    file_suf = 'movieDM'
+    all_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
+    fix_tr = 0
+
+raw_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/{exp_dir}'
+study_dir = f'/lab_data/behrmannlab/vlad/ginn/'
+out_dir = f'{study_dir}/{exp_dir}/derivatives/'
+subj_dir=f'{raw_dir}/derivatives/preprocessed_data'
+roi_dir = f'{study_dir}/derivatives/rois'
+
 results_dir =f'{curr_dir}/results/rsa'
-curr_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
-rois = ['LO','FFA','OFA']
-ages = [18, 5,6,7]
 
+rois = ['LO','FFA','A1']
+ages = [3,4,5,18]
 
 
 
@@ -49,7 +64,7 @@ def get_existing_files(curr_subs):
     
     sub_file =pd.DataFrame(columns=['sub','age'])
     for sub in enumerate(curr_subs['participant_id']):
-        img = f'{subj_dir}/sub-{sub[1]}/sub-{sub[1]}_task-movieDM_bold.nii.gz'
+        img = f'{subj_dir}/{sub[1]}/{sub[1]}_task-{file_suf}_bold.nii.gz'
         
         if os.path.exists(img):
             
@@ -64,50 +79,62 @@ def create_mean_rdm():
     print('Creating mean rdms...')
     for age in ages:
         curr_subs = sub_list[sub_list['age'] == age]
+        
         for lr in ['l','r']:
             for roi in rois:
+                print(f'Creating mean rdm for {roi} {lr} {age}')
                 all_subs = []
                 for sub in curr_subs['sub']:
-                    all_subs.append(pd.read_csv(f'{data_dir}/sub-{sub}/derivatives/rdms/{lr}{roi}_rdm_vec.csv').to_numpy())
+                    
+                    curr_sub = pd.read_csv(f'{data_dir}/{sub}/derivatives/rdms/{lr}{roi}_rdm_vec.csv').to_numpy()
+                    curr_sub = stats.zscore(curr_sub)
+                    all_subs.append(curr_sub)
 
                 
                 all_subs = np.array(all_subs)
+                
+                
                 mean_rdm = np.mean(all_subs, axis=0)
-                np.savetxt(f'{results_dir}/{lr}{roi}_{age}_mean_rdm.csv', mean_rdm, delimiter=',')
+                
+                np.savetxt(f'{out_dir}/group_func/rdm_{lr}{roi}_{age}_mean.csv', mean_rdm, delimiter=',')
 
 '''
 Get list of subs
 '''
-sub_list = get_existing_files(curr_subs)
-sub_list = sub_list.drop_duplicates()
-sub_list = sub_list.reset_index()
-#round ages to nearest group
-sub_list['age'][sub_list['age'] >=18] = 18
 
-sub_list['age'] = sub_list['age'].astype(float).round(0)
+sub_list = get_existing_files(all_subs)
+sub_list['age'] = sub_list['age'].apply(np.floor)
+sub_list['age'][sub_list['age']>=18] = 18
+sub_list = sub_list.drop_duplicates(subset ="sub",)
+sub_list = sub_list.reset_index()
+
+
+
+
 
 if human_predict == True:
-    data_dir = f'/lab_data/behrmannlab/vlad/{exp_dir}/'
+    data_dir = f'/lab_data/behrmannlab/vlad/ginn/{exp_dir}/'
 
-    print('Running human RSA...')
+    
 
     create_mean_rdm()
 
-    sub_list = get_existing_files(curr_subs)
-    sub_list = sub_list.drop_duplicates()
-    sub_list = sub_list.reset_index()
+    print('Running human RSA...')
     summary_df = pd.DataFrame(columns=['seed_age','seed_roi','target_age','target_roi','corr'])
     seed_age = 18
     for target_lr in ['l','r']:
         for target_roi in rois:
             for seed_lr in ['l','r']:
                 for seed_roi in rois:
-                    predictor_rdm = np.loadtxt(f'{results_dir}/{seed_lr}{seed_roi}_{seed_age}_mean_rdm.csv', delimiter=',')
+                    predictor_rdm = np.loadtxt(f'{out_dir}/group_func/rdm_{seed_lr}{seed_roi}_{seed_age}_mean.csv')
+                        
+                    
                     for target_age in ages:
                         if target_age != seed_age:
-                            target_rdm = np.loadtxt(f'{results_dir}/{target_lr}{target_roi}_{target_age}_mean_rdm.csv', delimiter=',')
+                            target_rdm = np.loadtxt(f'{out_dir}/group_func/rdm_{target_lr}{target_roi}_{target_age}_mean.csv', delimiter=',')
                             
-                            corr = np.corrcoef(predictor_rdm, target_rdm)[0][1]
+                            
+                            corr = np.corrcoef(predictor_rdm, target_rdm)[0,1]
                             summary_df = summary_df.append(pd.Series([seed_age, seed_lr+seed_roi, target_age, target_lr + target_roi, corr], index = summary_df.columns), ignore_index = True)
                         else:
                             continue

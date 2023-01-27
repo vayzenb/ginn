@@ -69,30 +69,6 @@ def get_existing_files(curr_subs):
     return sub_file
 
 
-
-def extract_mv_ts(bold_vol, mask_dir):
-    """
-    extract multivariate time course from ROI
-    """
-
-    #load seed
-    roi = image.get_data(image.load_img(f'{mask_dir}'))
-    #Just ensure its all binary
-    roi[roi>0] = 1
-    roi[roi<=0] = 0
-    reshaped_roi = np.reshape(roi, whole_brain_mask.shape +(1,))
-    masked_img = reshaped_roi*bold_vol
-
-    #extract voxel resposnes from within mask
-    mv_ts = masked_img.reshape(-1, bold_vol.shape[3]) #reshape into rows (voxels) x columns (time)
-    mv_ts =mv_ts[~np.all(mv_ts == 0, axis=1)] #remove voxels that are 0 (masked out)
-    mv_ts = np.transpose(mv_ts)
-
-    print('Seed data extracted...')
-
-    return mv_ts
-
-
 # %%
 
 def extract_roi_data(curr_subs, roi):
@@ -153,7 +129,7 @@ def calc_mvpd(seed_ts, train_data, test_data):
         clf.fit(seed_ts, train_data[kk,:])
         pred_ts = clf.predict(seed_ts)
 
-        all_scores.append(np.corrcoef(pred_ts,test_data[kk,:])[0])
+        all_scores.append(np.corrcoef(pred_ts,test_data[kk,:])[0,1])
 
 
        #all_scores.append(r_squared)
