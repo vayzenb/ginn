@@ -5,7 +5,7 @@ sys.path.insert(1, f'{curr_dir}')
 import pandas as pd
 import numpy as np
 
-exp = 'infant'
+exp = 'aeronaut'
 vid = 'Aeronaut'
 
 if exp == 'pixar':
@@ -20,11 +20,11 @@ elif exp == 'hbn':
     sub_list = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
     fix_tr = 0
 
-elif exp == 'infant':
-    exp_dir = f'fmri/infant'
+elif exp == 'aeronaut':
+    exp_dir = f'fmri/aeronaut'
     file_suf = '_Z'
-    sub_list = pd.read_csv(f'{curr_dir}/fmri/soar-sub-info.csv')
-    fix_tr = 0
+    sub_list = pd.read_csv(f'{curr_dir}/fmri/aeronaut-sub-info.csv')
+    fix_tr = 3
 
 
 

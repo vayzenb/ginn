@@ -1,3 +1,8 @@
+'''
+MVPD analyses where movie timecourse is split into training and testing sets
+run from predict_srm_mvpd.py
+'''
+
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys
@@ -70,7 +75,8 @@ n_iter = 30  # How many iterations of fitting will you perform
 
 folds = 2
 
-
+summary_cols = ['age', 'roi','corr']
+suf = 'movie_crossval'
 
 def extract_pc(data, n_components=None):
 
@@ -251,7 +257,7 @@ def cross_val_srm(target_data,seed_data, n_feats):
 
     return np.mean(score)
 
-def predict_srm(seed_ts,n_feats=50):
+def predict_srm(seed_ts,n_feats=25):
 
     
     sub_summary = pd.DataFrame(columns = ['age','roi', 'corr'])

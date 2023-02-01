@@ -1,5 +1,8 @@
 """Merges data by age group """
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
+import sys
+sys.path.insert(1, f'{curr_dir}')
 import os, argparse
 from glob import glob
 import pdb
@@ -7,6 +10,7 @@ import pandas as pd
 import numpy as np
 from nilearn import image
 import nibabel as nib
+import ginn_params as params
 
 parser = argparse.ArgumentParser(description='HBN preprocessing')
 parser.add_argument('--age', required=True,
@@ -18,29 +22,43 @@ suf = ''
 args = parser.parse_args()
 
 age_groups = [int(args.age)]
+age = 'adult'
 
-exp = 'pixar'
-#set directories
-curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+print('libraries loaded')
+#set up folders and ROIS
+exp = params.exp
+exp_dir = params.exp_dir
+file_suf = params.file_suf
+fix_tr = params.fix_tr
 
-if exp == 'pixar':
-    exp_dir= f'fmri/pixar'
-    file_suf = 'pixar_run-001_swrf'
-    sub_list = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
+data_dir = params.data_dir
+study_dir = params.study_dir
 
-elif exp == 'hbn':
-    exp_dir = f'fmri/hbn'
-    file_suf = 'movieDM'
-    sub_list = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
+sub_list = params.sub_list
 
-exp_dir= f'ginn/fmri/pixar'
-study_dir = f'/lab_data/behrmannlab/scratch/vlad/{exp_dir}'
-subj_dir=f'{study_dir}/derivatives/preprocessed_data'
-out_dir = f'/lab_data/behrmannlab/vlad/ginn/derivatives/mean_func'
+#if adult extract subs over 18 #else extract subs under 18
+if age == 'adult':
+    sub_list = sub_list[sub_list['Age'] >= 18]
+    sub_list = sub_list.reset_index(drop=True)
+else:
+    sub_list = sub_list[sub_list['Age'] < 18]
+    sub_list = sub_list.reset_index(drop=True)
+
+file_suf = params.file_suf
+
+roi_dir=f'{study_dir}/derivatives/rois'
+subj_dir=f'{study_dir}/derivatives'
+data_dir = f'{study_dir}/Aeronaut_firstview/preprocessed_standard/linear_alignment/'
+
+#whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
+#whole_brain_mask = image.binarize_img(whole_brain_mask)
+
+rois=["LO", "FFA", "A1"]
+out_dir = f'{subj_dir}/mean_func'
 
 
 
-whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
+whole_brain_mask = image.load_img(f'{subj_dir}/rois/mni_mask.nii.gz')
 affine = whole_brain_mask.affine
 whole_brain_mask = image.binarize_img(whole_brain_mask)
 
@@ -60,7 +78,7 @@ def get_existing_files(curr_subs):
 
 n =0
 for age in age_groups:
-    if age == 18:
+    if age == '18':
         curr_subs = sub_list[sub_list['Age']>=age]
     else:
         curr_subs = sub_list[(sub_list['Age']>=age) & (sub_list['Age']<age+1)]
@@ -73,7 +91,7 @@ for age in age_groups:
     
     
     
-    for sub in enumerate(file_list):
+    for sub in sub_list['participant_id']:
         print(f'Ages {age}:  {n+1} of {len(file_list)}')
         #pdb.set_trace()
         whole_brain_mask = image.binarize_img(image.load_img(f'{subj_dir}/{sub[1]}/{sub[1]}_analysis_mask.nii.gz'))

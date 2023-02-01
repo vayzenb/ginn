@@ -1,14 +1,18 @@
 """
 Run RSA analysese
 """
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
+import sys
+
+sys.path.insert(1, f'{curr_dir}')
 import warnings
 warnings.filterwarnings("ignore")
 import os, argparse
 from matplotlib.pyplot import subplot
 from scipy import stats
 
-
+import ginn_params as params
 import pandas as pd
 import numpy as np
 import pdb
@@ -18,128 +22,88 @@ model_predict = True
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 """Model params"""
-vid = 'DM-clip'
+
 stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 
 
 
-model_archs = ['cornet_z_cl','cornet_z_sl']
+model_archs = ['cornet_z_sl']
 train_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-layer_types = ['aIT','pIT']
+layer_types = ['aIT']
 
 """
 fmri params
 """
-exp = 'pixar'
+
 #set directories
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
+exp = params.exp
+exp_dir = params.exp_dir
+file_suf = params.file_suf
+fix_tr = params.fix_tr
 
+data_dir = params.data_dir
+study_dir = params.study_dir
 
-if exp == 'pixar':
-    exp_dir= f'fmri/pixar'
-    file_suf = 'pixar_run-001_swrf'
-    all_subs = pd.read_csv(f'{curr_dir}/fmri/pixar-sub-info.csv')
-    fix_tr = 6
+sub_list = params.sub_list
 
-elif exp == 'hbn':
-    exp_dir = f'fmri/hbn'
-    file_suf = 'movieDM'
-    all_subs = pd.read_csv(f'{curr_dir}/fmri/HBN-Site-CBIC.csv')
-    fix_tr = 0
+file_suf = params.file_suf
+vid = params.vid
 
-raw_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/{exp_dir}'
-study_dir = f'/lab_data/behrmannlab/vlad/ginn/'
-out_dir = f'{study_dir}/{exp_dir}/derivatives/'
-subj_dir=f'{raw_dir}/derivatives/preprocessed_data'
+subj_dir= data_dir
+
+out_dir = f'{data_dir}/group_func'
+
 roi_dir = f'{study_dir}/derivatives/rois'
+results_dir = f'{curr_dir}/results/rsa'
 
-results_dir =f'{curr_dir}/results/rsa'
+rois = ['LO','FFA', 'A1']
+ages = ['infant', 'adult']
+seed_age = 'adult'
 
-rois = ['LO','FFA','A1']
-ages = [3,4,5,18]
+iter = 100
 
-
-
-
-def get_existing_files(curr_subs):
-    
-    sub_file =pd.DataFrame(columns=['sub','age'])
-    for sub in enumerate(curr_subs['participant_id']):
-        img = f'{subj_dir}/{sub[1]}/{sub[1]}_task-{file_suf}_bold.nii.gz'
-        
-        if os.path.exists(img):
-            
-            sub_file = sub_file.append(pd.Series([sub[1], curr_subs['Age'][sub[0]]], index = sub_file.columns), ignore_index = True)
-
-    return sub_file
-
-def create_mean_rdm():
+def bootstrap_se(predictor, target, iter):
     """
-    Create mean rdm for each age and ROI
+    Calculate standard error across bootstraps
     """
-    print('Creating mean rdms...')
-    for age in ages:
-        curr_subs = sub_list[sub_list['age'] == age]
-        
-        for lr in ['l','r']:
-            for roi in rois:
-                print(f'Creating mean rdm for {roi} {lr} {age}')
-                all_subs = []
-                for sub in curr_subs['sub']:
-                    
-                    curr_sub = pd.read_csv(f'{data_dir}/{sub}/derivatives/rdms/{lr}{roi}_rdm_vec.csv').to_numpy()
-                    curr_sub = stats.zscore(curr_sub)
-                    all_subs.append(curr_sub)
+    corr_list = []
+    for ii in range(0,iter):
 
-                
-                all_subs = np.array(all_subs)
-                
-                
-                mean_rdm = np.mean(all_subs, axis=0)
-                
-                np.savetxt(f'{out_dir}/group_func/rdm_{lr}{roi}_{age}_mean.csv', mean_rdm, delimiter=',')
+        idx = np.random.choice(range(0,len(predictor)), len(predictor))
+        corr = np.corrcoef(predictor[idx], target[idx])[0,1]
+        corr_list.append(corr)
 
-'''
-Get list of subs
-'''
-
-sub_list = get_existing_files(all_subs)
-sub_list['age'] = sub_list['age'].apply(np.floor)
-sub_list['age'][sub_list['age']>=18] = 18
-sub_list = sub_list.drop_duplicates(subset ="sub",)
-sub_list = sub_list.reset_index()
-
-
-
+    return np.std(corr_list)
 
 
 if human_predict == True:
     data_dir = f'/lab_data/behrmannlab/vlad/ginn/{exp_dir}/'
 
-    
 
-    create_mean_rdm()
 
     print('Running human RSA...')
-    summary_df = pd.DataFrame(columns=['seed_age','seed_roi','target_age','target_roi','corr'])
-    seed_age = 18
+    summary_df = pd.DataFrame(columns=['age','roi','corr','seed_age','seed_roi', 'se'])
+    
     for target_lr in ['l','r']:
         for target_roi in rois:
             for seed_lr in ['l','r']:
                 for seed_roi in rois:
-                    predictor_rdm = np.loadtxt(f'{out_dir}/group_func/rdm_{seed_lr}{seed_roi}_{seed_age}_mean.csv')
+                    predictor_rdm = np.load(f'{out_dir}/{seed_lr}{seed_roi}_{seed_age}_rdm.npy')
                         
                     
                     for target_age in ages:
                         if target_age != seed_age:
-                            target_rdm = np.loadtxt(f'{out_dir}/group_func/rdm_{target_lr}{target_roi}_{target_age}_mean.csv', delimiter=',')
+                            target_rdm = np.load(f'{out_dir}/{target_lr}{target_roi}_{target_age}_rdm.npy')
                             
                             
                             corr = np.corrcoef(predictor_rdm, target_rdm)[0,1]
-                            summary_df = summary_df.append(pd.Series([seed_age, seed_lr+seed_roi, target_age, target_lr + target_roi, corr], index = summary_df.columns), ignore_index = True)
+                            se = bootstrap_se(predictor_rdm, target_rdm, iter)
+                            summary_df = summary_df.append(pd.Series([target_age, target_lr+target_roi,corr, seed_age, seed_lr+seed_roi, se], index = summary_df.columns), ignore_index = True)
                         else:
                             continue
 
-    summary_df.to_csv(f'{results_dir}/human_rsa_summary.csv', index=False)
+    summary_df.to_csv(f'{results_dir}/{exp}_human_rsa.csv', index=False)
 
 
         
@@ -148,24 +112,25 @@ if model_predict == True:
     data_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/rdms"
 
     for model_arch in model_archs:
-        summary_df = pd.DataFrame(columns=['model_arc','train_type','layer','target_age','target_roi','corr'])
+        summary_df = pd.DataFrame(columns=['age','roi','corr','architecture', 'train_type', 'layer','se'])
         for train_type in train_types:
             for layer in layer_types:
                 print(f'Predicting using {model_arch} {train_type} {layer}')
                 #load model rdm
-                predictor_rdm = pd.read_csv(f'{data_dir}/{model_arch}_{train_type}_{layer}_{vid}_rdm_vec.csv', delimiter=',')
-                predictor_rdm = np.ravel(predictor_rdm)
+                predictor_rdm = np.load(f'{data_dir}/{model_arch}_{train_type}_{layer}_{vid}_rdm.npy')
+                
                 
                 for target_lr in ['l','r']:
                     for target_roi in rois:
                         for target_age in ages:
-                            target_rdm = np.loadtxt(f'{results_dir}/{target_lr}{target_roi}_{target_age}_mean_rdm.csv', delimiter=',')
+                            target_rdm = np.load(f'{out_dir}/{target_lr}{target_roi}_{target_age}_rdm.npy')
                             
                             corr = np.corrcoef(predictor_rdm, target_rdm)[0][1]
-                            summary_df = summary_df.append(pd.Series([model_arch, train_type, layer, target_age, target_lr + target_roi, corr], index = summary_df.columns), ignore_index = True)
+                            se = bootstrap_se(predictor_rdm, target_rdm, iter)
+                            summary_df = summary_df.append(pd.Series([target_age, target_lr+target_roi,corr,model_arch, train_type, layer, se], index = summary_df.columns), ignore_index = True)
 
 
-        summary_df.to_csv(f'{results_dir}/{model_arch}_rsa_summary.csv', index=False)
+        summary_df.to_csv(f'{results_dir}/{exp}_model_rsa.csv', index=False)
     #
 
 

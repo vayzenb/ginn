@@ -1,3 +1,8 @@
+"""
+Runs MVPD on each individual using human adults or models as predictors
+Returns a summary file of weighted correlations
+"""
+
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys

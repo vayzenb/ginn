@@ -1,6 +1,10 @@
 """
 Run MVPD on each individaul
+
+Called from the predict_indiv_mvpd.py script
 """
+
+
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys
@@ -67,7 +71,8 @@ whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_br
 affine = whole_brain_mask.affine
 whole_brain_mask = image.binarize_img(whole_brain_mask)
 
-
+summary_cols = ['sub','age', 'roi','corr']
+suf = 'indiv'
 
 def extract_pc(data, n_components=None):
 

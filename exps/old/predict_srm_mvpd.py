@@ -1,3 +1,8 @@
+"""
+Runs MVPD analyses with human or model predictors
+Movie is split to run cross-validation
+"""
+
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys

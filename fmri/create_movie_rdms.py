@@ -29,7 +29,7 @@ print('Libraries loaded...')
 
 use_pc_thresh = True
 n_comp = 10
-global_signal = 'pca'
+global_signal = 'mean'
 
 pc_thresh = .9
 
@@ -58,17 +58,12 @@ roi_dir = f'{study_dir}/derivatives/rois'
 rois = ['LO','FFA','A1']
 
 
-
-
 #curr_subs= curr_subs[curr_subs['Age']<8]
 
 #load whole brain mask
 whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 affine = whole_brain_mask.affine
 whole_brain_mask = image.binarize_img(whole_brain_mask)
-
-
-
 
 
 
@@ -109,33 +104,57 @@ def create_rdm(ts):
     Create RDM
     """
     
-    rdm = 1-metrics.pairwise.cosine_similarity(ts)
+    #rdm = 1-metrics.pairwise.cosine_similarity(ts)
     #rdm = euclidean_distances(ts,squared = True)
-    #rdm = np.corrcoef(ts)*-1
+    rdm = np.corrcoef(ts)
     rdm_vec = rdm[np.triu_indices(n=ts.shape[0],k=1)] #remove lower triangle
+    
+    #fisher-z the rdm vec
+    rdm_vec = np.arctanh(rdm_vec)
     
     return rdm, rdm_vec
 
+def create_mean_rdm(age):
 
 
+    """create mean RDM for particular age"""
+    print(f'Creating mean RDM for {age}...')
+    if age == 'infant':
+        curr_subs = sub_list[sub_list['Age']<18]
+    elif age == 'adult':
+        curr_subs = sub_list[sub_list['Age']>=18]
+    
+    for roi in rois:
+        for lr in ['l','r']:
+            all_rdms = []
+            for sub in enumerate(curr_subs['participant_id']):
+                #load rdm for each subject
+                rdm = pd.read_csv(f'{out_dir}/sub-{sub[1]}/rdms/{lr}{roi}_rdm_vec.csv')
+                all_rdms.append(rdm['rdm'])
+            
+            #average rdms
+            mean_rdm = np.mean(np.stack(all_rdms),axis = 0)
+            
+            np.save(f'{out_dir}/group_func/{lr}{roi}_{age}_rdm.npy',mean_rdm)
+
+        
 
 def extract_rdm():
     """
     Calculate RDM for each ROI
     """
+    for roi in rois:
+        for lr in ['l','r']:
 
+            
+            #print(f'predicting for: {slr}{sr}', seed_comps.shape[1])
+            for sub in enumerate(sub_list['participant_id']):
+                print(f'Extracting RDMs for sub: {sub[1]}', f'{sub[0]} out of {len(sub_list)}')
+                whole_ts = np.load(f'{data_dir}/sub-{sub[1]}/timeseries/whole_brain_ts.npy')
+                whole_ts = whole_ts[fix_tr:,:]
+                #print(f'predicting {sub} from {args.roi}', seed_comps.shape[1], f'{sub[0]+1} of {len(sub_list)}')
+                os.makedirs(f'{out_dir}/sub-{sub[1]}/rdms', exist_ok=True)
 
-
-
-    #print(f'predicting for: {slr}{sr}', seed_comps.shape[1])
-    for sub in enumerate(sub_list['participant_id']):
-        print(f'Extracting RDMs for sub: {sub[1]}', f'{sub[0]} out of {len(sub_list)}')
-        whole_ts = np.load(f'{data_dir}/sub-{sub[1]}/timeseries/whole_brain_ts.npy')
-        whole_ts = whole_ts[fix_tr:,:]
-        #print(f'predicting {sub} from {args.roi}', seed_comps.shape[1], f'{sub[0]+1} of {len(sub_list)}')
-        os.makedirs(f'{out_dir}/sub-{sub[1]}/rdms', exist_ok=True)
-        for roi in rois:
-            for lr in ['l','r']:
                 #load data
                 sub_ts = np.load(f'{data_dir}/sub-{sub[1]}/timeseries/{lr}{roi}_ts_all.npy')
                 sub_ts = sub_ts[fix_tr:,:] #remove fix TRs
@@ -157,11 +176,15 @@ def extract_rdm():
                 
                 rdm, rdm_vec = create_rdm(sub_ts)
                 rdm_df = pd.DataFrame(rdm_vec, columns = ['rdm'])
+                
 
                 np.save(f'{out_dir}/sub-{sub[1]}/rdms/{lr}{roi}_rdm.npy',rdm)
                 rdm_df.to_csv(f'{out_dir}/sub-{sub[1]}/rdms/{lr}{roi}_rdm_vec.csv',index = False)
 
-                
+
+
     # %%
 
-extract_rdm()
+#extract_rdm()
+create_mean_rdm('infant')
+create_mean_rdm('adult')

@@ -15,6 +15,7 @@ import pandas as pd
 import numpy as np
 import pdb
 import ginn_params as params
+import analysis_funcs
 
 from sklearn.decomposition import PCA
 from sklearn.model_selection import ShuffleSplit
@@ -62,9 +63,10 @@ def create_rdm(ts):
     Create RDM
     """
     
-    rdm = np.corrcoef(ts) * -1
-    rdm_vec = rdm[np.triu_indices(n=vols,k=1)] #remove lower triangle
-    
+    rdm = np.corrcoef(ts)
+    rdm_vec = rdm[np.triu_indices(n=ts.shape[0],k=1)] #remove lower triangle
+    #fisher-z the rdm vec
+    rdm_vec = np.arctanh(rdm_vec)
     return rdm, rdm_vec
 
 """
@@ -76,13 +78,18 @@ for model_arch in model_archs:
         for layer in layer_type:
             print(f'extracting rdms for {model_arch}_{train_type}_{layer}')
             model_ts = np.load(f'{data_dir}/{model_arch}_{train_type}_{layer}_{vid}_ts.npy')
+            if use_pc_thresh == True:
+                n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(model_ts), 0.9)
+                
+            pca = analysis_funcs.extract_pc(model_ts, n_comps)
+            model_ts = pca.transform(model_ts)
+            
+            
             rdm, rdm_vec = create_rdm(model_ts)
-
-            np.save(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_rdm.npy',rdm)
-            rdm_df = pd.DataFrame(rdm_vec, columns = ['rdm'])
-            rdm_df.to_csv(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_rdm_vec.csv',index = False)
-
-
+            
+            np.save(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_rdm_full.npy',rdm)
+            np.save(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_rdm.npy',rdm_vec)
+            
 
 '''
 #print(f'predicting for: {slr}{sr}', seed_comps.shape[1])
