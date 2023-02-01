@@ -1,3 +1,0 @@
-model_arch,train_type,test_stim,pref,ci_low,ci_high
-cornet_z_cl,vggface_oneobject,cropped_face,0.5107892751693726,0.5076636165380478,0.5144728988409042
-cornet_z_cl,vggface_oneobject,au,0.5039425492286682,0.5027551829814911,0.5050798952579498

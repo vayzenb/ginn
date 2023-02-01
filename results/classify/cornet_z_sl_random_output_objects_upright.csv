@@ -1,6 +1,0 @@
-model_arch,train_type,test_stim,test_cond,fold_n,acc
-cornet_z_sl,random,objects,upright,1,0.30119176598049835
-cornet_z_sl,random,objects,upright,2,0.2941495124593716
-cornet_z_sl,random,objects,upright,3,0.2914409534127844
-cornet_z_sl,random,objects,upright,4,0.2979414951245937
-cornet_z_sl,random,objects,upright,5,0.30444203683640303
