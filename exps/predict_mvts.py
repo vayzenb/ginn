@@ -35,13 +35,15 @@ n_comps = 10
 
 exp = params.exp
 vid = params.vid
-fix_tr = params.fix_tr
+fmri_tr = params.fmri_tr
 
 '''
 neural predictors
 '''
 ages = ['adult']
-rois = ['LO','FFA']
+rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
+file_suf = '_nonface'
+
 group_type = 'mean'
 
 #numober of SRM feats to use as predictors
@@ -51,9 +53,8 @@ n_feats = [25]
 if len(sys.argv) > 1:
     analysis_type = sys.argv[1]
 else:
-    analysis_type = 'indiv'
+    analysis_type = 'mean_sub_crossval'
 
-print(analysis_type)
 
 if analysis_type == 'indiv':
     #predicts individual MVTS; PCA decomposition; reutrns mean correlation for each sub
@@ -74,7 +75,7 @@ elif analysis_type == 'mean_sub_crossval':
     
 suf = predict_script.suf
 
-print(n_comps)
+print(analysis_type)
 if human_predict == True:
 
     predictor_dir = f'/lab_data/behrmannlab/vlad/ginn/fmri/{exp}/derivatives/group_func'
@@ -84,21 +85,21 @@ if human_predict == True:
         sub_summary = pd.DataFrame(columns=predict_script.summary_cols + ['seed_age', 'seed_roi'])
         for age in ages:
             for rr in rois:
-                for lr in ['l','r']:
-                    roi = f'{lr}{rr}'
-                    print(f'predicting using {age} and {roi}...')
-                    predictor_ts = np.load(f'{predictor_dir}/{group_type}_{roi}_{age}_ts.npy')
+                
+                roi = f'{rr}'
+                print(f'predicting using {age} and {roi}...')
+                predictor_ts = np.load(f'{predictor_dir}/{group_type}_{roi}_{age}_ts.npy')
+                
+
+                if group_type == 'mean':
+                    if use_pc_thresh == True:
+                        n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
                     
-
-                    if group_type == 'mean':
-                        if use_pc_thresh == True:
-                            n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
-                        
-                        pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
-                        predictor_ts = pca.transform(predictor_ts)
+                    pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
+                    predictor_ts = pca.transform(predictor_ts)
 
 
-                    predictor_ts = predictor_ts[fix_tr:,:]
+                    predictor_ts = predictor_ts[fmri_tr:,:]
                     #predictor_ts = np.transpose(predictor_ts)
                     predictor_summary = predict_ts(predictor_ts)
                     
@@ -109,7 +110,7 @@ if human_predict == True:
                     
                     
         
-        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{exp}_{summary_type}_{analysis_type}.csv', index=False)
+        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{summary_type}_{analysis_type}{file_suf}.csv', index=False)
 
 if model_predict == True:
     predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'
@@ -141,4 +142,4 @@ if model_predict == True:
                 sub_summary = sub_summary.append(predictor_summary)
                 
 
-        sub_summary.to_csv(f'{curr_dir}/results/mvpd/{exp}_{summary_type}_{analysis_type}.csv', index=False)
+        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{summary_type}_{analysis_type}{file_suf}.csv', index=False)

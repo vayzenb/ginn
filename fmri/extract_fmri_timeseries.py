@@ -28,12 +28,12 @@ file_suf = params.file_suf
 
 roi_dir=f'{study_dir}/derivatives/rois'
 subj_dir=f'{study_dir}/derivatives'
-data_dir = f'{study_dir}/Aeronaut_firstview/preprocessed_standard/linear_alignment/'
+data_dir = f'{study_dir}/preprocessed_standard/linear_alignment/'
 
 #whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 #whole_brain_mask = image.binarize_img(whole_brain_mask)
 
-rois=["LO", "FFA", "A1"]
+rois=["LOC", "FFA", "EVC", "A1"]
 
 
 #pull sub dirs
@@ -88,6 +88,11 @@ for sub in sub_list['participant_id']:
             '''
             Extract mean TS
             '''
+            # create fsl command for bilateral ROI
+            bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/{rr}_ts_mean.txt -m {roi_dir}/{rr}.nii.gz'
+            #execute fsl command
+            bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
+
             # create fsl command for left hemi ROI
             bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/l{rr}_ts_mean.txt -m {roi_dir}/l{rr}.nii.gz'
             #execute fsl command
@@ -103,6 +108,9 @@ for sub in sub_list['participant_id']:
             '''
 
             #pdb.set_trace()
+            #extract bilateral, left and right hemis
+            mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/{rr}.nii.gz')
+            np.save(f'{out_dir}/{rr}_ts_all',mv_ts)
 
             mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/l{rr}.nii.gz')
             np.save(f'{out_dir}/l{rr}_ts_all',mv_ts)

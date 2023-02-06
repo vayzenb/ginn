@@ -21,7 +21,7 @@ import pdb
 from sklearn.decomposition import PCA
 from sklearn.model_selection import ShuffleSplit
 from sklearn.linear_model import LinearRegression, Ridge
-import brainiak.funcalign.srm
+
 from scipy import stats
 from nilearn import signal
 import nibabel as nib
@@ -42,7 +42,7 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 exp = params.exp
 exp_dir = params.exp_dir
 file_suf = params.file_suf
-fix_tr = params.fix_tr
+fmri_tr = params.fmri_tr
 
 data_dir = params.data_dir
 study_dir = params.study_dir
@@ -50,6 +50,7 @@ study_dir = params.study_dir
 sub_list = params.sub_list
 
 file_suf = params.file_suf
+vols = params.vols
 
 subj_dir= data_dir
 
@@ -57,7 +58,11 @@ out_dir = f'{data_dir}/group_func'
 
 roi_dir = f'{study_dir}/derivatives/rois'
 
-rois = ['LO','FFA', 'A1']
+rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
+
+#suffix of roi to load
+#options are _ts_all, _face, _nonface
+roi_suf = '_nonface'
 ages = ['infant', 'adult']
 
 
@@ -88,21 +93,25 @@ def extract_roi_data(curr_subs, roi):
     all_data = []
     for sub in curr_subs['participant_id']:
         whole_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/whole_brain_ts.npy')
-        whole_ts = whole_ts[fix_tr:,:]
+        whole_ts = whole_ts[fmri_tr:,:]
 
-        #remove global signal
-        if global_signal == 'pca':
-            pca = extract_pc(whole_ts, n_components = 10)
-            whole_confound = pca.transform(whole_ts)
-        elif global_signal == 'mean':
-            whole_confound = np.mean(whole_ts,axis =1)
-        
-        
-        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}_ts_all.npy')
-        sub_ts = sub_ts[fix_tr:,:]
-        sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
+        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}{roi_suf}.npy')
         
 
+        if global_signal != '':
+            #remove global signal
+            if global_signal == 'pca':
+                pca = extract_pc(whole_ts, n_components = 10)
+                whole_confound = pca.transform(whole_ts)
+            elif global_signal == 'mean':
+                whole_confound = np.mean(whole_ts,axis =1)
+            
+            
+
+            sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
+
+        if sub_ts.shape[0] > vols:             
+            sub_ts = sub_ts[fmri_tr:,:]
 
         sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
@@ -196,19 +205,19 @@ def predict_ts(seed_ts):
 
         
         for roi in rois:
-            for lr in ['l','r']:
-                print(f'predicting {age} {lr}{roi} ...')
-                
-                #load all subject data from ROI
-                roi_data = extract_roi_data(curr_subs, f'{lr}{roi}')
-                #roi_data = standardize_data(roi_data)
-                
-                score, score_se = cross_val(roi_data,seed_ts)
-                
-                
-                curr_data = pd.Series([age, f'{lr}{roi}', score, score_se],index= sub_summary.columns)
-                sub_summary = sub_summary.append(curr_data,ignore_index = True)
-    
+        
+            print(f'predicting {age} {roi} ...')
+            
+            #load all subject data from ROI
+            roi_data = extract_roi_data(curr_subs, f'{roi}')
+            #roi_data = standardize_data(roi_data)
+            
+            score, score_se = cross_val(roi_data,seed_ts)
+            
+            
+            curr_data = pd.Series([age, f'{roi}', score, score_se],index= sub_summary.columns)
+            sub_summary = sub_summary.append(curr_data,ignore_index = True)
+
                 
 
     return sub_summary

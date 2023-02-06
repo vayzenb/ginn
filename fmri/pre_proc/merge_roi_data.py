@@ -34,12 +34,12 @@ file_suf = params.file_suf
 
 roi_dir=f'{study_dir}/derivatives/rois'
 subj_dir=f'{study_dir}/derivatives'
-data_dir = f'{study_dir}/Aeronaut_firstview/preprocessed_standard/linear_alignment/'
+
 
 #whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 #whole_brain_mask = image.binarize_img(whole_brain_mask)
 
-rois=["LO", "FFA", "A1"]
+rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 out_dir = f'{subj_dir}/group_func'
 
 #create output directory
@@ -104,17 +104,17 @@ for age in ages:
 
         
         for roi in rois:
-            for lr in ['l','r']:
-                
-                
-                #load all subject data from ROI
-                roi_data = extract_roi_data(curr_subs, f'{lr}{roi}')
+        
+            
+            
+            #load all subject data from ROI
+            roi_data = extract_roi_data(curr_subs, f'{roi}')
 
-                
-                #average roi_data
-                roi_data = np.mean(roi_data, axis = 0)
+            
+            #average roi_data
+            roi_data = np.mean(roi_data, axis = 0)
 
-                #save data
-                np.save(f'{out_dir}/mean_{lr}{roi}_{age}_ts.npy', roi_data)
+            #save data
+            np.save(f'{out_dir}/mean_{roi}_{age}_ts.npy', roi_data)
 
 

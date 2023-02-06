@@ -1,8 +1,11 @@
 import os
 import numpy as np
 import pandas as pd
+from nilearn import signal
 
 from sklearn.decomposition import PCA
+import pdb
+print('libraries loaded')
 
 
 def get_existing_files(curr_subs, subj_dir, file_suf):
@@ -48,3 +51,48 @@ def calc_pc_n(pca, thresh):
         if var >=thresh: #once variance > than thresh, stop
             break
     return n_comp+1
+
+def extract_roi_data(subj_dir, curr_subs, roi,roi_suf, fix_tr,global_signal):
+    '''
+    load subs into numpy array
+    '''
+    print(f'extracting {roi} data...')
+    
+   
+    all_data = []
+    for sub in curr_subs['participant_id']:
+        whole_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/whole_brain_ts.npy')
+        whole_ts = whole_ts[fix_tr:,:]
+
+        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}{roi_suf}.npy')
+        #sub_ts = sub_ts[fix_tr:,:]
+
+        #pdb.set_trace()
+
+        if global_signal != '':
+            #remove global signal
+            if global_signal == 'pca':
+                pca = extract_pc(whole_ts, n_components = 10)
+                whole_confound = pca.transform(whole_ts)
+            elif global_signal == 'mean':
+                whole_confound = np.mean(whole_ts,axis =1)
+            
+            
+
+            sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
+        
+        
+
+
+        
+
+        sub_ts = np.transpose(sub_ts)
+        #sub_ts = np.expand_dims(sub_ts,axis =2)
+        
+        #sub_ts=np.mean(sub_ts, axis = 0)
+        
+        all_data.append(sub_ts)
+        #sub_ts = np.reshape(sub_ts, [sub_ts.shape[1], sub_ts.shape[0], sub_ts.shape[2]])
+        #pdb.set_trace()
+
+    return all_data
