@@ -6,19 +6,19 @@ from glob import glob as glob
 import os
 
 '''
-Rename timeseries files
+Rename folders or files
 '''
-og_vid = 'Aeronaut'
-new_vid = 'aeronaut'
+og_name = 'sub-sub-'
+new_name = 'sub-'
 
-data_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/rdms'
+target_dir = '/lab_data/behrmannlab/vlad/ginn/fmri/hbn/derivatives'
 
 # get all files with the old video name
-files = glob(f'{data_dir}/*{og_vid}*')
+files = glob(f'{target_dir}/*{og_name}*')
 
 # rename the files
 for file in files:
-    new_file = file.replace(og_vid, new_vid)
+    new_file = file.replace(og_name, new_name)
     os.rename(file, new_file)
     print(f'{file} renamed to {new_file}')
 

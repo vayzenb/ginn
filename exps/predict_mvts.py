@@ -18,7 +18,7 @@ import ginn_params as params
 import analysis_funcs
 
 #analysis scripts
-
+exp = 'hbn'
 
 human_predict = False
 model_predict = True
@@ -28,14 +28,15 @@ model predictors
 '''
 model_arch = ['cornet_z_sl']
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
+layer = ['V1','V2','V4','pIT','aIT', 'decoder']
 layer = ['aIT']
 
 use_pc_thresh = True
 n_comps = 10
 
-exp = params.exp
-vid = params.vid
-fmri_tr = params.fmri_tr
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+
+
 
 '''
 neural predictors
@@ -46,14 +47,11 @@ file_suf = ''
 
 group_type = 'mean'
 
-#numober of SRM feats to use as predictors
-n_feats = [25,50,100,200]
-n_feats = [25]
 
 if len(sys.argv) > 1:
     analysis_type = sys.argv[1]
 else:
-    analysis_type = 'mean_movie_crossval'
+    analysis_type = 'mean_sub_crossval'
 
 
 if analysis_type == 'mean_movie_crossval':
@@ -73,36 +71,36 @@ if human_predict == True:
     predictor_dir = f'/lab_data/behrmannlab/vlad/ginn/fmri/{exp}/derivatives/group_func'
     summary_type = 'human'
 
-    for n_feat in n_feats:
-        sub_summary = pd.DataFrame(columns=predict_script.summary_cols + ['seed_age', 'seed_roi'])
-        for age in ages:
-            for rr in rois:
+
+    sub_summary = pd.DataFrame(columns=predict_script.summary_cols + ['seed_age', 'seed_roi'])
+    for age in ages:
+        for rr in rois:
+            
+            roi = f'{rr}'
+            print(f'predicting using {age} and {roi}...')
+            predictor_ts = np.load(f'{predictor_dir}/{group_type}_{roi}_{age}_ts.npy')
+            
+
+            if group_type == 'mean':
+                if use_pc_thresh == True:
+                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
                 
-                roi = f'{rr}'
-                print(f'predicting using {age} and {roi}...')
-                predictor_ts = np.load(f'{predictor_dir}/{group_type}_{roi}_{age}_ts.npy')
+                pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
+                predictor_ts = pca.transform(predictor_ts)
+
+
+                predictor_ts = predictor_ts[fix_tr:,:]
+                #predictor_ts = np.transpose(predictor_ts)
+                predictor_summary = predict_ts(predictor_ts)
                 
+                predictor_summary['seed_age'] = age
+                predictor_summary['seed_roi'] = roi
 
-                if group_type == 'mean':
-                    if use_pc_thresh == True:
-                        n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
-                    
-                    pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
-                    predictor_ts = pca.transform(predictor_ts)
-
-
-                    predictor_ts = predictor_ts[fmri_tr:,:]
-                    #predictor_ts = np.transpose(predictor_ts)
-                    predictor_summary = predict_ts(predictor_ts)
-                    
-                    predictor_summary['seed_age'] = age
-                    predictor_summary['seed_roi'] = roi
-
-                    sub_summary = sub_summary.append(predictor_summary)
-                    
-                    
+                sub_summary = sub_summary.append(predictor_summary)
+                
+                
         
-        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{summary_type}_{analysis_type}{file_suf}.csv', index=False)
+    sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{summary_type}_{analysis_type}{file_suf}.csv', index=False)
 
 if model_predict == True:
     predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'

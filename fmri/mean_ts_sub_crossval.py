@@ -37,24 +37,14 @@ pc_thresh = .9
 
 clf = Ridge()
 
+exp = 'hbn'
+
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
-exp = params.exp
-exp_dir = params.exp_dir
-file_suf = params.file_suf
-fmri_tr = params.fmri_tr
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
-data_dir = params.data_dir
-study_dir = params.study_dir
 
-sub_list = params.sub_list
 
-file_suf = params.file_suf
-vols = params.vols
-
-subj_dir= data_dir
-
-out_dir = f'{data_dir}/group_func'
 
 roi_dir = f'{study_dir}/derivatives/rois'
 
@@ -63,7 +53,7 @@ rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA',
 #suffix of roi to load
 #options are _ts_all, _face, _nonface
 roi_suf = '_ts_all'
-ages = ['infant', 'adult']
+
 
 
 folds = 20
@@ -92,46 +82,38 @@ def extract_roi_data(curr_subs, roi):
     n = 0
     all_data = []
     for sub in curr_subs['participant_id']:
-        whole_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/whole_brain_ts.npy')
-        whole_ts = whole_ts[fmri_tr:,:]
+        #check if file exists
+        if os.path.exists(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy'):
+            whole_ts = np.load(f'{subj_dir}/{sub}/timeseries/whole_brain_ts.npy')
+            whole_ts = whole_ts[fix_tr:,:]
 
-        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}{roi_suf}.npy')
-        
-        if sub_ts.shape[0] > vols:             
-            sub_ts = sub_ts[fmri_tr:,:]
-        
-
-        if global_signal != '':
-            #remove global signal
-            if global_signal == 'pca':
-                pca = extract_pc(whole_ts, n_components = 10)
-                whole_confound = pca.transform(whole_ts)
-            elif global_signal == 'mean':
-                whole_confound = np.mean(whole_ts,axis =1)
+            sub_ts = np.load(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy')
             
+            if sub_ts.shape[0] > vols:             
+                sub_ts = sub_ts[fix_tr:,:]
             
 
-            sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
+            if global_signal != '':
+                #remove global signal
+                if global_signal == 'pca':
+                    pca = extract_pc(whole_ts, n_components = 10)
+                    whole_confound = pca.transform(whole_ts)
+                elif global_signal == 'mean':
+                    whole_confound = np.mean(whole_ts,axis =1)
+                
+                
 
-        
+                sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
 
-        sub_ts = np.transpose(sub_ts)
-        #sub_ts = np.expand_dims(sub_ts,axis =2)
-        
-        sub_ts=np.mean(sub_ts, axis = 0)
-        
-        all_data.append(sub_ts)
-        #sub_ts = np.reshape(sub_ts, [sub_ts.shape[1], sub_ts.shape[0], sub_ts.shape[2]])
-        #pdb.set_trace()
-        '''
-        if n == 0:
-            all_data = sub_ts
             
-            n += 1
-        else:
+
+            sub_ts = np.transpose(sub_ts)
+            #sub_ts = np.expand_dims(sub_ts,axis =2)
             
-            all_data = np.concatenate((all_data,sub_ts), axis = 2)
-        '''
+            sub_ts=np.mean(sub_ts, axis = 0)
+            
+            all_data.append(sub_ts)
+    #pdb.set_trace()    
     return all_data
 
 
@@ -200,10 +182,7 @@ def predict_ts(seed_ts):
     
     sub_summary = pd.DataFrame(columns = ['age','roi', 'corr','se'])
     for age in ages:
-        if age == 'adult':
-            curr_subs = sub_list[sub_list['Age'] >= 18]
-        else:
-            curr_subs = sub_list[sub_list['Age'] < 18]
+        curr_subs = sub_list[sub_list['AgeGroup'] == age]
 
         
         for roi in rois:
