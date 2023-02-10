@@ -57,7 +57,7 @@ results_dir = f'{curr_dir}/results/isc'
 roi_dir = f'{study_dir}/derivatives/rois'
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-roi_suf = '_face'
+roi_suf = '_ts_all'
 ages = ['infant', 'adult']
 file_suf = roi_suf
 
@@ -78,11 +78,11 @@ def loo_isc(seed_data, target_data):
         #extract data for current ind as test
         
         test_data = target_data[ind]
-        test_data = np.mean(test_data, axis=0) #average across subjects
+        #test_data = np.mean(test_data, axis=0) #average across subjects
 
         #create seed data from remaining subjects
         group_data = seed_data[~np.isin(sub_idx, ind)]
-        group_data = np.mean(group_data, axis=1) #average across voxels
+        #group_data = np.mean(group_data, axis=1) #average across voxels
         group_data = np.mean(group_data, axis=0)#average across subjects
         
         #calculate ISC
@@ -102,13 +102,13 @@ def shuffle_isc(seed_data, target_data, folds = folds, split_size=split_size):
     for fold in range(0,folds):
         #shuffle list
         random.shuffle(sub_idx)
-
-        test_data = target_data[sub_idx[:int(len(sub_idx)*split_size)],:, :]
-        test_data = np.mean(test_data, axis=1) #average across voxels
+        
+        test_data = target_data[sub_idx[:int(len(sub_idx)*split_size)],:]
+        #test_data = np.mean(test_data, axis=1) #average across voxels
         test_data = np.mean(test_data, axis=0) #average across subjects
 
-        group_data = seed_data[sub_idx[int(len(sub_idx)*split_size):],:, :]
-        group_data = np.mean(group_data, axis=1) #average across voxels
+        group_data = seed_data[sub_idx[int(len(sub_idx)*split_size):],:]
+        #group_data = np.mean(group_data, axis=1) #average across voxels
         group_data = np.mean(group_data, axis=0)#average across subjects
         
         #calculate ISC
@@ -146,7 +146,7 @@ for seed_age in ages:
             #convert to numpy array
             seed_data = np.asarray(seed_data)
             
-            seed_data = np.mean(seed_data, axis=1) #average across voxels
+            #seed_data = np.mean(seed_data, axis=0) #average across subs
             for target_roi in rois:
                 
                 if seed_roi == target_roi:
@@ -158,7 +158,7 @@ for seed_age in ages:
 
                 target_data = af.extract_roi_data(subj_dir, target_subs, target_roi,roi_suf = roi_suf, fix_tr=fix_tr,global_signal = 'mean')
                 target_data = np.asarray(target_data)
-                target_data = np.mean(target_data, axis=1) #average across voxels
+                #target_data = np.mean(target_data, axis=0) #average across sub
                 
                 
                 isc = cv(seed_data, target_data)
@@ -170,7 +170,7 @@ for seed_age in ages:
                 #append to summary df
                 summary_df.loc[len(summary_df)] = curr_data
             
-            summary_df.to_csv(f'{results_dir}/isc_summary_{cv_type}.csv')
+            summary_df.to_csv(f'{results_dir}/isc_human_{cv_type}{file_suf}.csv', index=False)
 
 
 

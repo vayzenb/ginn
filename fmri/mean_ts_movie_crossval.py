@@ -1,5 +1,5 @@
 """
-Runs MVPD by fitting to half the sub data and then predicting mean TS of other half
+Runs MVPD by fitting to half the movie data for subs and predicting other half
 """
 
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
@@ -70,7 +70,7 @@ folds = 20
 
 
 summary_cols = ['age', 'roi','corr']
-suf = 'mean_sub_crossval'
+suf = 'mean_movie_crossval'
 
 def extract_pc(data, n_components=None):
 
@@ -96,7 +96,6 @@ def extract_roi_data(curr_subs, roi):
         whole_ts = whole_ts[fmri_tr:,:]
 
         sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}{roi_suf}.npy')
-        
         if sub_ts.shape[0] > vols:             
             sub_ts = sub_ts[fmri_tr:,:]
         
@@ -113,7 +112,7 @@ def extract_roi_data(curr_subs, roi):
 
             sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
 
-        
+
 
         sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
@@ -151,7 +150,7 @@ def standardize_data(all_data):
     return all_data
 
 
-def fit_ts(seed_ts, train_data, test_data):
+def fit_ts(seed_train,seed_test, train_data, test_data):
     """
     Conduct regression by iteratively fitting all seed PCs to target PCs
     
@@ -161,8 +160,9 @@ def fit_ts(seed_ts, train_data, test_data):
     all_scores = []
     clf = Ridge()
     
-    clf.fit(seed_ts, train_data)
-    pred_ts = clf.predict(seed_ts)
+    
+    clf.fit(seed_train, train_data)
+    pred_ts = clf.predict(seed_test)
 
     score = np.corrcoef(pred_ts,test_data)[0,1]
 
@@ -177,23 +177,58 @@ def cross_val(roi_data,seed_ts):
     print('running cross validation...')
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
+
+    roi_mean = np.mean(roi_data, axis = 0)
+
+    mean_score_list = []
+    #calcualte mean across movie halves
+    for movie_half in range(0,2):
+        
+        if movie_half == 0:
+            seed_train = seed_ts[0:int(len(seed_ts)/2)]
+            seed_test = seed_ts[int(len(seed_ts)/2):]
+            target_train = roi_mean[0:int(len(roi_mean)/2)]
+            target_test = roi_mean[int(len(roi_mean)/2):]
+        elif movie_half == 1:
+            seed_train = seed_ts[int(len(seed_ts)/2):]
+            seed_test = seed_ts[0:int(len(seed_ts)/2)]
+            target_train = roi_mean[int(len(roi_mean)/2):]
+            target_test = roi_mean[0:int(len(roi_mean)/2)]
+
+        curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
+        mean_score_list.append(curr_score)
     
+    mean_score = np.mean(mean_score_list)
+
+    
+    #calcualte resampled SE
     score = []
     #split into folds
     for fold in range(0,folds):
-        random.shuffle(cv_ind)
-                
-        train_ind = cv_ind[0:int(len(cv_ind)/2)]
-        test_ind = cv_ind[int(len(cv_ind)/2):]
-        #get training and testing data
-        train_data = np.mean(roi_data[train_ind],0)
-        test_data = np.mean(roi_data[test_ind],0)
+        #sample cv_ind with replacement
+        curr_ind = np.random.choice(cv_ind, len(cv_ind), replace = True)
         
         
-        curr_score = fit_ts(seed_ts, train_data, test_data)
-        score.append(curr_score)
+        curr_data = np.mean(roi_data[curr_ind,:],axis = 0)
+
+        for movie_half in range(0,2):
+            
+            if movie_half == 0:
+                seed_train = seed_ts[0:int(len(seed_ts)/2),:]
+                seed_test = seed_ts[int(len(seed_ts)/2):,:]
+                target_train = curr_data[0:int(len(curr_data)/2)]
+                target_test = curr_data[int(len(curr_data)/2):]
+            elif movie_half == 1:
+                seed_train = seed_ts[int(len(seed_ts)/2):,:]
+                seed_test = seed_ts[0:int(len(seed_ts)/2),:]
+                target_train = curr_data[int(len(curr_data)/2):]
+                target_test = curr_data[0:int(len(curr_data)/2)]
+
+
+            curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
+            score.append(curr_score)
     
-    return np.mean(score), np.std(score)/np.sqrt(folds)
+    return mean_score, np.std(score)/np.sqrt(folds)
 
 def predict_ts(seed_ts):
 

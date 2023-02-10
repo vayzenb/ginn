@@ -13,26 +13,29 @@ import numpy as np
 import pdb
 
 study_dir = '/lab_data/behrmannlab/vlad/ginn'
-data_dir = f'{study_dir}/fmri/aeronaut/preprocessed_standard/linear_alignment'
+data_dir = f'{study_dir}/fmri/hbn/preprocessed_standard/linear_alignment'
+data_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/preprocessed_data/linear_alignment'
 roi_dir = f'{study_dir}/fmri/aeronaut/derivatives/rois'
 
-out_dir = f'{study_dir}/fmri/aeronaut/derivatives/rois'
+out_dir = f'{study_dir}/fmri/hbn/derivatives/rois'
 
 sub = "mov_01_Z"
 
 rois = ["mni_mask", "FFA", 'LOC', 'EVC','EAC']
+rois = ["mni_mask",'LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 
 #load data
-bold_vol = image.load_img(f'{data_dir}/{sub}.nii.gz')
+#bold_vol = image.load_img(f'{data_dir}/{sub}.nii.gz')
 
 #extract first volume
-first_vol = image.index_img(bold_vol, 0)
+#anat = image.index_img(bold_vol, 0)
+anat=f'/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz'
 
 
 def resample_roi():
     #load mni mask
     mni_mask = load_mni152_brain_mask()
-    mni_mask_resample = image.resample_to_img(mni_mask,first_vol, interpolation='nearest')
+    mni_mask_resample = image.resample_to_img(mni_mask,anat, interpolation='nearest')
     #binarize mni mask
     mni_mask_resample = image.binarize_img(mni_mask_resample)
 
@@ -45,7 +48,7 @@ def resample_roi():
         #load roi
         roi_vol = image.load_img(f'{roi_dir}/{roi}.nii.gz')
         #resample roi to functional space
-        resampled_roi = image.resample_to_img(roi_vol, first_vol, interpolation='nearest')
+        resampled_roi = image.resample_to_img(roi_vol, anat, interpolation='nearest')
         #binarize roi
         resampled_roi = image.binarize_img(resampled_roi)
 
@@ -83,5 +86,7 @@ def split_roi_hemis():
             nib.save(resampled_roi, f'{out_dir}/{lr}{roi}.nii.gz')
             
             #print(f'{roi} split into left and right')
-            
-split_roi_hemis()
+
+
+resample_roi()
+#split_roi_hemis()

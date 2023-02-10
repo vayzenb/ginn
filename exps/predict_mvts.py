@@ -20,7 +20,7 @@ import analysis_funcs
 #analysis scripts
 
 
-human_predict = True
+human_predict = False
 model_predict = True
 suf = ''
 '''
@@ -42,7 +42,7 @@ neural predictors
 '''
 ages = ['adult']
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-file_suf = '_nonface'
+file_suf = ''
 
 group_type = 'mean'
 
@@ -53,21 +53,13 @@ n_feats = [25]
 if len(sys.argv) > 1:
     analysis_type = sys.argv[1]
 else:
-    analysis_type = 'mean_sub_crossval'
+    analysis_type = 'mean_movie_crossval'
 
 
-if analysis_type == 'indiv':
+if analysis_type == 'mean_movie_crossval':
     #predicts individual MVTS; PCA decomposition; reutrns mean correlation for each sub
-    import mvpd_indiv as predict_script
-    predict_ts = predict_script.predict_indvidual
-elif analysis_type == 'mv_movie_crossval':
-    #predicts group MVTS; uses SRM decomposition; cross-vals by splitting movie
-    import mvpd_movie_crossval as predict_script
-    predict_ts = predict_script.predict_srm
-elif analysis_type == 'mv_sub_crossval':
-    #predicts group MVTS; uses SRM decomposition; cross-vals by splitting subjects
-    import mvpd_sub_crossval as predict_script
-    predict_ts = predict_script.predict_srm
+    import mean_ts_movie_crossval as predict_script
+    predict_ts = predict_script.predict_ts
 elif analysis_type == 'mean_sub_crossval':
     #predicts mean TS; cross-vals by splitting subjects
     import mean_ts_sub_crossval as predict_script

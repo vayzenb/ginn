@@ -2,7 +2,7 @@
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 import sys
-sys.path.insert(1, f'{curr_dir}/modelling')
+sys.path.insert(1, f'{curr_dir}')
 import os, argparse
 import torch
 import torch.nn as nn
@@ -22,7 +22,11 @@ from sklearn.decomposition import PCA
 from scipy.stats import gamma
 from glob import glob as glob
 
+import ginn_params as params
+
 import pdb
+
+print('libraries loaded')
 
 #if you've already (correctly) extracted the activations, just load them; set to True 
 acts_extracted = False
@@ -30,7 +34,7 @@ acts_extracted = False
 '''
 folder params
 '''
-vid = 'Aeronaut'
+vid = 'aeronaut'
 stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 weights_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_weights"
 out_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_ts"
@@ -50,47 +54,22 @@ train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggfac
 train_dir = f'/lab_data/behrmannlab/image_sets/'
 #n_classes = len(glob(f'{args.data}/train/*'))
 #layer =['aIT','pIT'] #set in descending order
-layer_type = ['aIT']
-#layer_type = ['decoder']
-sublayer_type = 'output'
+layer_type = ['V1','V2','V4','pIT','aIT']
+layer_type = ['decoder']
+sublayer_type = 'avgpool'
 seed = 1
 pca_perc = .90
 epochs = [0, 1, 5, 10, 15, 20, 25, 30]
 
 
+vid = params.vid
+vols = params.vols
+tr = params.tr
+fix_tr = params.model_tr
+fps = params.fps
+bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
 
-if vid == 'DM-clip':
-    '''
-    Despicable me (DM) video params
-    '''
-    vols = 750 #volumes in the scan
-    tr = .8 #TR of scan
-    fix_tr =0 #number of throwaway volumes at beginning
-    fps = 30 # frame per second of video (how many rows go into 1 sec)
-    bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
-
-elif vid == 'partly_cloudy':
-
-    '''
-    Pixar video params
-    '''
-    vols = 168 #volumes in the scan
-    tr = 2 #TR of scan
-    fix_tr =0 #number of throwaway volumes
-    fps = 24 # frame per second of video (how many rows go into 1 sec)
-    bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
-
-elif vid == 'Aeronaut':
-
-    '''
-    Pixar video params
-    '''
-    vols = 90 #volumes in the scan
-    tr = 2 #TR of scan
-    fix_tr =0 #number of throwaway volumes
-    fps = 24 # frame per second of video (how many rows go into 1 sec)
-    bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
-
+print(vid)
 
 transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -218,6 +197,7 @@ def extract_acts(model, image_dir):
 def down_sample(data):
     """Downsample data"""
     downsample_ts = np.empty((0, data.shape[1])) 
+
     
     #Bin frame data for TS
     for nn in range(0,len(data),bin_size):
@@ -324,7 +304,6 @@ for mm in enumerate(model_arch):
         
         if acts_extracted == False:
             model = load_model(mm[1], trt[1],feats)
-        
         
         for ll in layer_type:
             print(f"Extracting timeseries for {mm[1]}_{trt[1]}_{ll}...")

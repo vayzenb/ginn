@@ -28,7 +28,7 @@ file_suf = params.file_suf
 
 roi_dir=f'{study_dir}/derivatives/rois'
 subj_dir=f'{study_dir}/derivatives'
-data_dir = f'{study_dir}/preprocessed_standard/linear_alignment/'
+data_dir = params.data_dir
 
 #whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 #whole_brain_mask = image.binarize_img(whole_brain_mask)
@@ -62,11 +62,12 @@ n = 1
 for sub in sub_list['participant_id']:
     
     
-    #sub_file = f'{subj_dir}/{ss}/{ss}_task-movieDM_bold.nii.gz'
-    sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
+    sub_file = f'{data_dir}/{sub}/{sub}_task-movieDM_bold.nii.gz'
+    #sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
     
-    whole_brain_mask = image.binarize_img(image.load_img(f'{subj_dir}/rois/mni_mask.nii.gz'))
-
+    whole_brain_mask = image.binarize_img(image.load_img(f'{roi_dir}/mni_mask.nii.gz'))
+    #print(sub_file)
+    #pdb.set_trace()
     if os.path.exists(sub_file):
         print(f'Extracting for...{sub}', f'{n} of {len(sub_list)}')
         #grab  functional image in each sub dir

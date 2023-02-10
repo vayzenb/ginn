@@ -65,7 +65,7 @@ def extract_roi_data(subj_dir, curr_subs, roi,roi_suf, fix_tr,global_signal):
         whole_ts = whole_ts[fix_tr:,:]
 
         sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}{roi_suf}.npy')
-        #sub_ts = sub_ts[fix_tr:,:]
+        sub_ts = sub_ts[fix_tr:,:]
 
         #pdb.set_trace()
 
@@ -89,7 +89,7 @@ def extract_roi_data(subj_dir, curr_subs, roi,roi_suf, fix_tr,global_signal):
         sub_ts = np.transpose(sub_ts)
         #sub_ts = np.expand_dims(sub_ts,axis =2)
         
-        #sub_ts=np.mean(sub_ts, axis = 0)
+        sub_ts = np.mean(sub_ts, axis = 0)
         
         all_data.append(sub_ts)
         #sub_ts = np.reshape(sub_ts, [sub_ts.shape[1], sub_ts.shape[0], sub_ts.shape[2]])
