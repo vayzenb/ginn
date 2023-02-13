@@ -41,11 +41,12 @@ def load_params(exp):
         fix_tr =0 #number of throwaway volumes at beginning
         fps = 30 # frame per second of video (how many rows go into 1 sec)
 
-        ages = [5, 6, 7, 8, 18]
+        ages = [5, 6, 7, 18]
+        #ages= [18]
 
 
     elif exp == 'aeronaut':
-        vid == 'aeronaut'
+        vid = 'aeronaut'
         file_suf = '_Z'
         
         fix_tr = 3

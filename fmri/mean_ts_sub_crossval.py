@@ -49,6 +49,7 @@ study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bi
 roi_dir = f'{study_dir}/derivatives/rois'
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
+rois = ['LOC','FFA','A1','EVC']
 
 #suffix of roi to load
 #options are _ts_all, _face, _nonface

@@ -30,46 +30,48 @@ print('libraries loaded')
 
 #if you've already (correctly) extracted the activations, just load them; set to True 
 acts_extracted = False
+exp = 'hbn'
 
 '''
 folder params
 '''
-vid = 'aeronaut'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+
 stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 weights_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_weights"
 out_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_ts"
 
 
 #training info
-model_arch = ['cornet_z_cl','cornet_z_sl']
-model_arch = ['cornet_z_sl']
+
+model_arch = 'cornet_z_sl'
 '''
 set model params
 '''
 
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-#train_type = ['vggface_oneobject', 'vggface', 'random']
-#train_type = ['vggface_oneobject']
+
 
 train_dir = f'/lab_data/behrmannlab/image_sets/'
-#n_classes = len(glob(f'{args.data}/train/*'))
-#layer =['aIT','pIT'] #set in descending order
-layer_type = ['V1','V2','V4','pIT','aIT']
-layer_type = ['decoder']
-sublayer_type = 'avgpool'
+
+
 seed = 1
 pca_perc = .90
 epochs = [0, 1, 5, 10, 15, 20, 25, 30]
 
+global layer
+global sublayer
 
-vid = params.vid
-vols = params.vols
-tr = params.tr
-fix_tr = params.model_tr
-fps = params.fps
-bin_size = fps * tr # get the bin size to average by multiplying the FPS by tr
+#load first arg as train_type
+if len(sys.argv) > 1:
+    train_type = sys.argv[1]
+    layer = sys.argv[2]
+    sublayer = sys.argv[3]
+    print(f'extracting for {layer} and {sublayer}')
 
-print(vid)
+
+
+
 
 transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -139,7 +141,7 @@ def extract_acts(model, image_dir):
 
     
     test_dataset = load_stim.load_stim(image_dir, transform=transform)
-    testloader = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers = 4, pin_memory=True)
+    testloader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers = 1, pin_memory=False)
     
 
 
@@ -167,30 +169,6 @@ def extract_acts(model, image_dir):
     return acts
 
 
-
-# # %%
-# def model_loop(model, loader):
-
-#     im, label = next(iter(loader))
-
-#     first_batch = True
-#     for im, label in loader:
-#         out = model_funcs.extract_acts(model, im)
-
-#         if first_batch == True:
-#             all_out = out
-#             first_batch = False
-#         else:
-#             all_out = torch.cat((all_out, out), dim=0)
-
-#     frame_acts = all_out.cpu().detach().numpy()
-    
-#     return frame_acts
-
-# #idx = np.argwhere(np.all(all_out[..., :] == 0, axis=0))# find columns with only zeros
-# #all_out = np.delete(all_out, idx, axis=1)
-# #frame_ts = (all_out - np.mean(all_out,axis = 0))/np.std(all_out, axis = 0) # standardize the unit activations; this produces NaNs right now; figure out why
-# #frame_ts = frame_ts[:, ~np.isnan(frame_ts).any(axis=0)]
 
 
 # %%
@@ -289,98 +267,49 @@ Model loop ver. 1
 Conducts PCA on down-sample data
 USE THIS ONE
 '''
-for mm in enumerate(model_arch):   
-    for trt in enumerate(train_type):
-        
-        #set number of features in model
-        if mm[1] == 'cornet_z_sl':
 
-            if trt[1] == 'random':
-                feats = 600
-            else:
-                feats = len(glob(f'{train_dir}/{trt[1]}/train/*'))
-        else:
-            feats = 128
-        
-        if acts_extracted == False:
-            model = load_model(mm[1], trt[1],feats)
-        
-        for ll in layer_type:
-            print(f"Extracting timeseries for {mm[1]}_{trt[1]}_{ll}...")
-            global layer, sublayer
-            layer = ll
-            sublayer = sublayer_type
+#set number of features in model
+if model_arch == 'cornet_z_sl':
 
-            if acts_extracted == True:
-                print('Acts loaded...')
-                frame_acts = np.load(f'{out_dir}/{mm[1]}_{trt[1]}_{ll}_{vid}_allframes.npy')
-            else:
-                frame_acts = extract_acts(model, f'{stim_dir}/{vid}')
-            
-                #save full model timeseries (all frames)
-                np.save(f'{out_dir}/{mm[1]}_{trt[1]}_{ll}_{vid}_allframes', frame_acts)
-            
-            
-            
+    if train_type == 'random':
+        feats = 600
+    else:
+        feats = len(glob(f'{train_dir}/{train_type}/train/*'))
+else:
+    feats = 128
 
-            print('downsampling and running PCA...')
-            #downsample to scale of fmri
-            downsample_ts = down_sample(frame_acts)
+if acts_extracted == False:
+    model = load_model(model_arch, train_type,feats)
 
-            #convolve to hrf
-            hrf_ts = convolve_hrf(downsample_ts)
-            #pdb.set_trace()
-            #standardize activations
-            #hrf_ts = stats.zscore(hrf_ts)
 
-            #hrf_ts = np.isnan(hrf_ts).any(axis=1)
-            
-            
-            #calculate components for pca
-            #n_comp = calc_pc_n(extract_pc(hrf_ts),pca_perc)
-            
-            #calculate final set of PCs
-            #pca = extract_pc(hrf_ts, n_comp)
-            #final_ts = pca.transform(hrf_ts) #reduce dimensionality of data using model PCs
-            final_ts = hrf_ts
-            
-            
-            #plot pc variance explained
+print(f"Extracting timeseries for {model_arch}_{train_type}_{layer}...")
 
-            
 
-            np.save(f'{out_dir}/{mm[1]}_{trt[1]}_{ll}_{vid}_ts', final_ts)
-            
-            
-            #print(tc, ee,ll, n_comp)
+if acts_extracted == True:
+    print('Acts loaded...')
+    frame_acts = np.load(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_allframes.npy')
+else:
+    frame_acts = extract_acts(model, f'{stim_dir}/{vid}')
 
-'''
-for nc, tc in enumerate(train_type):
-    n_classes = len(glob(f'{train_dir}/{tc}/train/*'))
+    #save full model timeseries (all frames)
+    #np.save(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_allframes', frame_acts)
 
-    
-    model = models.__dict__[model_arch](out_feat=n_classes)
-    
-    for ll in layer:
-        model =  model_funcs.remove_layer(model, ll)
 
-        #extract acts for all frames of video
-        frame_acts = model_loop(model, loader)
-        np.save(f'fmri_data/{vid}_{model_type}_{tc}_{ee}_{ll}_allframes', frame_acts)
 
-        #downsample to scale of fmri
-        downsample_ts = down_sample(frame_acts)
 
-        #calculate components for pca
-        n_comp = calc_pc_n(extract_pc(downsample_ts),.95)
-        
-        #calculate final set of PCs
-        pca2 = extract_pc(downsample_ts, n_comp)
-        model_pcs = pca2.transform(downsample_ts) #reduce dimensionality of data using model PCs
-        #plot pc variance explained
+print('downsampling and running PCA...')
+#downsample to scale of fmri
+downsample_ts = down_sample(frame_acts)
 
-        #convolve to hrf
-        final_ts = convolve_hrf(model_pcs)
-        np.save(f'{out_dir}/{vid}_{model_type}_{tc}_{ee}_{ll}_TS', final_ts)
-        print(tc, ee,ll, n_comp)
-'''
+#convolve to hrf
+hrf_ts = convolve_hrf(downsample_ts)
+
+final_ts = hrf_ts
+
+
+#plot pc variance explained
+
+
+
+np.save(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_ts', final_ts)
+

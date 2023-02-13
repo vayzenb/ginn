@@ -10,11 +10,11 @@
 # Submit job to cpu queue                
 #SBATCH -p gpu
 
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=6
 #SBATCH --gres=gpu:1
 
 # Job memory request
-#SBATCH --mem=36gb
+#SBATCH --mem=64gb
 
 # Time limit days-hrs:min:sec
 #SBATCH --time 3-00:00:00
