@@ -14,21 +14,15 @@ import pdb
 
 print('libraries loaded')
 #set up folders and ROIS
-exp = params.exp
-exp_dir = params.exp_dir
-file_suf = params.file_suf
-fix_tr = params.fix_tr
 
-data_dir = params.data_dir
-study_dir = params.study_dir
-
-sub_list = params.sub_list
-
-file_suf = params.file_suf
+exp = 'hbn'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 roi_dir=f'{study_dir}/derivatives/rois'
-subj_dir=f'{study_dir}/derivatives'
-data_dir = params.data_dir
+
+#read sub from arg
+sub = sys.argv[1]
+
 
 #whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
 #whole_brain_mask = image.binarize_img(whole_brain_mask)
@@ -57,72 +51,68 @@ def extract_mv_ts(bold_vol, mask_dir):
     return roi_data
 
 
-n = 1
-#loop through subs
-for sub in sub_list['participant_id']:
+
+sub_file = f'{data_dir}/{sub}/{sub}_task-movieDM_bold.nii.gz'
+#sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
+
+whole_brain_mask = image.binarize_img(image.load_img(f'{roi_dir}/gm_mask.nii.gz'))
+#print(sub_file)
+
+if os.path.exists(sub_file):
+    print(f'Extracting for...{sub}')
+    #grab  functional image in each sub dir
     
+
+    out_dir = f'{subj_dir}/sub-{sub}/timeseries'
+    os.makedirs(out_dir, exist_ok=True)
     
-    sub_file = f'{data_dir}/{sub}/{sub}_task-movieDM_bold.nii.gz'
-    #sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
+    bold_vol = image.load_img(sub_file) #load data
+    whole_masker = maskers.NiftiMasker(mask_img=whole_brain_mask, detrend = True, standardize = True)
+    whole_masker.fit(bold_vol)
+    whole_ts = whole_masker.transform(bold_vol)
+    np.save(f'{out_dir}/whole_brain_ts',whole_ts)
+    #mean_ts = np.mean(whole_ts, axis=1)
     
-    whole_brain_mask = image.binarize_img(image.load_img(f'{roi_dir}/mni_mask.nii.gz'))
-    #print(sub_file)
-    #pdb.set_trace()
-    if os.path.exists(sub_file):
-        print(f'Extracting for...{sub}', f'{n} of {len(sub_list)}')
-        #grab  functional image in each sub dir
+    bold_vol = image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask, detrend=True) #extract within brain mask
+
+    for rr in rois:
+        '''
+        Extract mean TS
+        '''
+        # create fsl command for bilateral ROI
+        bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/{rr}_ts_mean.txt -m {roi_dir}/{rr}.nii.gz'
+        #execute fsl command
+        bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
+
+        # create fsl command for left hemi ROI
+        bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/l{rr}_ts_mean.txt -m {roi_dir}/l{rr}.nii.gz'
+        #execute fsl command
+        bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
+
+        #same for right hemi ROI
+        bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/r{rr}_ts_mean.txt -m {roi_dir}/r{rr}.nii.gz'
+        #execute fsl command
+        bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
+
+        '''
+        Extract ts from all voxels
+        '''
+
+        #pdb.set_trace()
+        #extract bilateral, left and right hemis
+        mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/{rr}.nii.gz')
+        np.save(f'{out_dir}/{rr}_ts_all',mv_ts)
+
+        mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/l{rr}.nii.gz')
+        np.save(f'{out_dir}/l{rr}_ts_all',mv_ts)
+        mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/r{rr}.nii.gz')
+        np.save(f'{out_dir}/r{rr}_ts_all',mv_ts)
+    
         
+else:
+    print(f'No file for {sub}')
 
-        out_dir = f'{subj_dir}/sub-{sub}/timeseries'
-        os.makedirs(out_dir, exist_ok=True)
-        
-        bold_vol = image.load_img(sub_file) #load data
-        whole_masker = maskers.NiftiMasker(mask_img=whole_brain_mask, detrend = True, standardize = True)
-        whole_masker.fit(bold_vol)
-        whole_ts = whole_masker.transform(bold_vol)
-        np.save(f'{out_dir}/whole_brain_ts',whole_ts)
-        #mean_ts = np.mean(whole_ts, axis=1)
-        
-        bold_vol = image.clean_img(bold_vol,standardize=True,mask_img=whole_brain_mask, detrend=True) #extract within brain mask
 
-        for rr in rois:
-            '''
-            Extract mean TS
-            '''
-            # create fsl command for bilateral ROI
-            bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/{rr}_ts_mean.txt -m {roi_dir}/{rr}.nii.gz'
-            #execute fsl command
-            bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
-
-            # create fsl command for left hemi ROI
-            bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/l{rr}_ts_mean.txt -m {roi_dir}/l{rr}.nii.gz'
-            #execute fsl command
-            bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
-
-            #same for right hemi ROI
-            bash_cmd = f'fslmeants -i {sub_file} -o {out_dir}/r{rr}_ts_mean.txt -m {roi_dir}/r{rr}.nii.gz'
-            #execute fsl command
-            bash_out = subprocess.run(bash_cmd.split(),check=True, capture_output=True, text=True)
-
-            '''
-            Extract ts from all voxels
-            '''
-
-            #pdb.set_trace()
-            #extract bilateral, left and right hemis
-            mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/{rr}.nii.gz')
-            np.save(f'{out_dir}/{rr}_ts_all',mv_ts)
-
-            mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/l{rr}.nii.gz')
-            np.save(f'{out_dir}/l{rr}_ts_all',mv_ts)
-            mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/r{rr}.nii.gz')
-            np.save(f'{out_dir}/r{rr}_ts_all',mv_ts)
-        
-            
-    else:
-        print(f'No file for {sub}')
-
-    n = n +1
 
         
     

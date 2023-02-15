@@ -43,7 +43,7 @@ exp = 'hbn'
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
-
+n_subs = 24
 
 
 roi_dir = f'{study_dir}/derivatives/rois'
@@ -184,6 +184,8 @@ def predict_ts(seed_ts):
     sub_summary = pd.DataFrame(columns = ['age','roi', 'corr','se'])
     for age in ages:
         curr_subs = sub_list[sub_list['AgeGroup'] == age]
+        #select first 24 subs in each age group
+        curr_subs = curr_subs.head(n_subs)
 
         
         for roi in rois:

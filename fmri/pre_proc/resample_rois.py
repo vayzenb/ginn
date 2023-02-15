@@ -1,7 +1,10 @@
 """
 resample ROIs to infant functional space
 """
+curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
+import sys
+sys.path.insert(1, f'{curr_dir}')
 import os
 import shutil
 import glob
@@ -11,25 +14,28 @@ from nilearn import image, plotting, datasets, masking
 import nibabel as nib
 import numpy as np
 import pdb
+import ginn_params as params
 
-study_dir = '/lab_data/behrmannlab/vlad/ginn'
-data_dir = f'{study_dir}/fmri/hbn/preprocessed_standard/linear_alignment'
-data_dir = f'/lab_data/behrmannlab/scratch/vlad/ginn/fmri/hbn/preprocessed_data/linear_alignment'
-roi_dir = f'{study_dir}/fmri/aeronaut/derivatives/rois'
 
-out_dir = f'{study_dir}/fmri/hbn/derivatives/rois'
+exp = 'aeronaut'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+roi_dir = f'{subj_dir}/rois'
+
+out_dir = f'/lab_data/behrmannlab/vlad/ginn/fmri/aeronaut/derivatives/rois'
 
 sub = "mov_01_Z"
 
 rois = ["mni_mask", "FFA", 'LOC', 'EVC','EAC']
 rois = ["mni_mask",'LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
+rois = ['gm_mask']
 
 #load data
-#bold_vol = image.load_img(f'{data_dir}/{sub}.nii.gz')
+bold_vol = image.load_img(f'{data_dir}/{sub}.nii.gz')
 
 #extract first volume
-#anat = image.index_img(bold_vol, 0)
-anat=f'/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz'
+anat = image.index_img(bold_vol, 0)
+#anat=f'/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz'
+
 
 
 def resample_roi():

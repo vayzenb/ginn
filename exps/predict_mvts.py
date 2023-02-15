@@ -18,7 +18,7 @@ import ginn_params as params
 import analysis_funcs
 
 #analysis scripts
-exp = 'hbn'
+exp = 'aeronaut'
 
 human_predict = False
 model_predict = True
@@ -29,7 +29,7 @@ model predictors
 model_arch = ['cornet_z_sl']
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layer = ['V1','V2','V4','pIT','aIT', 'decoder']
-layer = ['V1','V2','V4','pIT','aIT', 'decoder']
+
 
 use_pc_thresh = True
 n_comps = 10
@@ -43,7 +43,7 @@ neural predictors
 '''
 ages = ['adult']
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-rois = ['LOC','FFA','A1','EVC']
+#rois = ['LOC','FFA','A1','EVC']
 file_suf = ''
 
 group_type = 'mean'

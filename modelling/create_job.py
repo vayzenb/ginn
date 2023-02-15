@@ -8,22 +8,24 @@ import os
 import time
 import pdb
 
-mem = 24
+mem = 36
 run_time = "3-00:00:00"
+
+pause_time = 16 #how much time (hours) to wait between jobs
+pause_crit = 5 #how many jobs to do before pausing
 
 #subj info
 #stim info
-study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn/model_training'
+study_dir = f'/user_data/vayzenbe/GitHub_Repos/ginn/modelling'
 stim_dir = f'/lab_data/behrmannlab/image_sets/'
 
 #training info
 model_arch = 'cornet_z_sl'
 
-train_type = [ 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
+train_type = [ 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface']
 
-#train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
-train_type = ['imagenet_vggface']
-rand_seed = [1]
+
+rand_seed = [2,3,4,5]
 lr = .03
 #lr = .003
 
@@ -50,27 +52,26 @@ def setup_sbatch(model, train_cat, seed):
 #SBATCH --time {run_time}
 
 # Exclude
-#SBATCH --exclude=mind-1-26,mind-1-30
+# SBATCH --exclude=mind-1-26,mind-1-30
 
 # Standard output and error log
 #SBATCH --output={study_dir}/slurm_out/{model}_{train_cat}.out
 
 conda activate ml_new
 
-rsync -a {stim_dir}/{train_cat} /scratch/vayzenbe/
 
-echo "images transferred"
+
 
 # python train_model.py /scratch/vayzenbe/{train_cat}/ --arch cornet_z --epochs 50 --nce-k 4096 --nce-t 0.07 --lr {lr} --nce-m 0.5 --low-dim 128 -b 256 --rand_seed {seed}
-# python supervised_training.py --data /scratch/vayzenbe/{train_cat}/ --arch {model_arch} --rand_seed {seed}
-python supervised_training.py --data /scratch/vayzenbe/{train_cat}/ --arch {model_arch} --resume /lab_data/behrmannlab/vlad/ginn/model_weights/{model_arch}_{train_cat}_15_{seed}.pth.tar
+python supervised_training.py --data /lab_data/behrmannnlab/image_sets/{train_cat}/ --arch {model_arch} --rand_seed {seed}
+# python supervised_training.py --data /lab_data/behrmannnlab/image_sets/{train_cat}/ --arch {model_arch} --resume /lab_data/behrmannlab/vlad/ginn/model_weights/{model_arch}_{train_cat}_15_{seed}.pth.tar
 """
     return sbatch_setup
 
 
 
 
-
+n = 0
 for tt in train_type:
     for rs in rand_seed:
         job_name = f'{model_arch}_{tt}'
@@ -85,6 +86,12 @@ for tt in train_type:
         
         subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True)
         os.remove(f"{job_name}.sh")
+        n+=1
+
+        if n >= pause_crit:
+            #wait X hours
+            time.sleep(pause_time*60*60)
+            n = 0
 
 
 

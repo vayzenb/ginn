@@ -23,7 +23,7 @@ import model_funcs
 
 import random
 from glob import glob as glob
-from torch.utils.tensorboard import SummaryWriter
+#from torch.utils.tensorboard import SummaryWriter
 
 print('libs loaded')
 
@@ -62,7 +62,7 @@ image_type = args.data
 image_type=image_type.replace(image_dir, '')
 model_type = f'{args.arch}_{image_type[:-1]}{suf}'
 print(model_type)
-writer = SummaryWriter(f'runs/{model_type}')
+#writer = SummaryWriter(f'runs/{model_type}')
 best_prec1 = 0
 
 print_file = False   
@@ -168,8 +168,8 @@ for epoch in range(start_epoch, n_epochs+1):
         # calculate the batch loss
         loss = criterion(output, target)
         #print(loss)
-        writer.add_scalar("Supervised Raw Train Loss", loss, nTrain) #write to tensorboard
-        writer.flush()
+        #writer.add_scalar("Supervised Raw Train Loss", loss, nTrain) #write to tensorboard
+        #writer.flush()
         nTrain = nTrain + 1
         # backward pass: compute gradient of the loss with respect to model parameters
         loss.backward()
@@ -196,8 +196,8 @@ for epoch in range(start_epoch, n_epochs+1):
             output = model(data)
             # calculate the batch loss
             loss = criterion(output, target)
-            writer.add_scalar("Supervised Raw Validation Loss", loss, nVal) #write to tensorboard
-            writer.flush()
+            #writer.add_scalar("Supervised Raw Validation Loss", loss, nVal) #write to tensorboard
+            #writer.flush()
             nVal = nVal + 1
             #print('wrote to tensorboard')
             # update average validation loss 
@@ -222,10 +222,10 @@ for epoch in range(start_epoch, n_epochs+1):
     print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f}'.format(
         epoch, train_loss, valid_loss),
         "Test Accuracy: {:.3f}".format(accuracy/len(valloader)))
-    writer.add_scalar("Supervised Average Train Loss", train_loss, epoch) #write to tensorboard
-    writer.add_scalar("Supervised Average Validation Loss", valid_loss, epoch) #write to tensorboard
-    writer.add_scalar("Supervised Average Acc", accuracy/len(valloader), epoch) #write to tensorboard
-    writer.flush()
+    #writer.add_scalar("Supervised Average Train Loss", train_loss, epoch) #write to tensorboard
+    #writer.add_scalar("Supervised Average Validation Loss", valid_loss, epoch) #write to tensorboard
+    #writer.add_scalar("Supervised Average Acc", accuracy/len(valloader), epoch) #write to tensorboard
+    #writer.flush()
     
     # save model if validation loss has decreased
     save_checkpoint({
@@ -237,6 +237,6 @@ for epoch in range(start_epoch, n_epochs+1):
             }, is_best,epoch,filename=f'{model_type}')
 
 
-writer.close()
+#writer.close()
 
 

@@ -28,7 +28,7 @@ def load_params(exp):
         Despicable me (DM) fmri and modelling params
         '''
         
-        file_suf = 'movieDM'
+        file_suf = '_task-movieDM_bold'
         
         fix_tr = 0
         
@@ -51,8 +51,8 @@ def load_params(exp):
         
         fix_tr = 3
         
-        data_dir = f'{study_dir}/derivatives'
-        subj_dir = data_dir
+        data_dir = f'{study_dir}/preprocessed_standard/linear_alignment'
+        subj_dir = f'{study_dir}/derivatives'
 
         vols = 90 #volumes in the scan
         tr = 2 #TR of scan
