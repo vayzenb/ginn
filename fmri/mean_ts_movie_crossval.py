@@ -35,41 +35,27 @@ use_pc_thresh = True
 
 pc_thresh = .9
 
-clf = Ridge()
+clf = LinearRegression()
 
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
-exp = params.exp
-exp_dir = params.exp_dir
-file_suf = params.file_suf
-fmri_tr = params.fmri_tr
 
-data_dir = params.data_dir
-study_dir = params.study_dir
 
-sub_list = params.sub_list
 
-file_suf = params.file_suf
-vols = params.vols
 
-subj_dir= data_dir
-
-out_dir = f'{data_dir}/group_func'
-
-roi_dir = f'{study_dir}/derivatives/rois'
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-
+rois = ['LOC','FFA','A1','EVC']
 #suffix of roi to load
 #options are _ts_all, _face, _nonface
 roi_suf = '_ts_all'
-ages = ['infant', 'adult']
 
 
-folds = 20
+n_subs = 24
+folds = 24
 
 
-summary_cols = ['age', 'roi','corr']
+summary_cols = ['age','roi', 'corr','se']
 suf = 'mean_movie_crossval'
 
 def extract_pc(data, n_components=None):
@@ -92,62 +78,47 @@ def extract_roi_data(curr_subs, roi):
     n = 0
     all_data = []
     for sub in curr_subs['participant_id']:
-        whole_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/whole_brain_ts.npy')
-        whole_ts = whole_ts[fmri_tr:,:]
+        #check if sub has sub- in front, else add it
+        if sub[0:4] != 'sub-':
+            sub = f'sub-{sub}'
 
-        sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}{roi_suf}.npy')
-        if sub_ts.shape[0] > vols:             
-            sub_ts = sub_ts[fmri_tr:,:]
-        
 
-        if global_signal != '':
-            #remove global signal
-            if global_signal == 'pca':
-                pca = extract_pc(whole_ts, n_components = 10)
-                whole_confound = pca.transform(whole_ts)
-            elif global_signal == 'mean':
-                whole_confound = np.mean(whole_ts,axis =1)
+        #check if file exists
+        if os.path.exists(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy'):
+            whole_ts = np.load(f'{subj_dir}/{sub}/timeseries/whole_brain_ts.npy')
+            whole_ts = whole_ts[fix_tr:,:]
+
+            sub_ts = np.load(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy')
             
+            if sub_ts.shape[0] > vols:             
+                sub_ts = sub_ts[fix_tr:,:]
             
 
-            sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
+            if global_signal != '':
+                #remove global signal
+                if global_signal == 'pca':
+                    pca = extract_pc(whole_ts, n_components = 10)
+                    whole_confound = pca.transform(whole_ts)
+                elif global_signal == 'mean':
+                    whole_confound = np.mean(whole_ts,axis =1)
+                
+                
 
+                sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
 
-
-        sub_ts = np.transpose(sub_ts)
-        #sub_ts = np.expand_dims(sub_ts,axis =2)
-        
-        sub_ts=np.mean(sub_ts, axis = 0)
-        
-        all_data.append(sub_ts)
-        #sub_ts = np.reshape(sub_ts, [sub_ts.shape[1], sub_ts.shape[0], sub_ts.shape[2]])
-        #pdb.set_trace()
-        '''
-        if n == 0:
-            all_data = sub_ts
             
-            n += 1
-        else:
+
+            sub_ts = np.transpose(sub_ts)
+            #sub_ts = np.expand_dims(sub_ts,axis =2)
             
-            all_data = np.concatenate((all_data,sub_ts), axis = 2)
-        '''
+            sub_ts=np.mean(sub_ts, axis = 0)
+            
+            all_data.append(sub_ts)
+    #pdb.set_trace()    
     return all_data
 
+def tune_hyperparams(roi_data,seed_ts):
 
-def standardize_data(all_data):
-    '''
-    standardize data
-    '''
-    print('standardizing data...')
-    
-    for sub in range(0,len(all_data)):    
-        
-
-        # zscore each sub
-        all_data[sub] = stats.zscore(all_data[sub], axis=0, ddof=1)
-        all_data[sub] = np.nan_to_num(all_data[sub])
-        
-    return all_data
 
 
 def fit_ts(seed_train,seed_test, train_data, test_data):
@@ -155,9 +126,13 @@ def fit_ts(seed_train,seed_test, train_data, test_data):
     Conduct regression by iteratively fitting all seed PCs to target PCs
     
     """
+    #standardize all variables
+    seed_train = stats.zscore(seed_train, axis=0)
+    seed_test = stats.zscore(seed_test, axis=0)
+    train_data = stats.zscore(train_data, axis=0)
+    test_data = stats.zscore(test_data, axis=0)
 
-    
-    all_scores = []
+
     clf = Ridge()
     
     
@@ -166,48 +141,47 @@ def fit_ts(seed_train,seed_test, train_data, test_data):
 
     score = np.corrcoef(pred_ts,test_data)[0,1]
 
-
-       #all_scores.append(r_squared)
-
-    #final_score = np.sum(all_scores)/(np.sum(target_pca.explained_variance_ratio_))
     
     return score
 
 def cross_val(roi_data,seed_ts):
+    
     print('running cross validation...')
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
 
     roi_mean = np.mean(roi_data, axis = 0)
-
     mean_score_list = []
-    #calcualte mean across movie halves
+    #calcualte mean across movie halves for all subs
+    #this is happening inside the fold loop so account for variability in ridge fitting
     for movie_half in range(0,2):
-        
+    
         if movie_half == 0:
-            seed_train = seed_ts[0:int(len(seed_ts)/2)]
-            seed_test = seed_ts[int(len(seed_ts)/2):]
+            seed_train = seed_ts[0:int(len(seed_ts)/2),:]
+            seed_test = seed_ts[int(len(seed_ts)/2):,:]
             target_train = roi_mean[0:int(len(roi_mean)/2)]
             target_test = roi_mean[int(len(roi_mean)/2):]
         elif movie_half == 1:
-            seed_train = seed_ts[int(len(seed_ts)/2):]
-            seed_test = seed_ts[0:int(len(seed_ts)/2)]
+            seed_train = seed_ts[int(len(seed_ts)/2):,:]
+            seed_test = seed_ts[0:int(len(seed_ts)/2),:]
             target_train = roi_mean[int(len(roi_mean)/2):]
             target_test = roi_mean[0:int(len(roi_mean)/2)]
 
         curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
         mean_score_list.append(curr_score)
-    
+
     mean_score = np.mean(mean_score_list)
+    
+    #calculate resampled SE
 
     
-    #calcualte resampled SE
     score = []
     #split into folds
     for fold in range(0,folds):
+
+        
         #sample cv_ind with replacement
         curr_ind = np.random.choice(cv_ind, len(cv_ind), replace = True)
-        
         
         curr_data = np.mean(roi_data[curr_ind,:],axis = 0)
 
@@ -227,19 +201,23 @@ def cross_val(roi_data,seed_ts):
 
             curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
             score.append(curr_score)
+
     
-    return mean_score, np.std(score)/np.sqrt(folds)
+    
+    se = np.std(score)/np.sqrt(folds)
+    return mean_score, se
 
-def predict_ts(seed_ts):
-
+def predict_ts(seed_ts, exp):
+    global study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages, roi_dir
+    study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+    roi_dir = f'{study_dir}/derivatives/rois'
     
     sub_summary = pd.DataFrame(columns = ['age','roi', 'corr','se'])
     for age in ages:
-        if age == 'adult':
-            curr_subs = sub_list[sub_list['Age'] >= 18]
-        else:
-            curr_subs = sub_list[sub_list['Age'] < 18]
-
+        curr_subs = sub_list[sub_list['AgeGroup'] == age]
+        #select first 24 subs in each age group
+        curr_subs = curr_subs.head(n_subs)
+        
         
         for roi in rois:
         
@@ -247,7 +225,7 @@ def predict_ts(seed_ts):
             
             #load all subject data from ROI
             roi_data = extract_roi_data(curr_subs, f'{roi}')
-            #roi_data = standardize_data(roi_data)
+            
             
             score, score_se = cross_val(roi_data,seed_ts)
             

@@ -37,7 +37,6 @@ pc_thresh = .9
 
 clf = Ridge()
 
-exp = 'hbn'
 
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
@@ -46,7 +45,7 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 n_subs = 24
 
 
-roi_dir = f'{study_dir}/derivatives/rois'
+
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 rois = ['LOC','FFA','A1','EVC']
@@ -187,6 +186,7 @@ def cross_val(roi_data,seed_ts):
         
         curr_score, curr_isc = fit_ts(seed_ts, train_data, test_data)
         score.append(curr_score)
+        iscs.append(curr_isc)
     
     final_score = np.mean(score)
     final_se = np.std(score)/np.sqrt(folds)
@@ -194,14 +194,15 @@ def cross_val(roi_data,seed_ts):
     return final_score, final_se, noise_ceiling
 
 def predict_ts(seed_ts,exp):
-    global study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages
+    global study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages, roi_dir
     study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+    roi_dir = f'{study_dir}/derivatives/rois'
     
     sub_summary = pd.DataFrame(columns = summary_cols)
     for age in ages:
         curr_subs = sub_list[sub_list['AgeGroup'] == age]
         #select first 24 subs in each age group
-        #curr_subs = curr_subs.head(n_subs)
+        curr_subs = curr_subs.head(n_subs)
         
         
         for roi in rois:

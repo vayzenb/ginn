@@ -32,7 +32,8 @@ layer = ['V1','V2','V4','pIT','aIT', 'decoder']
 
 
 use_pc_thresh = True
-n_comps = 10
+pc_perc = .99
+
 
 study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
@@ -86,7 +87,7 @@ if human_predict == True:
 
             if group_type == 'mean':
                 if use_pc_thresh == True:
-                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
+                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), pc_perc)
                 
                 pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
                 predictor_ts = pca.transform(predictor_ts)
@@ -125,13 +126,17 @@ if model_predict == True:
 
 
                 if use_pc_thresh == True:
-                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
+                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), pc_perc)
                 
                 pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
-                predictor_ts = pca.transform(predictor_ts)
+                predictor_comps = pca.transform(predictor_ts)
+                #standardize predictor_ts
+                predictor_comps = stats.zscore(predictor_comps, axis=0)
+
+                
                 
                 #predictor_ts = np.transpose(predictor_ts)
-                predictor_summary = predict_ts(predictor_ts, exp)
+                predictor_summary = predict_ts(predictor_comps, exp)
                 
                 
                 predictor_summary['architecture'] = mt
