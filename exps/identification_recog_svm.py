@@ -13,7 +13,7 @@ Created on Thu Feb  6 14:02:03 2020
 
 import os
 import sys
-sys.path.insert(1, '/user_data/vayzenbe/GitHub_Repos/ginn/model_training')
+sys.path.insert(1, '/user_data/vayzenbe/GitHub_Repos/ginn/modelling')
 
 import torch as nn
 import torch
@@ -41,14 +41,13 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 test_dir = "/user_data/vayzenbe/image_sets/"
 act_dir = '/lab_data/behrmannlab/vlad/ginn/activations'
 #test_dir = "/lab_data/plautlab/imagesets/"
-weights_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
+weights_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_weights'
 
 train_type = ['random','imagenet_noface', 'imagenet_oneface',
 'imagenet_vggface', 'vggface_oneobject', 'vggface']
 n_feats = [600,600, 601,1200, 601, 600]
 #train_type = ['vggface_oneobject', 'vggface']
-train_type = ['random']
-n_feats = [600]
+
 
 
 model_arch = ['cornet_z_cl','cornet_z_sl']

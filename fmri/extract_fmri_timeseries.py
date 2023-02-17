@@ -15,7 +15,7 @@ import pdb
 print('libraries loaded')
 #set up folders and ROIS
 
-exp = 'hbn'
+exp = 'aeronaut'
 study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 roi_dir=f'{study_dir}/derivatives/rois'
@@ -53,7 +53,7 @@ def extract_mv_ts(bold_vol, mask_dir):
 
 
 sub_file = f'{data_dir}/{sub}/{sub}_task-movieDM_bold.nii.gz'
-#sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
+sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
 
 whole_brain_mask = image.binarize_img(image.load_img(f'{roi_dir}/gm_mask.nii.gz'))
 #print(sub_file)
@@ -70,6 +70,7 @@ if os.path.exists(sub_file):
     whole_masker = maskers.NiftiMasker(mask_img=whole_brain_mask, detrend = True, standardize = True)
     whole_masker.fit(bold_vol)
     whole_ts = whole_masker.transform(bold_vol)
+    
     np.save(f'{out_dir}/whole_brain_ts',whole_ts)
     #mean_ts = np.mean(whole_ts, axis=1)
     

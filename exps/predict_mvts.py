@@ -9,7 +9,7 @@ import sys
 sys.path.insert(1, f'{curr_dir}/fmri')
 sys.path.insert(1, f'{curr_dir}')
 
-
+from scipy import stats
 import pandas as pd
 import numpy as np
 import pdb
@@ -80,6 +80,8 @@ if human_predict == True:
             roi = f'{rr}'
             print(f'predicting using {age} and {roi}...')
             predictor_ts = np.load(f'{predictor_dir}/{group_type}_{roi}_{age}_ts.npy')
+            #standardize predictor_ts
+            
             
 
             if group_type == 'mean':
@@ -113,8 +115,14 @@ if model_predict == True:
             for ll in layer:
                 print(f'predicting using {mt} {tt} {ll}...')
                 predictor_ts = np.load(f'{predictor_dir}/{mt}_{tt}_{ll}_{vid}_ts.npy')
-                #predictor_ts = predictor_ts[fix_tr:,:]
-                #pdb.set_trace()
+                
+                #standardize predictor_ts
+                predictor_ts = stats.zscore(predictor_ts, axis=0)
+
+                #convert nans to 0
+                predictor_ts[np.isnan(predictor_ts)] = 0
+
+
 
                 if use_pc_thresh == True:
                     n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), 0.9)
@@ -123,7 +131,7 @@ if model_predict == True:
                 predictor_ts = pca.transform(predictor_ts)
                 
                 #predictor_ts = np.transpose(predictor_ts)
-                predictor_summary = predict_ts(predictor_ts)
+                predictor_summary = predict_ts(predictor_ts, exp)
                 
                 
                 predictor_summary['architecture'] = mt

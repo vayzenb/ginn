@@ -30,23 +30,11 @@ cv_type = 'shuffle'
 folds = 24
 split_size = .5
 
+exp = 'aeronaut'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
-exp = params.exp
-exp_dir = params.exp_dir
-file_suf = params.file_suf
-fix_tr = params.fix_tr
-
-data_dir = params.data_dir
-study_dir = params.study_dir
-
-sub_list = params.sub_list
-
-file_suf = params.file_suf
-
-subj_dir= data_dir
-
-out_dir = f'{data_dir}/group_func'
-results_dir = f'{curr_dir}/results/isc'
+out_dir = f'{subj_dir}/group_func'
+#results_dir = f'{curr_dir}/results/isc'
 
 roi_dir = f'{study_dir}/derivatives/rois'
 
@@ -56,13 +44,14 @@ rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA',
 face_cov = np.load(f'{curr_dir}/fmri/pre_proc/{exp}_parametric_face_cov.npy')
 
 for sub in sub_list['participant_id']:
-    sub_dir = f'{data_dir}/sub-{sub}/timeseries'
+    sub_dir = f'{subj_dir}/sub-{sub}/timeseries'
 
 
     for roi in rois:
         print(f'{sub} {roi}')
         #load roi data
         roi_data = np.load(f'{sub_dir}/{roi}_ts_all.npy')
+        roi_data =np.loadtxt(f'{sub_dir}/{roi}_ts_mean.txt')
         roi_data = roi_data[fix_tr:,:]
 
         #remove voxels cols with 0s

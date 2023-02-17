@@ -1,6 +1,6 @@
 model_arch,train_type,test_stim,test_cond,fold_n,acc
-cornet_z_sl,vggface,objects,upright,1,0.49404117009750814
-cornet_z_sl,vggface,objects,upright,2,0.4956663055254605
-cornet_z_sl,vggface,objects,upright,3,0.4848320693391116
-cornet_z_sl,vggface,objects,upright,4,0.4989165763813651
-cornet_z_sl,vggface,objects,upright,5,0.5205850487540629
+cornet_z_sl,vggface,objects,upright,1,0.5119176598049837
+cornet_z_sl,vggface,objects,upright,2,0.49512459371614304
+cornet_z_sl,vggface,objects,upright,3,0.4934994582881907
+cornet_z_sl,vggface,objects,upright,4,0.508667388949079
+cornet_z_sl,vggface,objects,upright,5,0.49295774647887325

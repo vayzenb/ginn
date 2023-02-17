@@ -41,7 +41,7 @@ exp = 'hbn'
 
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
-study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+
 
 n_subs = 24
 
@@ -60,8 +60,10 @@ roi_suf = '_ts_all'
 folds = 20
 
 
-summary_cols = ['age', 'roi','corr']
+summary_cols = ['age','roi', 'corr','se', 'noise_ceiling']
 suf = 'mean_sub_crossval'
+
+
 
 def extract_pc(data, n_components=None):
 
@@ -83,6 +85,11 @@ def extract_roi_data(curr_subs, roi):
     n = 0
     all_data = []
     for sub in curr_subs['participant_id']:
+        #check if sub has sub- in front, else add it
+        if sub[0:4] != 'sub-':
+            sub = f'sub-{sub}'
+
+
         #check if file exists
         if os.path.exists(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy'):
             whole_ts = np.load(f'{subj_dir}/{sub}/timeseries/whole_brain_ts.npy')
@@ -149,19 +156,24 @@ def fit_ts(seed_ts, train_data, test_data):
 
     score = np.corrcoef(pred_ts,test_data)[0,1]
 
+    isc = np.corrcoef(train_data,test_data)[0,1]
+
 
        #all_scores.append(r_squared)
 
     #final_score = np.sum(all_scores)/(np.sum(target_pca.explained_variance_ratio_))
     
-    return score
+    return score, isc
 
 def cross_val(roi_data,seed_ts):
     print('running cross validation...')
+
+    
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
     
     score = []
+    iscs = []
     #split into folds
     for fold in range(0,folds):
         random.shuffle(cv_ind)
@@ -173,20 +185,24 @@ def cross_val(roi_data,seed_ts):
         test_data = np.mean(roi_data[test_ind],0)
         
         
-        curr_score = fit_ts(seed_ts, train_data, test_data)
+        curr_score, curr_isc = fit_ts(seed_ts, train_data, test_data)
         score.append(curr_score)
     
-    return np.mean(score), np.std(score)/np.sqrt(folds)
+    final_score = np.mean(score)
+    final_se = np.std(score)/np.sqrt(folds)
+    noise_ceiling = np.mean(iscs)
+    return final_score, final_se, noise_ceiling
 
-def predict_ts(seed_ts):
-
+def predict_ts(seed_ts,exp):
+    global study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages
+    study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
     
-    sub_summary = pd.DataFrame(columns = ['age','roi', 'corr','se'])
+    sub_summary = pd.DataFrame(columns = summary_cols)
     for age in ages:
         curr_subs = sub_list[sub_list['AgeGroup'] == age]
         #select first 24 subs in each age group
-        curr_subs = curr_subs.head(n_subs)
-
+        #curr_subs = curr_subs.head(n_subs)
+        
         
         for roi in rois:
         
@@ -196,10 +212,10 @@ def predict_ts(seed_ts):
             roi_data = extract_roi_data(curr_subs, f'{roi}')
             #roi_data = standardize_data(roi_data)
             
-            score, score_se = cross_val(roi_data,seed_ts)
+            score, score_se, noise_ceiling = cross_val(roi_data,seed_ts)
             
             
-            curr_data = pd.Series([age, f'{roi}', score, score_se],index= sub_summary.columns)
+            curr_data = pd.Series([age, f'{roi}', score, score_se,noise_ceiling],index= sub_summary.columns)
             sub_summary = sub_summary.append(curr_data,ignore_index = True)
 
                 

@@ -96,3 +96,4 @@ def split_roi_hemis():
 
 resample_roi()
 #split_roi_hemis()
+

@@ -13,10 +13,10 @@ import time
 import pdb
 import ginn_params as params
 
-mem = 24
+mem = 36
 run_time = "3-00:00:00"
 
-pause_time = 5 #how much time (minutes) to wait between jobs
+pause_time = 10 #how much time (minutes) to wait between jobs
 pause_crit = 10 #how many jobs to do before pausing
 
 exp = 'hbn'
@@ -29,9 +29,9 @@ def setup_sbatch(job_name, script_name):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=vayzenb@cmu.edu
 # Submit job to cpu queue                
-#SBATCH -p cpu
-#SBATCH --cpus-per-task=1
-#SBATCH --gres=gpu:0
+#SBATCH -p gpu
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
 # Job memory request
 #SBATCH --mem={mem}gb
 # Time limit days-hrs:min:sec
@@ -41,36 +41,22 @@ def setup_sbatch(job_name, script_name):
 # Standard output and error log
 #SBATCH --output={curr_dir}/slurm_out/{job_name}.out
 
-conda activate fmri_new
+conda activate ml_new
 
 {script_name}
 """
     return sbatch_setup
 
 
-'''
-# run low-demand scripts
-for script in script_list:
-    job_name = script
-    script_path = f'python {curr_dir}/eeg/{script}.py'
-    print(job_name)
-    #create sbatch script
-    f = open(f"{job_name}.sh", "a")
-    f.writelines(setup_sbatch(job_name, script_path))
-    
-    f.close()
-    
-    subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True)
-    os.remove(f"{job_name}.sh")
-'''
 
-""" 
+
 model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject']
+
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
-layers = ['decoder']
+
 sub_layers = ['output', 'output', 'output', 'output', 'output', 'avgpool']
-sub_layers = ['avgpool']
+
+n = 0
 #run high-demand scripts
 for model in model_types:
     for layer in layers:
@@ -84,8 +70,14 @@ for model in model_types:
         f.close()
         
         subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True)
-        os.remove(f"{job_name}.sh") """
-
+        os.remove(f"{job_name}.sh") 
+    
+        n+=1
+        if n >= pause_crit:
+            #wait X minutes
+            time.sleep(pause_time*60)
+            n = 0
+'''
 n =0 
 for sub in sub_list['participant_id']:
     job_name = f'extract_ts_{sub}'
@@ -106,3 +98,4 @@ for sub in sub_list['participant_id']:
         #wait X minutes
         time.sleep(pause_time*60)
         n = 0
+'''

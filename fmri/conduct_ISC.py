@@ -37,21 +37,11 @@ folds = 24
 split_size = .5
 
 
-exp = params.exp
-exp_dir = params.exp_dir
-file_suf = params.file_suf
-fix_tr = params.fmri_tr
+exp = 'hbn'
 
-data_dir = params.data_dir
-study_dir = params.study_dir
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
-sub_list = params.sub_list
-
-file_suf = params.file_suf
-
-subj_dir= data_dir
-
-out_dir = f'{data_dir}/group_func'
+out_dir = f'{subj_dir}/group_func'
 results_dir = f'{curr_dir}/results/isc'
 
 roi_dir = f'{study_dir}/derivatives/rois'
