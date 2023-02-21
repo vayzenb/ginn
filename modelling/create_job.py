@@ -23,7 +23,7 @@ stim_dir = f'/lab_data/behrmannlab/image_sets/'
 #training info
 model_arch = 'cornet_z_sl'
 
-train_type = [ 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface']
+train_type = ['vggface', 'vggface_oneobject', 'imagenet_noface', 'imagenet_oneface', 'imagenet_vggface']
 #train_type = ['vggface']
 
 

@@ -46,9 +46,9 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
 
 suf=''
 
-image_dir= '/scratch/vayzenbe/'
-#image_dir ='/lab_data/behrmannlab/image_sets/'
-out_dir = '/lab_data/behrmannlab/vlad/ginn/model_weights'
+
+image_dir ='/lab_data/behrmannlab/image_sets/'
+out_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_weights'
 
 print('read some args')
 
@@ -82,6 +82,7 @@ n_epochs = args.epochs
 n_save = 5 #save model every X epochs
 
 def save_checkpoint(state, is_best, epoch, filename='checkpoint.pth.tar'):
+    
     torch.save(state, f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar')
     if (epoch) == 1 or (epoch) % n_save  == 0:
         shutil.copyfile(f'{out_dir}/{filename}_checkpoint_{args.rand_seed}.pth.tar', f'{out_dir}/{filename}_{epoch}_{args.rand_seed}.pth.tar')

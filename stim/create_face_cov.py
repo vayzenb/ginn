@@ -18,13 +18,15 @@ import matplotlib.pyplot as plt
 from glob import glob
 
 # %%
-vid = params.vid
+exp = 'hbn'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 frame_dir = f'{curr_dir}/stim/fmri_videos/frames/{vid}'
 
 frame_list = glob(f'{frame_dir}/*')
 #frame_list = frame_list[0:50]
 
+print(vid)
 
 # %%
 frame_covs = pd.DataFrame(columns = ['frame', 'present', 'proportion'])

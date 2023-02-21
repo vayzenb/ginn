@@ -31,6 +31,7 @@ train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggfac
 layer = ['V1','V2','V4','pIT','aIT', 'decoder']
 
 
+
 use_pc_thresh = True
 pc_perc = .99
 
@@ -45,7 +46,7 @@ neural predictors
 ages = ['adult']
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 #rois = ['LOC','FFA','A1','EVC']
-file_suf = ''
+file_suf = '_og'
 
 group_type = 'mean'
 
@@ -53,7 +54,7 @@ group_type = 'mean'
 if len(sys.argv) > 1:
     analysis_type = sys.argv[1]
 else:
-    analysis_type = 'mean_sub_crossval'
+    analysis_type = 'mean_movie_crossval'
 
 
 if analysis_type == 'mean_movie_crossval':
@@ -124,11 +125,7 @@ if model_predict == True:
                 predictor_ts[np.isnan(predictor_ts)] = 0
 
 
-
-                if use_pc_thresh == True:
-                    n_comps = analysis_funcs.calc_pc_n(analysis_funcs.extract_pc(predictor_ts), pc_perc)
-                
-                pca = analysis_funcs.extract_pc(predictor_ts, n_comps)
+                pca = analysis_funcs.extract_pc(predictor_ts)
                 predictor_comps = pca.transform(predictor_ts)
                 #standardize predictor_ts
                 predictor_comps = stats.zscore(predictor_comps, axis=0)
@@ -136,7 +133,7 @@ if model_predict == True:
                 
                 
                 #predictor_ts = np.transpose(predictor_ts)
-                predictor_summary = predict_ts(predictor_comps, exp)
+                predictor_summary,boot_summary = predict_ts(predictor_comps, exp)
                 
                 
                 predictor_summary['architecture'] = mt
@@ -144,6 +141,9 @@ if model_predict == True:
                 predictor_summary['layer'] = ll
 
                 sub_summary = sub_summary.append(predictor_summary)
+
+                #save bootstrapped summary
+                boot_summary.to_csv(f'{curr_dir}/results/mean_ts/seperated/{exp}_{model_arch}_{train_type}_{layer}_{analysis_type}_boot{file_suf}.csv', index=False)
                 
 
-        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{summary_type}_{analysis_type}{file_suf}.csv', index=False)
+        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{model_arch}_{analysis_type}{file_suf}.csv', index=False)

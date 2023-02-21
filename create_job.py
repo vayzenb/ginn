@@ -13,13 +13,13 @@ import time
 import pdb
 import ginn_params as params
 
-mem = 36
+mem = 24
 run_time = "3-00:00:00"
 
-pause_time = 10 #how much time (minutes) to wait between jobs
-pause_crit = 10 #how many jobs to do before pausing
+pause_time = 2 #how much time (minutes) to wait between jobs
+pause_crit = 15 #how many jobs to do before pausing
 
-exp = 'hbn'
+exp = 'aeronaut'
 study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 def setup_sbatch(job_name, script_name):
@@ -29,9 +29,9 @@ def setup_sbatch(job_name, script_name):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=vayzenb@cmu.edu
 # Submit job to cpu queue                
-#SBATCH -p gpu
-#SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:1
+#SBATCH -p cpu
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:0
 # Job memory request
 #SBATCH --mem={mem}gb
 # Time limit days-hrs:min:sec
@@ -41,7 +41,7 @@ def setup_sbatch(job_name, script_name):
 # Standard output and error log
 #SBATCH --output={curr_dir}/slurm_out/{job_name}.out
 
-conda activate ml_new
+conda activate fmri_new
 
 {script_name}
 """
@@ -51,13 +51,37 @@ conda activate ml_new
 
 
 model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-
+model_types = ['imagenet_noface']
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 
 sub_layers = ['output', 'output', 'output', 'output', 'output', 'avgpool']
 
 n = 0
-#run high-demand scripts
+#predict ts
+for model in model_types:
+    for layer in layers:
+        job_name = f'predict_ts_{model}_{layer}'
+        script_path = f'python {curr_dir}/exps/batch_predict_ts.py {exp} mean_movie_crossval cornet_z_sl {model} {layer}'
+        print(job_name)
+        #create sbatch script
+        f = open(f"{job_name}.sh", "a")
+        f.writelines(setup_sbatch(job_name, script_path))
+        
+        f.close()
+        
+        subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True)
+        os.remove(f"{job_name}.sh") 
+    
+        n+=1
+        if n >= pause_crit:
+            #wait X minutes
+            time.sleep(pause_time*60)
+            n = 0
+
+
+""" 
+#extract model ts
+n = 0
 for model in model_types:
     for layer in layers:
         job_name = f'extract_ts_{model}_{layer}'
@@ -76,8 +100,9 @@ for model in model_types:
         if n >= pause_crit:
             #wait X minutes
             time.sleep(pause_time*60)
-            n = 0
+            n = 0 """
 '''
+#extract fmri ts
 n =0 
 for sub in sub_list['participant_id']:
     job_name = f'extract_ts_{sub}'

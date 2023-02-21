@@ -13,27 +13,11 @@ import nibabel as nib
 from nilearn import signal
 import ginn_params as params
 
-
-age = 'adult'
-global_signal = 'mean'
-print('libraries loaded')
-#set up folders and ROIS
-exp = params.exp
-exp_dir = params.exp_dir
-file_suf = params.file_suf
-fix_tr = params.fix_tr
-
-data_dir = params.data_dir
-study_dir = params.study_dir
-
-sub_list = params.sub_list
-
-ages = ['infant', 'adult']
-
-file_suf = params.file_suf
+exp = 'aeronaut'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 roi_dir=f'{study_dir}/derivatives/rois'
-subj_dir=f'{study_dir}/derivatives'
+
 
 
 #whole_brain_mask = image.load_img('/opt/fsl/6.0.3/data/standard/MNI152_T1_2mm_brain.nii.gz')
@@ -45,17 +29,6 @@ out_dir = f'{subj_dir}/group_func'
 #create output directory
 os.makedirs(out_dir, exist_ok=True)
 
-def extract_pc(data, n_components=None):
-
-    """
-    Extract principal components
-    if n_components isn't set, it will extract all it can
-    """
-    
-    pca = PCA(n_components = n_components)
-    pca.fit(data)
-    
-    return pca
 
 def extract_roi_data(curr_subs, roi):
     '''
@@ -69,11 +42,8 @@ def extract_roi_data(curr_subs, roi):
         
 
         #remove global signal
-        if global_signal == 'pca':
-            pca = extract_pc(whole_ts, n_components = 10)
-            whole_confound = pca.transform(whole_ts)
-        elif global_signal == 'mean':
-            whole_confound = np.mean(whole_ts,axis =1)
+    
+        whole_confound = np.mean(whole_ts,axis =1)
         
         
         sub_ts = np.load(f'{subj_dir}/sub-{sub}/timeseries/{roi}_ts_all.npy')
@@ -97,12 +67,8 @@ def extract_roi_data(curr_subs, roi):
 
 
 for age in ages:
-        if age == 'adult':
-            curr_subs = sub_list[sub_list['Age'] >= 18]
-        else:
-            curr_subs = sub_list[sub_list['Age'] < 18]
+        curr_subs = sub_list[sub_list['AgeGroup'] == age]
 
-        
         for roi in rois:
         
             

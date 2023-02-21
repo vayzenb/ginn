@@ -35,27 +35,29 @@ use_pc_thresh = True
 
 pc_thresh = .9
 
-clf = LinearRegression()
+
 
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
-
+results_dir = f'{curr_dir}/results'
 
 
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 rois = ['LOC','FFA','A1','EVC']
+
+
 #suffix of roi to load
 #options are _ts_all, _face, _nonface
 roi_suf = '_ts_all'
 
-
+alpha = .05
 n_subs = 24
-folds = 24
+folds = 50 #change to 1000 for real analysis
 
 
-summary_cols = ['age','roi', 'corr','se']
+summary_cols = ['age','roi', 'corr','se', 'ci_low','ci_high']
 suf = 'mean_movie_crossval'
 
 def extract_pc(data, n_components=None):
@@ -117,9 +119,6 @@ def extract_roi_data(curr_subs, roi):
     #pdb.set_trace()    
     return all_data
 
-def tune_hyperparams(roi_data,seed_ts):
-
-
 
 def fit_ts(seed_train,seed_test, train_data, test_data):
     """
@@ -144,75 +143,113 @@ def fit_ts(seed_train,seed_test, train_data, test_data):
     
     return score
 
-def cross_val(roi_data,seed_ts):
+def find_optimal_pc(roi_data, predictor_ts):
+    
+    iter_num = int(predictor_ts.shape[1]/vols)
+
+    
+    roi_mean = np.mean(roi_data,axis=0)
+    
+    
+    all_scores = []
+    for pc in range(iter_num,vols,iter_num):
+        
+        
+        seed_ts = predictor_ts[:,0:pc]
+        
+
+        score = []
+        for movie_half in range(0,2):
+            if movie_half == 0:
+                seed_train = seed_ts[0:int(len(seed_ts)/2),:]
+                seed_test = seed_ts[int(len(seed_ts)/2):,:]
+                target_train = roi_mean[0:int(len(roi_mean)/2)]
+                target_test = roi_mean[int(len(roi_mean)/2):]
+            elif movie_half == 1:
+                seed_train = seed_ts[int(len(seed_ts)/2):,:]
+                seed_test = seed_ts[0:int(len(seed_ts)/2),:]
+                target_train = roi_mean[int(len(roi_mean)/2):]
+                target_test = roi_mean[0:int(len(roi_mean)/2)]
+
+            curr_score = fit_ts(seed_train,seed_test,target_train,target_test)
+            
+            score.append(curr_score)
+        all_scores.append(np.mean(score))
+    
+    #find index of max value
+    max_ind = np.argmax(all_scores)
+    
+
+    return max_ind+1
+
+def cross_val(roi_data,predictor_ts):
     
     print('running cross validation...')
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
-
-    roi_mean = np.mean(roi_data, axis = 0)
-    mean_score_list = []
-    #calcualte mean across movie halves for all subs
-    #this is happening inside the fold loop so account for variability in ridge fitting
-    for movie_half in range(0,2):
-    
-        if movie_half == 0:
-            seed_train = seed_ts[0:int(len(seed_ts)/2),:]
-            seed_test = seed_ts[int(len(seed_ts)/2):,:]
-            target_train = roi_mean[0:int(len(roi_mean)/2)]
-            target_test = roi_mean[int(len(roi_mean)/2):]
-        elif movie_half == 1:
-            seed_train = seed_ts[int(len(seed_ts)/2):,:]
-            seed_test = seed_ts[0:int(len(seed_ts)/2),:]
-            target_train = roi_mean[int(len(roi_mean)/2):]
-            target_test = roi_mean[0:int(len(roi_mean)/2)]
-
-        curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
-        mean_score_list.append(curr_score)
-
-    mean_score = np.mean(mean_score_list)
-    
-    #calculate resampled SE
-
     
     score = []
     #split into folds
     for fold in range(0,folds):
 
-        
-        #sample cv_ind with replacement
-        curr_ind = np.random.choice(cv_ind, len(cv_ind), replace = True)
-        
-        curr_data = np.mean(roi_data[curr_ind,:],axis = 0)
+        #shuffle cv_ind
+        random.shuffle(cv_ind)
 
+        #split into train and test for hyperparameter tuning
+        #use train data to find how many PCs to use
+        hp_train = roi_data[cv_ind[0:int(len(cv_ind)/2)],:]
+        hp_test = roi_data[cv_ind[int(len(cv_ind)/2):],:]
+
+        #find optimal PCs
+        optimal_pc = find_optimal_pc(hp_train, predictor_ts)
+
+        seed_ts = predictor_ts[:,0:optimal_pc]
+  
+
+        roi_mean = np.mean(hp_test,axis=0)
+
+        
         for movie_half in range(0,2):
             
             if movie_half == 0:
                 seed_train = seed_ts[0:int(len(seed_ts)/2),:]
                 seed_test = seed_ts[int(len(seed_ts)/2):,:]
-                target_train = curr_data[0:int(len(curr_data)/2)]
-                target_test = curr_data[int(len(curr_data)/2):]
+                target_train = roi_mean[0:int(len(roi_mean)/2)]
+                target_test = roi_mean[int(len(roi_mean)/2):]
             elif movie_half == 1:
                 seed_train = seed_ts[int(len(seed_ts)/2):,:]
                 seed_test = seed_ts[0:int(len(seed_ts)/2),:]
-                target_train = curr_data[int(len(curr_data)/2):]
-                target_test = curr_data[0:int(len(curr_data)/2)]
+                target_train = roi_mean[int(len(roi_mean)/2):]
+                target_test = roi_mean[0:int(len(roi_mean)/2)]
 
 
             curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
             score.append(curr_score)
 
     
-    
+
+    mean_score = np.mean(score)
+    #caluclate 95% confidence interval
+    ci_low = np.percentile(score, alpha*100)
+    ci_high= np.percentile(score, 100-alpha*100)
+
     se = np.std(score)/np.sqrt(folds)
-    return mean_score, se
+
+    #convert score to np
+    score = np.asanyarray(score)
+    #save score
+    
+
+
+    return mean_score, se, ci_low, ci_high, score
 
 def predict_ts(seed_ts, exp):
     global study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages, roi_dir
     study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
     roi_dir = f'{study_dir}/derivatives/rois'
     
-    sub_summary = pd.DataFrame(columns = ['age','roi', 'corr','se'])
+    sub_summary = pd.DataFrame(columns = summary_cols)
+    boot_summary = pd.DataFrame(columns = rois)
     for age in ages:
         curr_subs = sub_list[sub_list['AgeGroup'] == age]
         #select first 24 subs in each age group
@@ -227,15 +264,21 @@ def predict_ts(seed_ts, exp):
             roi_data = extract_roi_data(curr_subs, f'{roi}')
             
             
-            score, score_se = cross_val(roi_data,seed_ts)
+            score, score_se,ci_low, ci_high, scores = cross_val(roi_data,seed_ts)
+
+            boot_summary[f'{age}_{roi}'] = scores
+
+
             
             
-            curr_data = pd.Series([age, f'{roi}', score, score_se],index= sub_summary.columns)
+            curr_data = pd.Series([age, f'{roi}', score, score_se,ci_low, ci_high],index= sub_summary.columns)
             sub_summary = sub_summary.append(curr_data,ignore_index = True)
+
+            
 
                 
 
-    return sub_summary
+    return sub_summary, boot_summary
                     
                 
 

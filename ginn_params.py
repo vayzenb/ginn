@@ -22,6 +22,8 @@ def load_params(exp):
         
         fps = 24 # frame per second of video (how many rows go into 1 sec)
 
+        ages = [3, 4, 5, 6, 7, 18]
+
 
     elif exp == 'hbn':
         '''
@@ -59,7 +61,7 @@ def load_params(exp):
         
         fps = 24 # frame per second of video (how many rows go into 1 sec)
 
-        ages = ['adult', 'infant'] #age groups in the study
+        ages = ['infant', 'adult'] #age groups in the study
         
     bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
 
