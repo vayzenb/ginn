@@ -53,6 +53,8 @@ conda activate fmri_new
 model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 model_types = ['imagenet_noface']
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
+model_types = ['imagenet_noface']
+layers = ['V1','V2']
 
 sub_layers = ['output', 'output', 'output', 'output', 'output', 'avgpool']
 
@@ -61,7 +63,7 @@ n = 0
 for model in model_types:
     for layer in layers:
         job_name = f'predict_ts_{model}_{layer}'
-        script_path = f'python {curr_dir}/exps/batch_predict_ts.py {exp} mean_movie_crossval cornet_z_sl {model} {layer}'
+        script_path = f'python {curr_dir}/exps/analysis_setup.py {exp} mean_movie_crossval cornet_z_sl {model} {layer}'
         print(job_name)
         #create sbatch script
         f = open(f"{job_name}.sh", "a")

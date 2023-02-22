@@ -11,7 +11,7 @@ def load_params(exp):
 
     if exp == 'pixar':
         vid = 'partly_cloudy'
-        file_suf = 'pixar_run-001_swrf'
+        fmri_suf = 'pixar_run-001_swrf'
         
         fix_tr = 6
 
@@ -30,7 +30,7 @@ def load_params(exp):
         Despicable me (DM) fmri and modelling params
         '''
         
-        file_suf = '_task-movieDM_bold'
+        fmri_suf = '_task-movieDM_bold'
         
         fix_tr = 0
         
@@ -49,7 +49,7 @@ def load_params(exp):
 
     elif exp == 'aeronaut':
         vid = 'aeronaut'
-        file_suf = '_Z'
+        fmri_suf = '_Z'
         
         fix_tr = 3
         
@@ -65,7 +65,7 @@ def load_params(exp):
         
     bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
 
-    return study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages
+    return study_dir,subj_dir, sub_list, vid, fmri_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages
 
 
 

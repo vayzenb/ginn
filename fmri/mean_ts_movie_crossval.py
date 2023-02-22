@@ -55,7 +55,7 @@ roi_suf = '_ts_all'
 
 alpha = .05
 n_subs = 24
-folds = 3 
+folds = 50
 
 
 summary_cols = ['age','roi', 'corr','se', 'ci_low','ci_high']
