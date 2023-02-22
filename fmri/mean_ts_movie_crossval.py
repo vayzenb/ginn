@@ -46,6 +46,7 @@ results_dir = f'{curr_dir}/results'
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 rois = ['LOC','FFA','A1','EVC']
+rois = ['FFA','A1']
 
 
 #suffix of roi to load
@@ -54,7 +55,7 @@ roi_suf = '_ts_all'
 
 alpha = .05
 n_subs = 24
-folds = 50 #change to 1000 for real analysis
+folds = 3 
 
 
 summary_cols = ['age','roi', 'corr','se', 'ci_low','ci_high']
@@ -192,8 +193,8 @@ def cross_val(roi_data,predictor_ts):
     #split into folds
     for fold in range(0,folds):
 
-        #shuffle cv_ind
-        random.shuffle(cv_ind)
+        #shuffle cv_ind use fold as the same random seed
+        random.Random(fold).shuffle(cv_ind)
 
         #split into train and test for hyperparameter tuning
         #use train data to find how many PCs to use
@@ -249,7 +250,7 @@ def predict_ts(seed_ts, exp):
     roi_dir = f'{study_dir}/derivatives/rois'
     
     sub_summary = pd.DataFrame(columns = summary_cols)
-    boot_summary = pd.DataFrame(columns = rois)
+    boot_summary = pd.DataFrame()
     for age in ages:
         curr_subs = sub_list[sub_list['AgeGroup'] == age]
         #select first 24 subs in each age group

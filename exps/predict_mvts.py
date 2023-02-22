@@ -30,6 +30,9 @@ model_arch = ['cornet_z_sl']
 train_type = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layer = ['V1','V2','V4','pIT','aIT', 'decoder']
 
+train_type = ['imagenet_noface', 'vggface']
+layer = ['V1','V2','V4','pIT','aIT', 'decoder']
+
 
 
 use_pc_thresh = True
@@ -46,7 +49,7 @@ neural predictors
 ages = ['adult']
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 #rois = ['LOC','FFA','A1','EVC']
-file_suf = '_og'
+file_suf = '_test2'
 
 group_type = 'mean'
 
@@ -142,8 +145,11 @@ if model_predict == True:
 
                 sub_summary = sub_summary.append(predictor_summary)
 
+                
                 #save bootstrapped summary
-                boot_summary.to_csv(f'{curr_dir}/results/mean_ts/seperated/{exp}_{model_arch}_{train_type}_{layer}_{analysis_type}_boot{file_suf}.csv', index=False)
+                boot_summary.to_csv(f'{curr_dir}/results/mean_ts/resamples/{exp}_{mt}_{tt}_{ll}_{analysis_type}_boot{file_suf}.csv', index=False)
+                #save seperate summary for each sub
+                predictor_summary.to_csv(f'{curr_dir}/results/mean_ts/seperated/{exp}_{mt}_{tt}_{ll}_{analysis_type}{file_suf}.csv', index=False)
                 
 
-        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{model_arch}_{analysis_type}{file_suf}.csv', index=False)
+        sub_summary.to_csv(f'{curr_dir}/results/mean_ts/{exp}_{mt}_{analysis_type}{file_suf}.csv', index=False)

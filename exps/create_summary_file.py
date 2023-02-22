@@ -22,7 +22,7 @@ study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bi
 model_arch = 'cornet_z_sl'
 train_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
-file_suf = '_3'
+file_suf = '_1'
 
 results_dir = f'{curr_dir}/results/mean_ts'
 
