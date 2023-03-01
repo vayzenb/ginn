@@ -17,6 +17,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from glob import glob
 
+print('libraries loaded')
 # %%
 exp = 'hbn'
 study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
@@ -25,13 +26,13 @@ frame_dir = f'{curr_dir}/stim/fmri_videos/frames/{vid}'
 
 frame_list = glob(f'{frame_dir}/*')
 #frame_list = frame_list[0:50]
-
+steps = 6
 print(vid)
 
 # %%
 frame_covs = pd.DataFrame(columns = ['frame', 'present', 'proportion'])
 fn = 1
-for frame in range(fn,len(frame_list)+1):
+for frame in range(fn,len(frame_list)+1,steps):
 
     image = face_recognition.load_image_file(f'{frame_dir}/{vid}_{frame}.jpg')
     face_locations = face_recognition.face_locations(image,model ='cnn')
@@ -51,7 +52,9 @@ for frame in range(fn,len(frame_list)+1):
     print(f'Frame {frame} of {len(frame_list)}')
     
 
-frame_covs.to_csv(f'{curr_dir}/stim/fmri_videos/{vid}_face_covs.csv', index=False)
+    #save every 500 frames
+    if frame % 500 == 0:
+        frame_covs.to_csv(f'{curr_dir}/stim/fmri_videos/{vid}_face_covs.csv', index=False)
 
 
 

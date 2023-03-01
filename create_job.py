@@ -16,12 +16,12 @@ import ginn_params as params
 mem = 24
 run_time = "3-00:00:00"
 
-pause_time = 2 #how much time (minutes) to wait between jobs
-pause_crit = 15 #how many jobs to do before pausing
+pause_time = 5 #how much time (minutes) to wait between jobs
+pause_crit = 10 #how many jobs to do before pausing
 
 exp = 'aeronaut'
-study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
-
+study_dir,subj_dir, sub_list, vid, fmri_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+suf = ''
 def setup_sbatch(job_name, script_name):
     sbatch_setup = f"""#!/bin/bash -l
 # Job name
@@ -48,13 +48,10 @@ conda activate fmri_new
     return sbatch_setup
 
 
-
-
 model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-model_types = ['imagenet_noface']
+
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
-model_types = ['imagenet_noface']
-layers = ['V1','V2']
+
 
 sub_layers = ['output', 'output', 'output', 'output', 'output', 'avgpool']
 
@@ -62,7 +59,7 @@ n = 0
 #predict ts
 for model in model_types:
     for layer in layers:
-        job_name = f'predict_ts_{model}_{layer}'
+        job_name = f'{exp}_predict_ts_{model}_{layer}{suf}'
         script_path = f'python {curr_dir}/exps/analysis_setup.py {exp} mean_movie_crossval cornet_z_sl {model} {layer}'
         print(job_name)
         #create sbatch script

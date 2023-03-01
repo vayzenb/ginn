@@ -45,13 +45,17 @@ results_dir = f'{curr_dir}/results'
 
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-rois = ['LOC','FFA','A1','EVC']
-rois = ['FFA','A1']
+
+
+
 
 
 #suffix of roi to load
 #options are _ts_all, _face, _nonface
-roi_suf = '_ts_all'
+roi_suf = ''
+
+if roi_suf == '':
+    roi_suf = '_ts_all'
 
 alpha = .05
 n_subs = 24
@@ -82,10 +86,11 @@ def extract_roi_data(curr_subs, roi):
     all_data = []
     for sub in curr_subs['participant_id']:
         #check if sub has sub- in front, else add it
+        
         if sub[0:4] != 'sub-':
             sub = f'sub-{sub}'
 
-
+        
         #check if file exists
         if os.path.exists(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy'):
             whole_ts = np.load(f'{subj_dir}/{sub}/timeseries/whole_brain_ts.npy')
@@ -117,7 +122,7 @@ def extract_roi_data(curr_subs, roi):
             sub_ts=np.mean(sub_ts, axis = 0)
             
             all_data.append(sub_ts)
-    #pdb.set_trace()    
+    
     return all_data
 
 
@@ -158,7 +163,7 @@ def find_optimal_pc(roi_data, predictor_ts):
         
         seed_ts = predictor_ts[:,0:pc]
         
-
+        
         score = []
         for movie_half in range(0,2):
             if movie_half == 0:
@@ -189,17 +194,18 @@ def cross_val(roi_data,predictor_ts):
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
     
-    score = []
+    
     #split into folds
+    score = []
     for fold in range(0,folds):
 
         #shuffle cv_ind use fold as the same random seed
         random.Random(fold).shuffle(cv_ind)
-
+        
         #split into train and test for hyperparameter tuning
         #use train data to find how many PCs to use
-        hp_train = roi_data[cv_ind[0:int(len(cv_ind)/2)],:]
-        hp_test = roi_data[cv_ind[int(len(cv_ind)/2):],:]
+        hp_train = roi_data[cv_ind[0:int(len(cv_ind)/2)]]
+        hp_test = roi_data[cv_ind[int(len(cv_ind)/2):]]
 
         #find optimal PCs
         optimal_pc = find_optimal_pc(hp_train, predictor_ts)
@@ -209,7 +215,7 @@ def cross_val(roi_data,predictor_ts):
 
         roi_mean = np.mean(hp_test,axis=0)
 
-        
+        split_score = []
         for movie_half in range(0,2):
             
             if movie_half == 0:
@@ -225,9 +231,10 @@ def cross_val(roi_data,predictor_ts):
 
 
             curr_score = fit_ts(seed_train,seed_test, target_train, target_test)
-            score.append(curr_score)
+            split_score.append(curr_score)
 
     
+        score.append(np.mean(split_score))
 
     mean_score = np.mean(score)
     #caluclate 95% confidence interval
@@ -249,6 +256,7 @@ def predict_ts(seed_ts, exp):
     study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
     roi_dir = f'{study_dir}/derivatives/rois'
     
+    
     sub_summary = pd.DataFrame(columns = summary_cols)
     boot_summary = pd.DataFrame()
     for age in ages:
@@ -261,8 +269,10 @@ def predict_ts(seed_ts, exp):
         
             print(f'predicting {age} {roi} ...')
             
+            
             #load all subject data from ROI
             roi_data = extract_roi_data(curr_subs, f'{roi}')
+            
             
             
             score, score_se,ci_low, ci_high, scores = cross_val(roi_data,seed_ts)

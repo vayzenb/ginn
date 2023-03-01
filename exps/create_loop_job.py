@@ -31,8 +31,6 @@ model_archs = ['cornet_z_sl']
 train_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 
-train_type = ['imagenet_noface', 'vggface']
-layer = ['V1','V2','V4','pIT','aIT', 'decoder']
 
 
 
@@ -49,8 +47,8 @@ neural predictors
 '''
 ages = ['adult']
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-#rois = ['LOC','FFA','A1','EVC']
-file_suf = '_4batch'
+
+file_suf = ''
 
 group_type = 'mean'
 

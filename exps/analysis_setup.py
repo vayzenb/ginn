@@ -20,9 +20,6 @@ import analysis_funcs
 #analysis scripts
 exp = 'aeronaut'
 
-human_predict = False
-model_predict = False
-custom_predict = True
 suf = ''
 '''
 model predictors
@@ -36,10 +33,8 @@ pc_perc = .99
 '''
 neural predictors
 '''
-ages = ['adult']
-rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-rois = ['LOC','FFA','A1','EVC']
-file_suf = '_5batch'
+
+file_suf = ''
 
 
 
