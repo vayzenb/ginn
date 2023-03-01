@@ -21,7 +21,8 @@ pause_crit = 10 #how many jobs to do before pausing
 
 exp = 'aeronaut'
 study_dir,subj_dir, sub_list, vid, fmri_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
-suf = ''
+suf = '_45PCs'
+
 def setup_sbatch(job_name, script_name):
     sbatch_setup = f"""#!/bin/bash -l
 # Job name
@@ -48,11 +49,44 @@ conda activate fmri_new
     return sbatch_setup
 
 
-model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
-
+""" #Predict using model combos
+model_types = ['imagenet_noface', 'vggface']
 layers = ['V1','V2','V4','pIT','aIT', 'decoder']
+n= 0
+for model1 in model_types:
+    for layer1 in layers:
+        for model2 in model_types:
+            for layer2 in layers:
+
+                if model1 == model2:
+                    continue
+
+                job_name = f'{exp}_predict_{model1}_{model2}_{layer1}_{layer2}{suf}'
+                print(job_name)
+                script_path = f'python {curr_dir}/exps/predict_combined_model.py {exp} mean_movie_crossval cornet_z_sl {model1} {model2} {layer1} {layer2}'
+
+                #create sbatch script
+                f = open(f"{job_name}.sh", "a")
+                f.writelines(setup_sbatch(job_name, script_path))
+                
+                f.close()
+                
+                subprocess.run(['sbatch', f"{job_name}.sh"],check=True, capture_output=True, text=True)
+                os.remove(f"{job_name}.sh") 
+            
+                n+=1
+                if n >= pause_crit:
+                    #wait X minutes
+                    time.sleep(pause_time*60)
+                    n = 0
 
 
+ """
+
+
+#Predict individual using model ts
+model_types = ['imagenet_noface', 'imagenet_oneface', 'imagenet_vggface', 'vggface_oneobject', 'vggface', 'random']
+layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 sub_layers = ['output', 'output', 'output', 'output', 'output', 'avgpool']
 
 n = 0
@@ -76,7 +110,7 @@ for model in model_types:
             #wait X minutes
             time.sleep(pause_time*60)
             n = 0
-
+ 
 
 """ 
 #extract model ts

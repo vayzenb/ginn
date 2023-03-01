@@ -38,7 +38,52 @@ model_types = [['imagenet_noface',  'vggface'],['imagenet_noface', 'imagenet_vgg
 layers = [['V2','pIT'],['V2','V1','pIT'],
           ['V2','aIT'],['V2','pIT','aIT']]
 
+model_types =['imagenet_noface',  'vggface']
+layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 
+#loop through all models and all layers
+for model1 in model_types:
+    for layer1 in layers:
+        #load model data 
+        predictor1 = np.load(f'{predictor_dir}/{model_arch}_{model1}_{layer1}_{vid}_ts.npy')
+
+        predictor1 = stats.zscore(predictor1, axis=0)
+
+        #convert nans to 0
+        predictor1[np.isnan(predictor1)] = 0
+
+
+        pca = analysis_funcs.extract_pc(predictor1)
+        predictor_comps1 = pca.transform(predictor1)
+        #standardize predictor_ts
+        predictor_comps1 = stats.zscore(predictor_comps1, axis=0)
+
+
+        for model2 in model_types:
+            for layer2 in layers:
+                predictor2 = np.load(f'{predictor_dir}/{model_arch}_{model2}_{layer2}_{vid}_ts.npy')
+                predictor2 = stats.zscore(predictor2, axis=0)
+
+                #convert nans to 0
+                predictor2[np.isnan(predictor2)] = 0
+
+                pca = analysis_funcs.extract_pc(predictor2)
+                predictor_comps2 = pca.transform(predictor2)
+                #standardize predictor_ts
+                predictor_comps2 = stats.zscore(predictor_comps2, axis=0)
+
+                #combine model data in alternating order                
+                
+                combined_data = np.zeros((predictor_comps1.shape[0], vols))
+                for i in range(0, vols,2):
+                    combined_data[:,i] = predictor_comps1[:,i]
+                    combined_data[:,i+1] = predictor_comps2[:,i]
+
+                np.save(f'{predictor_dir}/{model_arch}_{"_".join([model1,model2])}_{"_".join([layer1,layer2])}_{vid}_ts.npy', combined_data)
+                
+
+
+'''
 for mt, models in enumerate(model_types):
     model_data = []
     model_len = []
@@ -83,3 +128,4 @@ for mt, models in enumerate(model_types):
     np.save(f'{predictor_dir}/{model_arch}_{"_".join(models)}_{"_".join(layers[mt])}_{vid}_ts.npy', combined_data)
 
 
+'''

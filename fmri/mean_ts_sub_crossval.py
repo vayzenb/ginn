@@ -37,15 +37,10 @@ pc_thresh = .9
 
 clf = Ridge()
 
-
 #set directories
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
-
 n_subs = 24
-
-
-
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
 rois = ['LOC','FFA','A1','EVC']
@@ -54,15 +49,10 @@ rois = ['LOC','FFA','A1','EVC']
 #options are _ts_all, _face, _nonface
 roi_suf = '_ts_all'
 
-
-
 folds = 20
-
 
 summary_cols = ['age','roi', 'corr','se', 'noise_ceiling']
 suf = 'mean_sub_crossval'
-
-
 
 def extract_pc(data, n_components=None):
 
@@ -88,7 +78,6 @@ def extract_roi_data(curr_subs, roi):
         if sub[0:4] != 'sub-':
             sub = f'sub-{sub}'
 
-
         #check if file exists
         if os.path.exists(f'{subj_dir}/{sub}/timeseries/{roi}{roi_suf}.npy'):
             whole_ts = np.load(f'{subj_dir}/{sub}/timeseries/whole_brain_ts.npy')
@@ -110,9 +99,7 @@ def extract_roi_data(curr_subs, roi):
                 
                 
 
-                sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)
-
-            
+                sub_ts = signal.clean(sub_ts,confounds = whole_confound, standardize_confounds=True)   
 
             sub_ts = np.transpose(sub_ts)
             #sub_ts = np.expand_dims(sub_ts,axis =2)
@@ -146,7 +133,6 @@ def fit_ts(seed_ts, train_data, test_data):
     
     """
 
-    
     all_scores = []
     clf = Ridge()
     
@@ -157,17 +143,12 @@ def fit_ts(seed_ts, train_data, test_data):
 
     isc = np.corrcoef(train_data,test_data)[0,1]
 
-
-       #all_scores.append(r_squared)
-
-    #final_score = np.sum(all_scores)/(np.sum(target_pca.explained_variance_ratio_))
     
     return score, isc
 
 def cross_val(roi_data,seed_ts):
     print('running cross validation...')
 
-    
     roi_data = np.asanyarray(roi_data)
     cv_ind = np.arange(0,len(roi_data)).tolist()
     

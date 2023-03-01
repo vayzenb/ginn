@@ -73,7 +73,6 @@ suf = predict_script.suf
 print(analysis_type)
 
 
-
 predictor_dir = '/lab_data/behrmannlab/vlad/ginn/modelling/model_ts'
 summary_type = 'model'
 sub_summary = pd.DataFrame(columns=predict_script.summary_cols + ['architecture', 'train_type', 'layer'])

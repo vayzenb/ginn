@@ -35,6 +35,8 @@ use_pc_thresh = True
 
 pc_thresh = .9
 
+exp = 'aeronaut'
+study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 
 #set directories
@@ -42,12 +44,7 @@ curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'
 
 results_dir = f'{curr_dir}/results'
 
-
-
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
-
-
-
 
 
 #suffix of roi to load
@@ -185,8 +182,8 @@ def find_optimal_pc(roi_data, predictor_ts):
     #find index of max value
     max_ind = np.argmax(all_scores)
     
-
-    return max_ind+1
+    
+    return max_ind+1, all_scores[max_ind]
 
 def cross_val(roi_data,predictor_ts):
     
@@ -208,7 +205,7 @@ def cross_val(roi_data,predictor_ts):
         hp_test = roi_data[cv_ind[int(len(cv_ind)/2):]]
 
         #find optimal PCs
-        optimal_pc = find_optimal_pc(hp_train, predictor_ts)
+        optimal_pc, _ = find_optimal_pc(hp_train, predictor_ts)
 
         seed_ts = predictor_ts[:,0:optimal_pc]
   

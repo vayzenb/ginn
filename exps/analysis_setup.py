@@ -27,6 +27,9 @@ model predictors
 
 use_pc_thresh = True
 pc_perc = .99
+n_comps = 45
+
+
 
 
 
@@ -34,7 +37,7 @@ pc_perc = .99
 neural predictors
 '''
 
-file_suf = ''
+file_suf = '_45PCs'
 
 
 
@@ -70,8 +73,10 @@ def setup_predictors(exp, analysis_type, model_arch, train_type, layer):
     #convert nans to 0
     predictor_ts[np.isnan(predictor_ts)] = 0
 
+    if n_comps is None:
+        n_comps = vols
 
-    pca = analysis_funcs.extract_pc(predictor_ts)
+    pca = analysis_funcs.extract_pc(predictor_ts,n_components=n_comps)
     predictor_comps = pca.transform(predictor_ts)
     #standardize predictor_ts
     predictor_comps = stats.zscore(predictor_comps, axis=0)
@@ -85,7 +90,6 @@ def setup_predictors(exp, analysis_type, model_arch, train_type, layer):
     predictor_summary['layer'] = layer
 
     sub_summary = sub_summary.append(predictor_summary)
-
 
     #save bootstrapped summary
     boot_summary.to_csv(f'{curr_dir}/results/mean_ts/resamples/{exp}_{model_arch}_{train_type}_{layer}_{analysis_type}_boot{file_suf}.csv', index=False)
