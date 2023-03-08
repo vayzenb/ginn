@@ -17,7 +17,7 @@ import analysis_funcs
 
 from scipy import stats
 from sklearn.linear_model import LinearRegression, Ridge
-import pickle
+from joblib import dump, load
 
 predict_ts = predict_script.predict_ts
 
@@ -33,9 +33,10 @@ layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 
 model_dir = '/lab_data/behrmannlab/vlad/ginn/modelling'
 summary_type = 'model'
-rois = ['FFA','lFFA','rFFA']
+rois = ['EVC', 'FFA']
+file_suf = ''
 
-encoding_summary = pd.DataFrame(columns=['model','layer','roi','age','optimal_pc','score'])
+encoding_summary = pd.DataFrame(columns=['train_type','layer','roi','age','optimal_pc','score'])
 #loop through model and layers
 for model in model_types:
     for layer in layers:
@@ -81,11 +82,14 @@ for model in model_types:
 
 
                 #save encoding model
-                pickle.dump(clf, open(f'{model_dir}/encoding_models/{model_arch}_{model}_{layer}_{roi}_{age}_ridge.pkl', 'wb'))
+                dump(clf, f'{model_dir}/encoding_models/{model_arch}_{model}_{layer}_{roi}{file_suf}_{age}_ridge.joblib')
+
+                #save PCA model
+                dump(pca, f'{model_dir}/encoding_models/{model_arch}_{model}_{layer}_{roi}{file_suf}_{age}_pca.joblib')
 
                 #add to summary
-                encoding_summary = encoding_summary.append({'model':model, 'layer':layer, 'roi':roi, 'age':age, 'optimal_pc':max_pc, 'score':score}, ignore_index=True)
+                encoding_summary = encoding_summary.append({'train_type':model, 'layer':layer, 'roi':roi, 'age':age, 'optimal_pc':max_pc, 'score':score}, ignore_index=True)
                 #save summary
-                encoding_summary.to_csv(f'{model_dir}/encoding_models/{model_arch}_encoding_summary.csv', index=False)
+                encoding_summary.to_csv(f'{model_dir}/encoding_models/{model_arch}_encoding_summary{file_suf}.csv', index=False)
 
                 print(f'{model_arch} {model} {layer}...')

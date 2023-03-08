@@ -21,7 +21,7 @@ pause_crit = 10 #how many jobs to do before pausing
 
 exp = 'aeronaut'
 study_dir,subj_dir, sub_list, vid, fmri_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
-suf = '_45PCs'
+suf = ''
 
 def setup_sbatch(job_name, script_name):
     sbatch_setup = f"""#!/bin/bash -l

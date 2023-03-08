@@ -25,7 +25,7 @@ layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 file_suf = ''
 
 results_dir = f'{curr_dir}/results/mean_ts'
-""" 
+
 #loop through models and layers
 #indiv models
 nn = 0
@@ -40,11 +40,13 @@ for model in train_types:
             #add to summary df
             summary_df = pd.concat([summary_df, curr_df], axis=0)
         nn += 1
+
+        
     
 summary_df.to_csv(f'{results_dir}/{exp}_{model_arch}_{analysis_type}{file_suf}.csv', index=False)
 
- """
 
+""" 
 #Create combined model summary
 train_types = ['imagenet_noface','vggface']
 #loop through models
@@ -68,4 +70,4 @@ for model1 in train_types:
                     summary_df = pd.concat([summary_df, curr_df], axis=0)
         nn += 1
     
-    summary_df.to_csv(f'{results_dir}/{exp}_{model1}_{model2}_{analysis_type}{file_suf}.csv', index=False)
+    summary_df.to_csv(f'{results_dir}/{exp}_{model1}_{model2}_{analysis_type}{file_suf}.csv', index=False) """

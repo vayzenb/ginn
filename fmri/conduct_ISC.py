@@ -33,13 +33,13 @@ global_signal = 'mean'
 use_pc_thresh = True
 
 cv_type = 'shuffle'
-folds = 24
+folds = 50
 split_size = .5
 
 
-exp = 'hbn'
+exp = 'aeronaut'
 
-study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+study_dir,subj_dir, sub_list, vid, file_suf, fmri_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
 
 out_dir = f'{subj_dir}/group_func'
 results_dir = f'{curr_dir}/results/isc'
@@ -47,6 +47,7 @@ results_dir = f'{curr_dir}/results/isc'
 roi_dir = f'{study_dir}/derivatives/rois'
 
 rois = ['LOC','FFA','A1','EVC'] + ['lLOC','lFFA','lA1','lEVC'] + ['rLOC','rFFA','rA1','rEVC']
+rois = ['FFA','A1','EVC']
 roi_suf = '_ts_all'
 ages = ['infant', 'adult']
 file_suf = roi_suf
@@ -93,6 +94,7 @@ def shuffle_isc(seed_data, target_data, folds = folds, split_size=split_size):
         #shuffle list
         random.shuffle(sub_idx)
         
+        
         test_data = target_data[sub_idx[:int(len(sub_idx)*split_size)],:]
         #test_data = np.mean(test_data, axis=1) #average across voxels
         test_data = np.mean(test_data, axis=0) #average across subjects
@@ -131,7 +133,8 @@ for seed_age in ages:
             age_cond = 'between'
 
         for seed_roi in rois:
-            seed_data = af.extract_roi_data(subj_dir, seed_subs, seed_roi,roi_suf = roi_suf, fix_tr=fix_tr,global_signal = 'mean')
+            
+            seed_data = af.extract_roi_data(subj_dir, seed_subs, seed_roi,roi_suf = roi_suf, fix_tr=fmri_tr,global_signal = 'mean')
             
             #convert to numpy array
             seed_data = np.asarray(seed_data)
@@ -146,7 +149,7 @@ for seed_age in ages:
 
                 print(f'Calculating ISC for {seed_age} {seed_roi} to {target_age} {target_roi}')
 
-                target_data = af.extract_roi_data(subj_dir, target_subs, target_roi,roi_suf = roi_suf, fix_tr=fix_tr,global_signal = 'mean')
+                target_data = af.extract_roi_data(subj_dir, target_subs, target_roi,roi_suf = roi_suf, fix_tr=fmri_tr,global_signal = 'mean')
                 target_data = np.asarray(target_data)
                 #target_data = np.mean(target_data, axis=0) #average across sub
                 

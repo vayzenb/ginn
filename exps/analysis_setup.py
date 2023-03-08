@@ -27,17 +27,25 @@ model predictors
 
 use_pc_thresh = True
 pc_perc = .99
-n_comps = 45
+global n_comps
+n_comps = 0
 
+#check if n_comps is set
+if n_comps == 0:
+    n_comps = 90
 
-
+exp = 'aeronaut'
+analysis_type = 'mean_movie_crossval'
+model_arch = 'cornet_z_sl'
+train_type = 'vggface'
+layer = 'pIT'
 
 
 '''
 neural predictors
 '''
 
-file_suf = '_45PCs'
+file_suf = ''
 
 
 
@@ -72,9 +80,10 @@ def setup_predictors(exp, analysis_type, model_arch, train_type, layer):
 
     #convert nans to 0
     predictor_ts[np.isnan(predictor_ts)] = 0
+    print(n_comps)
+    
+    
 
-    if n_comps is None:
-        n_comps = vols
 
     pca = analysis_funcs.extract_pc(predictor_ts,n_components=n_comps)
     predictor_comps = pca.transform(predictor_ts)
@@ -107,7 +116,8 @@ if len(sys.argv) > 1:
     train_type = sys.argv[4]
     layer = sys.argv[5]
 
-    setup_predictors(exp, analysis_type, model_arch, train_type, layer)
+
+setup_predictors(exp, analysis_type, model_arch, train_type, layer)
 
 
 
