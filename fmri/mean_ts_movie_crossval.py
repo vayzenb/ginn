@@ -49,14 +49,14 @@ rois = ['FFA','A1','EVC'] + ['lFFA','lA1','lEVC'] + ['rFFA','rA1','rEVC']
 
 #suffix of roi to load
 #options are _ts_all, _face, _nonface
-roi_suf = ''
+roi_suf = '_face'
 
 if roi_suf == '':
     roi_suf = '_ts_all'
 
 alpha = .05
 n_subs = 24
-folds = 100
+folds = 50
 
 
 summary_cols = ['age','roi', 'corr','se', 'ci_low','ci_high', 'isc']

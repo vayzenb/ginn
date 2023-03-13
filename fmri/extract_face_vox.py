@@ -1,5 +1,7 @@
 '''
 Extract maximally and minamlly face-response voxels from each ROI
+
+Uses a parametric face cov to find voxel with highest correlation to the time series
 '''
 
 curr_dir = '/user_data/vayzenbe/GitHub_Repos/ginn'

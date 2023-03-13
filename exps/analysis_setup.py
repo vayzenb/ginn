@@ -20,7 +20,7 @@ import analysis_funcs
 #analysis scripts
 exp = 'aeronaut'
 
-suf = ''
+suf = '_face'
 '''
 model predictors
 '''

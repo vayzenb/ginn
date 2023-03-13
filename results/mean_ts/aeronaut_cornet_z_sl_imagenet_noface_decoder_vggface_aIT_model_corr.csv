@@ -1,0 +1,3 @@
+model_arch,train_type1,layer1,train_type2,layer2,age,roi,corr,se,ci_low,ci_high
+cornet_z_sl,imagenet_noface,decoder,vggface,aIT,FFA,infant,0.18517280453204674,0.03071334241079374,-0.06619228437469855,0.5484837613849116
+cornet_z_sl,imagenet_noface,decoder,vggface,aIT,FFA,adult,0.22758733210662616,0.028352039158869934,-0.11964807121091116,0.5550923085345504

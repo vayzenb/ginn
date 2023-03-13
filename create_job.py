@@ -109,10 +109,10 @@ for model in model_types:
         if n >= pause_crit:
             #wait X minutes
             time.sleep(pause_time*60)
-            n = 0
+            n = 0 
+  
  
-
-""" 
+"""
 #extract model ts
 n = 0
 for model in model_types:
@@ -134,12 +134,12 @@ for model in model_types:
             #wait X minutes
             time.sleep(pause_time*60)
             n = 0 """
-'''
-#extract fmri ts
+
+""" #extract fmri ts
 n =0 
 for sub in sub_list['participant_id']:
-    job_name = f'extract_ts_{sub}'
-    script_path = f'python fmri/extract_fmri_timeseries.py {sub}'
+    job_name = f'extract_ts_{sub}_face'
+    script_path = f'python fmri/find_face_vox.py {sub}'
     print(job_name)
 
     #create sbatch script
@@ -155,5 +155,5 @@ for sub in sub_list['participant_id']:
     if n >= pause_crit:
         #wait X minutes
         time.sleep(pause_time*60)
-        n = 0
-'''
+        n = 0 
+  """

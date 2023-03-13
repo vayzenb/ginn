@@ -30,7 +30,7 @@ print('libraries loaded')
 
 #if you've already (correctly) extracted the activations, just load them; set to True 
 acts_extracted = False
-exp = 'hbn'
+exp = 'aeronaut'
 
 '''
 folder params
