@@ -24,7 +24,7 @@ import pdb
 print('libraries loaded')
 # %%
 exp = 'aeronaut'
-study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+study_dir,subj_dir, sub_list, vid, fmri_suf, start_trs,end_trs, data_dir, vols, tr, fps, bin_size, ages= params.load_params(exp)
 
 frame_dir = f'{curr_dir}/stim/fmri_videos/frames/{vid}'
 
@@ -128,19 +128,40 @@ def convolve_face_cov(vid, col):
 
     downsample_ts = down_sample(face_cov)
 
+    #add burn volumes to beginning and end of timeseries as needed
+    if start_trs > 0:
+        downsample_ts = np.vstack((np.zeros((start_trs,downsample_ts.shape[1])), downsample_ts))    
 
+    if end_trs > 0:
+        downsample_ts = np.vstack((downsample_ts, np.zeros((end_trs,downsample_ts.shape[1]))))
+        
     
     hrf_ts = convolve_hrf(downsample_ts)
 
     return downsample_ts, hrf_ts
     
 
-downsample_ts, hrf_ts = convolve_face_cov(vid, 'top')
+downsample_ts, hrf_ts = convolve_face_cov(vid, 'proportion')
 
+#min-max normalize downsampled
+downsample_ts = (downsample_ts - np.min(downsample_ts))/(np.max(downsample_ts)-np.min(downsample_ts))
+
+#round downsampled
+downsample_ts = np.round(downsample_ts,2)
+
+
+
+#save downsampled as txt file
+np.savetxt(f'{curr_dir}/fmri/pre_proc/{vid}_face_covs_downsampled.txt', downsample_ts, fmt='%1.3f')
+#save convolved as txt file
+np.savetxt(f'{curr_dir}/fmri/pre_proc/{vid}_face_covs_convolved.txt', hrf_ts, delimiter=',')
+
+
+""" 
 # grab top responses
 binarized = hrf_ts
 binarized[binarized>=.15] = 1
 binarized[binarized<.15] = 0
 
 #save  binarized
-np.save(f'{curr_dir}/fmri/pre_proc/{vid}_binary_face cov.npy', binarized)
+np.save(f'{curr_dir}/fmri/pre_proc/{vid}_binary_face cov.npy', binarized) """

@@ -1,0 +1,11 @@
+,model_arch,train_type,layer,image,pred
+0,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n04154565/n04154565_1019.JPEG,1.6804920078521035e-07
+1,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n03250847/n03250847_3488.JPEG,1.6626278508659414e-07
+2,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n03729826/n03729826_599.JPEG,1.66088750482492e-07
+3,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n03637318/n03637318_6220.JPEG,1.6350210084756618e-07
+4,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n13044778/n13044778_6087.JPEG,1.6141138246364341e-07
+5,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n03729826/n03729826_3651.JPEG,1.597617943117261e-07
+6,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n04286575/n04286575_20556.JPEG,1.591856072540661e-07
+7,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n02992211/n02992211_29546.JPEG,1.5813682835407522e-07
+8,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n000343/0302_01.jpg,1.5786329243917802e-07
+9,cornet_z_sl,vggface,decoder,/lab_data/behrmannlab/image_sets/imagenet_vggface/train/n03637318/n03637318_16602.JPEG,1.5738378687090175e-07

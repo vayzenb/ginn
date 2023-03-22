@@ -35,7 +35,7 @@ exp = 'aeronaut'
 '''
 folder params
 '''
-study_dir,subj_dir, sub_list, vid, file_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages = params.load_params(exp)
+study_dir,subj_dir, sub_list, vid, fmri_suf, start_trs,end_trs, data_dir, vols, tr, fps, bin_size, ages= params.load_params(exp)
 
 stim_dir = f"{curr_dir}/stim/fmri_videos/frames"
 weights_dir = f"/lab_data/behrmannlab/vlad/ginn/modelling/model_weights"
@@ -68,9 +68,6 @@ if len(sys.argv) > 1:
     layer = sys.argv[2]
     sublayer = sys.argv[3]
     print(f'extracting for {layer} and {sublayer}')
-
-
-
 
 
 transform = transforms.Compose([
@@ -174,6 +171,7 @@ def extract_acts(model, image_dir):
 # %%
 def down_sample(data):
     """Downsample data"""
+    print('downsampling...')
     downsample_ts = np.empty((0, data.shape[1])) 
 
     
@@ -183,49 +181,11 @@ def down_sample(data):
 
         downsample_ts = np.vstack((downsample_ts,np.mean(temp, axis=0)))
 
-    downsample_ts = downsample_ts[0:(vols-fix_tr),:] #extract only 168 volumes to match fmri data (credits of movie were cut)
+    #downsample_ts = downsample_ts[0:(vols-fix_tr),:] #extract only 168 volumes to match fmri data (credits of movie were cut)
     
     return downsample_ts
 
 # %%
-def extract_pc(data, n_components=None):
-
-    """
-    Extract principal components
-    if n_components isn't set, it will extract all it can
-    
-    """
-    #pdb.set_trace()
-    pca = PCA(n_components = n_components)
-    pca.fit(data)
-    
-    return pca
-
-# %%
-def calc_pc_n(pca, thresh):
-    '''
-    Calculate how many PCs are needed to explain X% of data
-    
-    pca - result of pca analysis
-    thresh- threshold for how many components to keep
-    '''
-
-    explained_variance = pca.explained_variance_ratio_
-    
-    var = 0
-    for n_comp, ev in enumerate(explained_variance):
-        var += ev #add each PC's variance to current variance
-        #print(evn, ev, var)
-
-        if var >=thresh: #once variance > than thresh, stop
-            break
-    
-    #plt.bar(range(len(explained_variance[0:n_comp])), explained_variance[0:n_comp], alpha=0.5, align='center')
-    #plt.ylabel('Variance ratio')
-    #plt.xlabel('Principal components')
-    #plt.show()
-    
-    return n_comp
 
 # %%
 '''
@@ -250,11 +210,14 @@ def hrf(data, tr):
 
 # %%
 def convolve_hrf(data):
+    print('Convolving with HRF...')
 
     conv_ts =np.zeros((data.shape))
     for ii in range(0,data.shape[1]):
         temp = hrf(data[:,ii],tr)
-        temp = temp[0:(vols-fix_tr)] # only grab the first 168 volumes
+        temp = temp[0:data.shape[0]]
+        
+        
         #temp = (temp - np.mean(temp))/np.std(temp)
         conv_ts[:,ii] = temp
         
@@ -297,18 +260,23 @@ else:
 
 
 
-print('downsampling and running PCA...')
+
 #downsample to scale of fmri
 downsample_ts = down_sample(frame_acts)
+
+
+#add burn volumes to beginning and end of timeseries as needed
+if start_trs > 0:
+    downsample_ts = np.vstack((np.zeros((start_trs,downsample_ts.shape[1])), downsample_ts))    
+
+if end_trs > 0:
+    downsample_ts = np.vstack((downsample_ts, np.zeros((end_trs,downsample_ts.shape[1]))))
+    
 
 #convolve to hrf
 hrf_ts = convolve_hrf(downsample_ts)
 
 final_ts = hrf_ts
-
-
-#plot pc variance explained
-
 
 
 np.save(f'{out_dir}/{model_arch}_{train_type}_{layer}_{vid}_ts', final_ts)

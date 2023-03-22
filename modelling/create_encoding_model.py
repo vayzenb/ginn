@@ -33,8 +33,8 @@ layers = ['V1','V2','V4','pIT','aIT', 'decoder']
 
 model_dir = '/lab_data/behrmannlab/vlad/ginn/modelling'
 summary_type = 'model'
-rois = ['EVC', 'FFA']
-file_suf = ''
+rois = ['EVC', 'FFA', 'A1']
+file_suf = '_face'
 
 encoding_summary = pd.DataFrame(columns=['train_type','layer','roi','age','optimal_pc','score'])
 #loop through model and layers

@@ -51,12 +51,13 @@ def load_params(exp):
         vid = 'aeronaut'
         fmri_suf = '_Z'
         
-        fix_tr = 3
+        start_trs = 0
+        end_trs = 3
         
         data_dir = f'{study_dir}/preprocessed_standard/linear_alignment'
         subj_dir = f'{study_dir}/derivatives'
 
-        vols = 90 #volumes in the scan
+        vols = 93 #volumes in the scan
         tr = 2 #TR of scan
         
         fps = 24 # frame per second of video (how many rows go into 1 sec)
@@ -65,7 +66,7 @@ def load_params(exp):
         
     bin_size = int(fps * tr) # get the bin size to average by multiplying the FPS by tr
 
-    return study_dir,subj_dir, sub_list, vid, fmri_suf, fix_tr, data_dir, vols, tr, fps, bin_size, ages
+    return study_dir,subj_dir, sub_list, vid, fmri_suf, start_trs,end_trs, data_dir, vols, tr, fps, bin_size, ages
 
 
 

@@ -73,7 +73,7 @@ sub_file = f'{data_dir}/{sub}{file_suf}.nii.gz'
 whole_brain_mask = image.binarize_img(image.load_img(f'{roi_dir}/mni_mask.nii.gz'))
 print(sub_file)
 
-def extract_face_vox(mv_ts):
+def extract_face_vox(mv_ts, roi):
 
     mv_ts = mv_ts[fix_tr:,:]
     #integrate this into a funciton later
@@ -97,7 +97,7 @@ def extract_face_vox(mv_ts):
     
     
     #save 
-    np.save(f'{out_dir}/{rr}{roi_suf}',top_10_ts)
+    np.save(f'{out_dir}/{roi}{roi_suf}',top_10_ts)
 
     
 
@@ -128,12 +128,13 @@ if os.path.exists(sub_file):
         #pdb.set_trace()
         #extract bilateral, left and right hemis
         mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/{rr}.nii.gz')
-        extract_face_vox(mv_ts)    
+        extract_face_vox(mv_ts, rr)    
 
         mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/l{rr}.nii.gz')
-        extract_face_vox(mv_ts)
+        extract_face_vox(mv_ts , f'l{rr}')
+        
         mv_ts = extract_mv_ts(bold_vol, f'{roi_dir}/r{rr}.nii.gz')
-        extract_face_vox(mv_ts)
+        extract_face_vox(mv_ts, f'r{rr}')
         
     
         

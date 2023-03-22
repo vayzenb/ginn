@@ -20,7 +20,7 @@ import analysis_funcs
 #analysis scripts
 exp = 'aeronaut'
 
-suf = '_face'
+file_suf = ''
 '''
 model predictors
 '''
@@ -45,7 +45,7 @@ layer = 'pIT'
 neural predictors
 '''
 
-file_suf = ''
+
 
 
 

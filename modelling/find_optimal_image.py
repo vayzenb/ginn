@@ -61,7 +61,7 @@ file_suf = '_face'
 encoding_summary = pd.read_csv(f'{encode_dir}/{model_arch}_encoding_summary{file_suf}.csv')
 
 summary_type = 'model'
-rois = ['FFA','lFFA','rFFA']
+rois = ['FFA_face','EVC_face','A1_face']
 
 #load data from arguments
 train_type = sys.argv[1]
